@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/IsoMaker.dir/home/atominc/Desktop/Epitech/EIP/IsoMaker/src/main.cpp.o -o IsoMaker
