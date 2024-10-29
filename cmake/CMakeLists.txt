@@ -1,7 +1,11 @@
-cmake_minimum_required(VERSION 3.29)
+cmake_minimum_required(VERSION 3.28)
 project(IsoMaker LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(IsoMaker
-    ../src/main.cpp)
+include(FetchContent)
+include(raylib.cmake)
+
+add_executable(IsoMaker ../src/main.cpp)
+
+target_link_libraries(IsoMaker PRIVATE raylib)
