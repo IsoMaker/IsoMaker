@@ -11,7 +11,7 @@
 #include <unordered_map>
 #include <SDL2/SDL.h> 
 
-#include "../game/Effect.hpp"
+#include "../Game/Effect.hpp"
 
 namespace input {
 
