@@ -1,17 +1,24 @@
-#include <iostream>
-#include "raylib.h"
+#include "paint/paint_tools.hpp"
 
 int main()
 {
     const int screenWidth = 800;
-    const int screenHeight = 450;
+    const int screenHeight = 600;
+    paint_tools paint(screenWidth, screenHeight);
+    Vector2 mousePos;
 
-    InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
+    InitWindow(screenWidth, screenHeight, "Pixel Art Editor");
     SetTargetFPS(60);
+
     while (!WindowShouldClose()) {
+        if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
+            mousePos = GetMousePosition();
+            paint.paint_pixel(mousePos.x, mousePos.y);
+        }
         BeginDrawing();
-            ClearBackground(RAYWHITE);
-            DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
+        ClearBackground(RAYWHITE);
+        paint.draw_pixels();
+        paint.draw_grid();
         EndDrawing();
     }
     CloseWindow();
