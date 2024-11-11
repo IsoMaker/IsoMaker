@@ -21,7 +21,7 @@ namespace input {
                     {SDL_CONTROLLER_BUTTON_A, Generic::INTERACT},
                     {SDL_CONTROLLER_BUTTON_B, Generic::ATTACK},
                     {SDL_CONTROLLER_BUTTON_X, Generic::INVENTORY},
-                    {SDL_CONTROLLER_BUTTON_START, Generic::PAUSE}
+                    {SDL_CONTROLLER_BUTTON_START, Generic::PAUSE},
                 };
             };
             ~ControllerHandler() = default;

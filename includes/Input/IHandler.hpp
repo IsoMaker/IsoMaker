@@ -14,13 +14,13 @@ namespace input {
     enum class Type {
         KEYBOARD,
         MOUSE,
-        GAMEPAD
+        GAMEPAD,
     };
 
     enum class State {
         PRESSED,
         RELEASED,
-        HELD
+        HELD,
     };
 
     enum class Generic {
@@ -31,9 +31,13 @@ namespace input {
         INTERACT,
         ATTACK,
         INVENTORY,
-        SELECT,
         PAUSE,
-        VOID
+        ENTER,
+        SELECT1,
+        SELECT2,
+        SELECT3,
+        SELECT4,
+        VOID,
     };
 
     template <typename T>

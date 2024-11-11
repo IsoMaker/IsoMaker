@@ -18,11 +18,11 @@ namespace input {
                     {SDLK_s, Generic::DOWN},
                     {SDLK_a, Generic::LEFT},
                     {SDLK_d, Generic::RIGHT},
-                    {SDLK_e, Generic::INTERACT},
+                    {SDLK_RETURN, Generic::INTERACT},
                     {SDLK_SPACE, Generic::ATTACK},
                     {SDLK_TAB, Generic::INVENTORY},
-                    {SDLK_RETURN, Generic::SELECT},
-                    {SDLK_ESCAPE, Generic::PAUSE}
+                    {SDLK_ESCAPE, Generic::PAUSE},
+                    {SDLK_RETURN, Generic::ENTER},
                 };
             };
             ~KeyboardHandler() = default;

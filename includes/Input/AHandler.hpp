@@ -31,8 +31,8 @@ namespace input {
                     {Generic::INTERACT, State::RELEASED},
                     {Generic::ATTACK, State::RELEASED},
                     {Generic::INVENTORY, State::RELEASED},
-                    {Generic::SELECT, State::RELEASED},
-                    {Generic::PAUSE, State::RELEASED}
+                    {Generic::SELECT1, State::RELEASED},
+                    {Generic::PAUSE, State::RELEASED},
                 }) {};
             virtual ~AHandler() = default;
 
