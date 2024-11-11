@@ -5,12 +5,12 @@ set(CMAKE_CXX_STANDARD 14)
 
 include(FetchContent)
 include(raylib.cmake)
+include(raygui.cmake)
 include(SDL2.cmake)
 
 add_executable(IsoMaker
     "../src/main.cpp"
-    "../src//paint/paint_tools.cpp"
+    "../src/Paint/PaintEditor.cpp"
 )
 
-target_link_libraries(IsoMaker PRIVATE raylib)
-target_link_libraries(IsoMaker PRIVATE SDL2)
+target_link_libraries(IsoMaker PRIVATE raylib raygui SDL2)

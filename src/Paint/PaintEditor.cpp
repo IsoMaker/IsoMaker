@@ -1,10 +1,10 @@
-#include "paint_tools.hpp"
+#include "PaintEditor.hpp"
 
-paint_tools::paint_tools(unsigned int screenWidth, unsigned int screenHeight)
+paint::Editor::Editor(unsigned int screenWidth, unsigned int screenHeight)
     : _screenWidth(screenWidth), _screenHeight(screenHeight),
       pixelColors(screenWidth / _gridSize, std::vector<Color>(screenHeight / _gridSize, WHITE)) {}
 
-void paint_tools::draw_grid()
+void paint::Editor::draw_grid()
 {
     int cols = _screenWidth / _gridSize;
     int rows = _screenHeight / _gridSize;
@@ -17,7 +17,7 @@ void paint_tools::draw_grid()
     }
 }
 
-void paint_tools::draw_pixels()
+void paint::Editor::draw_pixels()
 {
     for (int i = 0; i < pixelColors.size(); i++) {
         for (int j = 0; j < pixelColors[i].size(); j++) {
@@ -26,7 +26,7 @@ void paint_tools::draw_pixels()
     }
 }
 
-void paint_tools::paint_pixel(int x, int y)
+void paint::Editor::paint_pixel(int x, int y)
 {
     int col = x / _gridSize;
     int row = y / _gridSize;
@@ -38,4 +38,15 @@ void paint_tools::paint_pixel(int x, int y)
             pixelColors[col][row] = _currentColor;
         }
     }
+}
+
+void paint::Editor::color_selector()
+{
+    DrawText("Custom Color Picker", 20, 480, 10, DARKGRAY);
+    GuiSliderBar((Rectangle){ 20, 490, 200, 20 }, "0", "255", &_redParams, 0, 255);
+    GuiSliderBar((Rectangle){ 20, 520, 200, 20 }, "0", "255", &_greenParams, 0, 255);
+    GuiSliderBar((Rectangle){ 20, 550, 200, 20 }, "0", "255", &_blueParams, 0, 255);
+
+    _currentColor = { (unsigned char)_redParams, (unsigned char)_greenParams, (unsigned char)_blueParams, 255 };
+    DrawRectangle(250, 520, 50, 50, _currentColor);
 }
