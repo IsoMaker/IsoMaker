@@ -7,13 +7,13 @@
 
 #pragma once
 
-#include "Handler.hpp"
+#include "../../includes/Input/AHandler.hpp"
 
 namespace input {
-    class ControllerHandler : public AHandler {
+    class ControllerHandler : public AHandler<Uint8> {
         public:
             ControllerHandler() : AHandler(Type::GAMEPAD) {
-                controllerBindings = {
+                inputBindings = {
                     {SDL_CONTROLLER_BUTTON_DPAD_UP, Generic::UP},
                     {SDL_CONTROLLER_BUTTON_DPAD_DOWN, Generic::DOWN},
                     {SDL_CONTROLLER_BUTTON_DPAD_LEFT, Generic::LEFT},
@@ -24,17 +24,10 @@ namespace input {
                     {SDL_CONTROLLER_BUTTON_START, Generic::PAUSE}
                 };
             };
+            ~ControllerHandler() = default;
 
         private:
-            std::unordered_map<Uint8, Generic> controllerBindings;
-
-            Generic getGenericFromEvent(const SDL_Event &event) const {
-                auto it = controllerBindings.find(event.cbutton.button);
-                return (it != controllerBindings.end()) ? it->second : Generic::VOID;
-            }
-
-            State getState(const SDL_Event &event) const {
-                return (event.cbutton.state == SDL_PRESSED) ? State::PRESSED : State::RELEASED;
-            }
+            Generic getGenericFromEvent(const SDL_Event &event) const;
+            State getState(const SDL_Event &event) const;
     };
 }
