@@ -9,8 +9,6 @@
 
 #include <SDL2/SDL.h> 
 
-#include "../Game/Effect.hpp"
-
 namespace input {
 
     enum class Type {
@@ -38,24 +36,24 @@ namespace input {
         VOID
     };
 
+    template <typename T>
     class IHandler {
         public:
             IHandler() = default;
             virtual ~IHandler() = default;
 
-            virtual void setBinding(Generic input, game::Effect effect) = 0;
-            virtual void eraseBinding(Generic input) = 0;
-
             virtual void handleInput() = 0;
             virtual void handleInput(const SDL_Event &event) = 0;
-            virtual void handleInput(const SDL_Event &event, game::Effect effect) = 0;
             virtual void checkHeldState() = 0;
 
-            virtual Generic getGenericFromEvent(const SDL_Event &event) const = 0;
-            virtual State getState(const SDL_Event &event) const = 0;
-            virtual void setState(Generic input, State state) = 0;
-            virtual game::Effect getEffect(const SDL_Event &event) const = 0;
+            virtual void setBinding(T binding, Generic input) = 0;
+            virtual void eraseBinding(T binding) = 0;
 
+            virtual void setState(Generic input, State state) = 0;
+            virtual std::unordered_map<Generic, State> getStates() const = 0;
+
+            virtual Generic getGenericFromEvent(const SDL_Event &event) const = 0;
+            virtual State getGenericStateFromEvent(const SDL_Event &event) const = 0;
         protected:
         private:
     };

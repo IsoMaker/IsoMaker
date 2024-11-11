@@ -16,7 +16,6 @@ namespace input {
 
     using TimePoint = std::chrono::steady_clock::time_point;
 
-
     template <typename T>
     class AHandler : public IHandler {
         public:
@@ -24,17 +23,6 @@ namespace input {
             AHandler(Type type) :
                 type(type),
                 holdThreshold(std::chrono::milliseconds(200)),
-                inputEffects({
-                    {Generic::UP, game::Effect::UP},
-                    {Generic::DOWN, game::Effect::DOWN},
-                    {Generic::LEFT, game::Effect::LEFT},
-                    {Generic::RIGHT, game::Effect::RIGHT},
-                    {Generic::INTERACT, game::Effect::INTERACT},
-                    {Generic::ATTACK, game::Effect::ATTACK},
-                    {Generic::INVENTORY, game::Effect::INVENTORY},
-                    {Generic::SELECT, game::Effect::SELECT},
-                    {Generic::PAUSE, game::Effect::PAUSE}
-                }),
                 inputStates({
                     {Generic::UP, State::RELEASED},
                     {Generic::DOWN, State::RELEASED},
@@ -47,13 +35,6 @@ namespace input {
                     {Generic::PAUSE, State::RELEASED}
                 }) {};
             virtual ~AHandler() = default;
-
-            void setBinding(Generic input, game::Effect effect) override {
-                inputEffects[input] = effect;
-            }
-            void eraseBinding(Generic input) override {
-                inputEffects.erase(input);
-            }
 
             void handleInput() override {
                 checkHeldState();
@@ -72,6 +53,13 @@ namespace input {
                     }
                 }
             }
+        
+            void setBinding(T binding, Generic input) override {
+                inputBindings[binding] = input;
+            }
+            void eraseBinding(T binding) override {
+                inputBindings.erase(binding);
+            }
 
             void setState(Generic input, State state) override {
                 if (input == Generic::VOID || (inputStates[input] == State::PRESSED && state == State::PRESSED)) {
@@ -85,15 +73,12 @@ namespace input {
                     holdTimestamps.erase(input);  // Remove the timestamp on release
                 }
             }
-            game::Effect getEffect(const SDL_Event &event) const override {
-                Generic genericInput = getGenericFromEvent(event);
-                auto it = inputEffects.find(genericInput);
-                return (it != inputEffects.end()) ? it->second : game::Effect::VOID;
+            std::unordered_map<Generic, State> getStates() const override {
+                return inputStates;
             }
 
             Type type;
             std::chrono::milliseconds holdThreshold;
-            std::unordered_map<Generic, game::Effect> inputEffects;
             std::unordered_map<Generic, State> inputStates;
             std::unordered_map<Generic, TimePoint> holdTimestamps;
             std::unordered_map<T, Generic> inputBindings;
