@@ -1,7 +1,8 @@
 #define RAYGUI_IMPLEMENTATION
 #include "Paint/PaintEditor.hpp"
 
-int main() {
+int main()
+{
     const int screenWidth = 800;
     const int screenHeight = 600;
     paint::Editor PaintEditor(screenWidth, screenHeight);
@@ -14,13 +15,13 @@ int main() {
         BeginDrawing();
         ClearBackground(RAYWHITE);
 
-        PaintEditor.draw_pixels();
-        PaintEditor.draw_grid();
-        PaintEditor.color_selector();
+        PaintEditor.drawPixels();
+        PaintEditor.drawGrid();
+        PaintEditor.customizationTools();
 
         if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
             mousePos = GetMousePosition();
-            PaintEditor.paint_pixel(mousePos.x, mousePos.y);
+            PaintEditor.paintPixel(mousePos.x, mousePos.y);
         }
 
         EndDrawing();

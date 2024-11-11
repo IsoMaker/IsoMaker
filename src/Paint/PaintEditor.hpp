@@ -6,26 +6,34 @@
 
 namespace paint {
 
+    enum class ToolType {
+        Pen,
+        Eraser,
+        Pipette
+    };
+
     class Editor {
-        public:
-            unsigned int _screenWidth;
-            unsigned int _screenHeight;
-            int _gridSize = 20;
-            Color _currentColor;
-            std::vector<std::vector<Color>> pixelColors;
+    public:
+        unsigned int _screenWidth;
+        unsigned int _screenHeight;
+        int _gridSize = 20;
+        Color _currentColor;
+        std::vector<std::vector<Color>> pixelColors;
 
-            float _redParams = 255;
-            float _greenParams = 0;
-            float _blueParams = 0;
+        float _redParams = 255;
+        float _greenParams = 0;
+        float _blueParams = 0;
 
-            Editor(unsigned int screenWidth, unsigned int screenHeight);
-            ~Editor() {};
+        ToolType _currentTool = ToolType::Pen;
 
-            void draw_grid();
-            void draw_pixels();
-            void paint_pixel(int x, int y);
-            void color_selector();
+        Editor(unsigned int screenWidth, unsigned int screenHeight);
+        ~Editor() {};
 
+        void drawGrid();
+        void drawPixels();
+        void paintPixel(int x, int y);
+        void customizationTools();
+        void setTool(ToolType tool);
     };
 
 }
