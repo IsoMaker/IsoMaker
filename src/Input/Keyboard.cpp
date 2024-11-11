@@ -19,6 +19,6 @@ Generic KeyboardHandler::getGenericFromEvent(const SDL_Event &event) const {
     return Generic::VOID;
 }
 
-State KeyboardHandler::getState(const SDL_Event &event) const {
+State KeyboardHandler::getGenericStateFromEvent(const SDL_Event &event) const {
     return (event.type == SDL_KEYDOWN) ? State::PRESSED : State::RELEASED;
 }

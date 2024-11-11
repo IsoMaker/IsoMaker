@@ -29,6 +29,6 @@ namespace input {
 
         private:
             Generic getGenericFromEvent(const SDL_Event &event) const;
-            State getState(const SDL_Event &event) const;
+            State getGenericStateFromEvent(const SDL_Event &event) const;
     };
 }
