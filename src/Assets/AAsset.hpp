@@ -1,5 +1,4 @@
-#ifndef AASSET_HPP_
-#define AASSET_HPP_
+#pragma once
 
 #include "IAsset.hpp"
 
@@ -31,5 +30,3 @@ class AAsset : public IAsset
         std::string _displayName;
         std::vector<std::string> _tags;
 };
-
-#endif
