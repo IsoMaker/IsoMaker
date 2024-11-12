@@ -1,5 +1,4 @@
-#ifndef IASSET_HPP_
-#define IASSET_HPP_
+#pragma once
 
 #include <memory>
 #include <string>
@@ -30,5 +29,3 @@ class IAsset
         //virtual AssetType getType(); ?
         //set/get/load preview ?
 };
-
-#endif

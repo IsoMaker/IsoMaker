@@ -1,7 +1,8 @@
-#ifndef ASSET3D_HPP_
-#define ASSET3D_HPP_
+#pragma once
 
 #include "AAsset.hpp"
+
+#include <iostream>
 
 class Asset3D : public AAsset
 {
@@ -15,5 +16,3 @@ class Asset3D : public AAsset
         Model _model;
         bool _modelLoaded;
 };
-
-#endif
