@@ -1,5 +1,4 @@
-#ifndef ASSET2D_HPP_
-#define ASSET2D_HPP_
+#pragma once
 
 #include "AAsset.hpp"
 
@@ -15,5 +14,3 @@ class Asset2D : public AAsset
         bool _textureLoaded;
         Texture2D _texture;
 };
-
-#endif
