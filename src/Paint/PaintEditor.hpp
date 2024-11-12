@@ -19,6 +19,9 @@ namespace paint {
         int _gridSize = 20;
         Color _currentColor;
         std::vector<std::vector<Color>> pixelColors;
+        float _zoomLevel = 1.0f;
+        const float _zoomStep = 0.1f;
+        const int _originalGridSize = 20;
 
         float _redParams = 255;
         float _greenParams = 0;
@@ -31,9 +34,11 @@ namespace paint {
 
         void drawGrid();
         void drawPixels();
-        void paintPixel(int x, int y);
+        void handlePixel(int x, int y);
         void customizationTools();
         void setTool(ToolType tool);
+        void zoomIn();
+        void zoomOut();
     };
 
 }

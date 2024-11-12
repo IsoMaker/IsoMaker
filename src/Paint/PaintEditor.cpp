@@ -1,4 +1,5 @@
 #include "PaintEditor.hpp"
+#include <iostream>
 
 paint::Editor::Editor(unsigned int screenWidth, unsigned int screenHeight)
     : _screenWidth(screenWidth), _screenHeight(screenHeight),
@@ -28,7 +29,7 @@ void paint::Editor::drawPixels() {
     }
 }
 
-void paint::Editor::paintPixel(int x, int y) {
+void paint::Editor::handlePixel(int x, int y) {
     int col = x / _gridSize;
     int row = y / _gridSize;
 
@@ -67,5 +68,21 @@ void paint::Editor::customizationTools() {
     }
     if (GuiButton((Rectangle){ 320, 550, 60, 30 }, "Pipette")) {
         setTool(ToolType::Pipette);
+    }
+}
+
+void paint::Editor::zoomIn()
+{
+    if (_zoomLevel <= 1.5) {
+        _zoomLevel += _zoomStep;
+        _gridSize = static_cast<int>(_originalGridSize * _zoomLevel);
+    }
+}
+
+void paint::Editor::zoomOut()
+{
+    if (_zoomLevel >= 0.6) {
+        _zoomLevel -= _zoomStep;
+        _gridSize = static_cast<int>(_originalGridSize * _zoomLevel);
     }
 }

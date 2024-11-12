@@ -15,13 +15,16 @@ int main()
         BeginDrawing();
         ClearBackground(RAYWHITE);
 
+        if (IsKeyPressed(KEY_UP)) PaintEditor.zoomIn();
+        if (IsKeyPressed(KEY_DOWN)) PaintEditor.zoomOut();
+
         PaintEditor.drawPixels();
         PaintEditor.drawGrid();
         PaintEditor.customizationTools();
 
         if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
             mousePos = GetMousePosition();
-            PaintEditor.paintPixel(mousePos.x, mousePos.y);
+            PaintEditor.handlePixel(mousePos.x, mousePos.y);
         }
 
         EndDrawing();
