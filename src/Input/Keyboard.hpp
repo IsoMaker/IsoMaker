@@ -13,7 +13,7 @@ namespace input {
     class KeyboardHandler : public AHandler<SDL_Keycode> {
         public:
             KeyboardHandler() : AHandler(Type::KEYBOARD) {
-                inputBindings = {
+                _inputBindings = {
                     {SDLK_w, Generic::UP},
                     {SDLK_s, Generic::DOWN},
                     {SDLK_a, Generic::LEFT},

@@ -13,7 +13,7 @@ namespace input {
     class MouseHandler : public AHandler<Uint8> {
         public:
             MouseHandler() : AHandler(Type::MOUSE) {
-                inputBindings = {
+                _inputBindings = {
                     {SDL_BUTTON_LEFT, Generic::SELECT1},
                     {SDL_BUTTON_RIGHT, Generic::SELECT2},
                     {SDL_BUTTON_MIDDLE, Generic::VOID},
