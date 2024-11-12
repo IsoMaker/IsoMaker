@@ -17,13 +17,13 @@ namespace input {
     using TimePoint = std::chrono::steady_clock::time_point;
 
     template <typename T>
-    class AHandler : public IHandler {
+    class AHandler : public IHandler<T> {
         public:
         protected:
             AHandler(Type type) :
-                type(type),
-                holdThreshold(std::chrono::milliseconds(200)),
-                inputStates({
+                _type(type),
+                _holdThreshold(std::chrono::milliseconds(200)),
+                _inputStates({
                     {Generic::UP, State::RELEASED},
                     {Generic::DOWN, State::RELEASED},
                     {Generic::LEFT, State::RELEASED},
@@ -36,52 +36,59 @@ namespace input {
                 }) {};
             virtual ~AHandler() = default;
 
-            void handleInput() override {
+            void handleInput() {
                 checkHeldState();
             }
-            void handleInput(const SDL_Event &event) override {
-                setState(getGenericFromEvent(event), getState(event));
+            void handleInput(const SDL_Event &event){
+                setState(getGenericFromEvent(event), getGenericStateFromEvent(event));
             }
-            void checkHeldState() override {
+            void checkHeldState() {
                 auto now = std::chrono::steady_clock::now();
-                for (auto &[input, state] : inputStates) {
-                    if (state == State::PRESSED) {
-                        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - holdTimestamps[input]);
-                        if (elapsed >= holdThreshold) {
-                            state = State::HELD;  // Transition to HELD if the threshold is met
+                for (auto &inputState : _inputStates) {
+                    if (inputState.second == State::PRESSED) {
+                        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - _holdTimestamps[inputState.first]);
+                        if (elapsed >= _holdThreshold) {
+                            inputState.second = State::HELD;  // Transition to HELD if the threshold is met
                         }
                     }
                 }
             }
         
-            void setBinding(T binding, Generic input) override {
-                inputBindings[binding] = input;
+            void setBinding(T binding, Generic input) {
+                _inputBindings[binding] = input;
             }
-            void eraseBinding(T binding) override {
-                inputBindings.erase(binding);
+            void eraseBinding(T binding) {
+                _inputBindings.erase(binding);
             }
 
-            void setState(Generic input, State state) override {
-                if (input == Generic::VOID || (inputStates[input] == State::PRESSED && state == State::PRESSED)) {
+            void setState(Generic input, State state) {
+                if (input == Generic::VOID || (_inputStates[input] == State::PRESSED && state == State::PRESSED)) {
                     return;
                 }
-                inputStates[input] = state;
+                _inputStates[input] = state;
 
                 if (state == State::PRESSED) {
-                    holdTimestamps[input] = std::chrono::steady_clock::now();  // Record the press time
+                    _holdTimestamps[input] = std::chrono::steady_clock::now();  // Record the press time
                 } else if (state == State::RELEASED) {
-                    holdTimestamps.erase(input);  // Remove the timestamp on release
+                    _holdTimestamps.erase(input);  // Remove the timestamp on release
                 }
             }
-            std::unordered_map<Generic, State> getStates() const override {
-                return inputStates;
+            std::unordered_map<Generic, State> getStates() const {
+                return _inputStates;
             }
 
-            Type type;
-            std::chrono::milliseconds holdThreshold;
-            std::unordered_map<Generic, State> inputStates;
-            std::unordered_map<Generic, TimePoint> holdTimestamps;
-            std::unordered_map<T, Generic> inputBindings;
+            Generic getGenericFromEvent(const SDL_Event &event) const {
+                return Generic::VOID;
+            }
+            State getGenericStateFromEvent(const SDL_Event &event) const {
+                return (event.type == SDL_KEYDOWN || event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_CONTROLLERBUTTONDOWN) ? State::PRESSED : State::RELEASED;
+            }
+
+            Type _type;
+            std::chrono::milliseconds _holdThreshold;
+            std::unordered_map<Generic, State> _inputStates;
+            std::unordered_map<Generic, TimePoint> _holdTimestamps;
+            std::unordered_map<T, Generic> _inputBindings;
         private:
     };
 }

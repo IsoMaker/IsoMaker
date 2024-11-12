@@ -13,7 +13,7 @@ namespace input {
     class ControllerHandler : public AHandler<Uint8> {
         public:
             ControllerHandler() : AHandler(Type::GAMEPAD) {
-                inputBindings = {
+                _inputBindings = {
                     {SDL_CONTROLLER_BUTTON_DPAD_UP, Generic::UP},
                     {SDL_CONTROLLER_BUTTON_DPAD_DOWN, Generic::DOWN},
                     {SDL_CONTROLLER_BUTTON_DPAD_LEFT, Generic::LEFT},

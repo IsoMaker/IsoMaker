@@ -5,16 +5,14 @@
 ** Controller
 */
 
-#pragma once
-
 #include "Controller.hpp"
 
 using namespace input;
 
 Generic ControllerHandler::getGenericFromEvent(const SDL_Event &event) const {
     if (event.type == SDL_CONTROLLERBUTTONDOWN || event.type == SDL_CONTROLLERBUTTONUP) {
-        auto it = inputBindings.find(event.cbutton.button);
-        return (it != inputBindings.end()) ? it->second : Generic::VOID;
+        auto it = _inputBindings.find(event.cbutton.button);
+        return (it != _inputBindings.end()) ? it->second : Generic::VOID;
     }
     return Generic::VOID;
 }
