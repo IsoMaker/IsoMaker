@@ -18,6 +18,10 @@ namespace input {
             IHandler() = default;
             virtual ~IHandler() = default;
 
+            virtual void start() = 0;
+
+            virtual std::unordered_map<Generic, State> getStates() const = 0;
+
             virtual void handleInput() = 0;
             virtual void handleInput(const SDL_Event &event) = 0;
             virtual void checkHeldState() = 0;
@@ -26,7 +30,6 @@ namespace input {
             virtual void eraseBinding(T binding) = 0;
 
             virtual void setState(Generic input, State state) = 0;
-            virtual std::unordered_map<Generic, State> getStates() const = 0;
 
             virtual Generic getGenericFromEvent(const SDL_Event &event) const = 0;
             virtual State getGenericStateFromEvent(const SDL_Event &event) const = 0;

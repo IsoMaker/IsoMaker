@@ -19,8 +19,8 @@ namespace input {
     template <typename T>
     class AHandler : public IHandler<T> {
         public:
-        protected:
             AHandler(Type type) :
+                _running(false),
                 _type(type),
                 _holdThreshold(std::chrono::milliseconds(200)),
                 _inputStates({
@@ -36,6 +36,29 @@ namespace input {
                 }) {};
             virtual ~AHandler() = default;
 
+            std::unordered_map<Generic, State> getStates() const {
+                return _inputStates;
+            }
+
+            void start() {
+                _running = true;
+                SDL_Event event;
+
+                while (_running) {
+                    while (SDL_PollEvent(&event)) {
+                        if (event.type == SDL_QUIT) {
+                            _running = false;
+                            break;
+                        }
+                        handleInput(event); // handle input events
+                    }
+
+                    handleInput(); // check held states
+                    std::this_thread::sleep_for(std::chrono::milliseconds(16)); // ~60 FPS
+                }
+            }
+
+        protected:
             void handleInput() {
                 checkHeldState();
             }
@@ -73,9 +96,6 @@ namespace input {
                     _holdTimestamps.erase(input);  // Remove the timestamp on release
                 }
             }
-            std::unordered_map<Generic, State> getStates() const {
-                return _inputStates;
-            }
 
             Generic getGenericFromEvent(const SDL_Event &event) const {
                 return Generic::VOID;
@@ -84,6 +104,7 @@ namespace input {
                 return (event.type == SDL_KEYDOWN || event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_CONTROLLERBUTTONDOWN) ? State::PRESSED : State::RELEASED;
             }
 
+            bool _running;
             Type _type;
             std::chrono::milliseconds _holdThreshold;
             std::unordered_map<Generic, State> _inputStates;
