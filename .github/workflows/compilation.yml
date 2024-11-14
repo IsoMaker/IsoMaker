@@ -13,7 +13,19 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: install dependencies
-      run: apt-get install libxrandr2
-    - name: compile Isomaker
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake libgl1-mesa-dev xorg-dev
+
+    - name: Compile IsoMaker
       run: sh install-linux.sh
+
+    - name: Verify binary
+      run: |
+        if [ ! -f "bin/IsoMaker" ]; then
+          echo "Compilation failed: IsoMaker binary not found."
+          exit 1
+        fi
+      shell: bash
