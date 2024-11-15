@@ -1,5 +1,4 @@
-#include "PaintEditor.hpp"
-#include <iostream>
+#include "2DEditor.hpp"
 
 void paint::Editor::update()
 {
@@ -55,7 +54,7 @@ void paint::Editor::handlePixel(int x, int y)
                 pixelColors[col][row] = getCurrentColor();
                 break;
             case ToolType::Eraser:
-                pixelColors[col][row] = WHITE;
+                pixelColors[col][row] = BLANK;
                 break;
             case ToolType::Pipette:
                 setCurrentColor(pixelColors[col][row]);
@@ -87,12 +86,57 @@ void paint::Editor::customizationTools()
     if (GuiButton((Rectangle){ 320, 550, 60, 30 }, "Pipette")) {
         setTool(ToolType::Pipette);
     }
+
+    if (GuiButton((Rectangle){ 400, 490, 60, 30 }, "Save")) {
+        saveToFile("pixel_art.png");
+    }
+    if (GuiButton((Rectangle){ 400, 520, 60, 30 }, "Load")) {
+        loadFromFile("pixel_art.png");
+    }
 }
 
-void paint::Editor::zoomIn() {
+void paint::Editor::zoomIn()
+{
     setZoomLevel(getZoomLevel() + _zoomStep);
 }
 
-void paint::Editor::zoomOut() {
+void paint::Editor::zoomOut()
+{
     setZoomLevel(getZoomLevel() - _zoomStep);
+}
+
+void paint::Editor::saveToFile(const std::string& filename)
+{
+    int cols = pixelColors.size();
+    int rows = pixelColors[0].size();
+    Image image = GenImageColor(cols, rows, BLANK);
+
+    for (int y = 0; y < rows; y++) {
+        for (int x = 0; x < cols; x++) {
+            ImageDrawPixel(&image, x, y, pixelColors[x][y]);
+        }
+    }
+    ExportImage(image, filename.c_str());
+    UnloadImage(image);
+    std::cout << "Saved PNG to: " << filename << std::endl;
+}
+
+void paint::Editor::loadFromFile(const std::string& filename)
+{
+    Image image = LoadImage(filename.c_str());
+
+    if (image.data == nullptr) {
+        std::cerr << "Failed to load PNG file: " << filename << std::endl;
+        return;
+    }
+    pixelColors.resize(image.width, std::vector<Color>(image.height, BLANK));
+    for (int y = 0; y < image.height; y++) {
+        for (int x = 0; x < image.width; x++) {
+            Color color = GetImageColor(image, x, y);
+            pixelColors[x][y] = color;
+        }
+    }
+    updateCanvasOffset();
+    UnloadImage(image);
+    std::cout << "Loaded PNG from: " << filename << std::endl;
 }

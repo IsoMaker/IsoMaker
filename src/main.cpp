@@ -1,5 +1,5 @@
 #define RAYGUI_IMPLEMENTATION
-#include "Paint/PaintEditor.hpp"
+#include "Editor/2D/2DEditor.hpp"
 
 int main()
 {

@@ -3,6 +3,9 @@
 #include "raylib.h"
 #include "raygui.h"
 #include <vector>
+#include <iostream>
+#include <fstream>
+#include <sstream>
 
 namespace paint {
 
@@ -16,7 +19,8 @@ namespace paint {
     public:
         Editor(unsigned int screenWidth, unsigned int screenHeight)
             : _screenWidth(screenWidth), _screenHeight(screenHeight),
-              pixelColors(screenWidth / _gridSize, std::vector<Color>(screenHeight / _gridSize, WHITE)),
+              _currentColor(RED),
+              pixelColors(screenWidth / _gridSize, std::vector<Color>(screenHeight / _gridSize, BLANK)),
               _canvasOffsetX((screenWidth - (pixelColors.size() * _gridSize)) / 2),
               _canvasOffsetY((screenHeight - (pixelColors[0].size() * _gridSize)) / 2) {
                 updateCanvasOffset();
@@ -31,6 +35,10 @@ namespace paint {
         void customizationTools();
         void zoomIn();
         void zoomOut();
+
+        void saveToFile(const std::string& filename);
+        void loadFromFile(const std::string& filename);
+
 
         ToolType getTool() const { return _currentTool; }
         Color getCurrentColor() const { return _currentColor; }
