@@ -14,30 +14,15 @@ namespace paint {
 
     class Editor {
     public:
-        unsigned int _screenWidth;
-        unsigned int _screenHeight;
-        int _gridSize = 20;
-        Color _currentColor;
-        std::vector<std::vector<Color>> pixelColors;
-        float _zoomLevel = 1.0f;
-        const float _zoomStep = 0.1f;
-        const int _originalGridSize = 20;
-
-        float _redParams = 255;
-        float _greenParams = 0;
-        float _blueParams = 0;
-
-        int _canvasOffsetX = 0;
-        int _canvasOffsetY = 0;
-
-        ToolType _currentTool = ToolType::Pen;
-
         Editor(unsigned int screenWidth, unsigned int screenHeight)
             : _screenWidth(screenWidth), _screenHeight(screenHeight),
               pixelColors(screenWidth / _gridSize, std::vector<Color>(screenHeight / _gridSize, WHITE)),
               _canvasOffsetX((screenWidth - (pixelColors.size() * _gridSize)) / 2),
-              _canvasOffsetY((screenHeight - (pixelColors[0].size() * _gridSize)) / 2) {}
-        ~Editor() {};
+              _canvasOffsetY((screenHeight - (pixelColors[0].size() * _gridSize)) / 2) {
+                updateCanvasOffset();
+              }
+
+        ~Editor() {}
 
         void update();
         void drawGrid();
@@ -47,16 +32,40 @@ namespace paint {
         void zoomIn();
         void zoomOut();
 
-        void setTool(ToolType tool) {
-            _currentTool = tool;
+        ToolType getTool() const { return _currentTool; }
+        Color getCurrentColor() const { return _currentColor; }
+        float getZoomLevel() const { return _zoomLevel; }
+        int getGridSize() const { return _gridSize; }
+
+        void setTool(ToolType tool) { _currentTool = tool; }
+        void setCurrentColor(const Color& color) { _currentColor = color; }
+        void setZoomLevel(float zoomLevel) {
+            if (zoomLevel >= 0.5f && zoomLevel <= 2.0f) {
+                _zoomLevel = zoomLevel;
+                _gridSize = _originalGridSize * _zoomLevel;
+                updateCanvasOffset();
+            }
         }
 
+    private:
+        unsigned int _screenWidth;
+        unsigned int _screenHeight;
+
+        int _gridSize = 20;
+        Color _currentColor;
+        float _zoomLevel = 1.0f;
+        const float _zoomStep = 0.1f;
+        const int _originalGridSize = 20;
+        int _canvasOffsetX = 0;
+        int _canvasOffsetY = 0;
+        ToolType _currentTool = ToolType::Pen;
+
+        std::vector<std::vector<Color>> pixelColors;
+
+        void updateCanvasOffset() {
+            _canvasOffsetX = (_screenWidth - (pixelColors.size() * _gridSize)) / 2;
+            _canvasOffsetY = (_screenHeight - (pixelColors[0].size() * _gridSize)) / 2;
+        }
     };
 
-}
-
-inline bool operator==(const Color &firstColor, const Color &secondColor)
-{
-    return firstColor.r == secondColor.r && firstColor.g == secondColor.g &&
-           firstColor.b == secondColor.b && firstColor.a == secondColor.a;
 }

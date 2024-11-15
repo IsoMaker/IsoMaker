@@ -50,18 +50,15 @@ void paint::Editor::handlePixel(int x, int y)
     int row = (y - _canvasOffsetY) / _gridSize;
 
     if (col >= 0 && col < pixelColors.size() && row >= 0 && row < pixelColors[0].size()) {
-        switch (_currentTool) {
+        switch (getTool()) {
             case ToolType::Pen:
-                pixelColors[col][row] = _currentColor;
+                pixelColors[col][row] = getCurrentColor();
                 break;
             case ToolType::Eraser:
                 pixelColors[col][row] = WHITE;
                 break;
             case ToolType::Pipette:
-                _currentColor = pixelColors[col][row];
-                _redParams = _currentColor.r;
-                _greenParams = _currentColor.g;
-                _blueParams = _currentColor.b;
+                setCurrentColor(pixelColors[col][row]);
                 break;
         }
     }
@@ -69,12 +66,16 @@ void paint::Editor::handlePixel(int x, int y)
 
 void paint::Editor::customizationTools()
 {
-    DrawText("Custom Color Picker", 20, 480, 10, DARKGRAY);
-    GuiSliderBar((Rectangle){ 20, 490, 200, 20 }, "0", "255", &_redParams, 0, 255);
-    GuiSliderBar((Rectangle){ 20, 520, 200, 20 }, "0", "255", &_greenParams, 0, 255);
-    GuiSliderBar((Rectangle){ 20, 550, 200, 20 }, "0", "255", &_blueParams, 0, 255);
+    float red = _currentColor.r;
+    float green = _currentColor.g;
+    float blue = _currentColor.b;
 
-    _currentColor = { (unsigned char)_redParams, (unsigned char)_greenParams, (unsigned char)_blueParams, 255 };
+    DrawText("Custom Color Picker", 20, 480, 10, DARKGRAY);
+    GuiSliderBar((Rectangle){ 20, 490, 200, 20 }, "0", "255", &red, 0, 255);
+    GuiSliderBar((Rectangle){ 20, 520, 200, 20 }, "0", "255", &green, 0, 255);
+    GuiSliderBar((Rectangle){ 20, 550, 200, 20 }, "0", "255", &blue, 0, 255);
+
+    _currentColor = { (unsigned char)red, (unsigned char)green, (unsigned char)blue, 255 };
     DrawRectangle(250, 520, 50, 50, _currentColor);
 
     if (GuiButton((Rectangle){ 320, 490, 60, 30 }, "Pen")) {
@@ -88,24 +89,10 @@ void paint::Editor::customizationTools()
     }
 }
 
-void paint::Editor::zoomIn()
-{
-    if (_zoomLevel < 2.0f) {
-        _zoomLevel += _zoomStep;
-        _gridSize = _originalGridSize * _zoomLevel;
-
-        _canvasOffsetX = (_screenWidth - (pixelColors.size() * _gridSize)) / 2;
-        _canvasOffsetY = (_screenHeight - (pixelColors[0].size() * _gridSize)) / 2;
-    }
+void paint::Editor::zoomIn() {
+    setZoomLevel(getZoomLevel() + _zoomStep);
 }
 
-void paint::Editor::zoomOut()
-{
-    if (_zoomLevel > 0.5f) {
-        _zoomLevel -= _zoomStep;
-        _gridSize = _originalGridSize * _zoomLevel;
-
-        _canvasOffsetX = (_screenWidth - (pixelColors.size() * _gridSize)) / 2;
-        _canvasOffsetY = (_screenHeight - (pixelColors[0].size() * _gridSize)) / 2;
-    }
+void paint::Editor::zoomOut() {
+    setZoomLevel(getZoomLevel() - _zoomStep);
 }
