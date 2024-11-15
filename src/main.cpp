@@ -1,18 +1,31 @@
 #include <iostream>
 #include "raylib.h"
+#include "Render/Camera.hpp"
+#include "Render/Window.hpp"
+#include "Object3D/BasicObject3D.hpp"
 
 int main()
 {
-    const int screenWidth = 800;
-    const int screenHeight = 450;
+    Vector2D screen (800, 450);
+    Render::Window window;
+    Render::Camera camera;
+    Asset3D asset;
+    Object3D::BasicObject3D object;
 
-    InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
-    SetTargetFPS(60);
-    while (!WindowShouldClose()) {
-        BeginDrawing();
-            ClearBackground(RAYWHITE);
-            DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
-        EndDrawing();
+    window.startWindow(screen);
+    window.setFPS(60);
+
+    asset.setFileName("./ressources/Block1.glb");
+    asset.loadFile();
+    object.setAsset(asset);
+
+    while (!window.isWindowClosing()) {
+        window.startRender();
+            window.clearBackground(WHITE);
+            camera.start3D();
+                object.draw();
+            camera.end3D();
+        window.endRender();
     }
     CloseWindow();
     return 0;

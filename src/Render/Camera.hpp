@@ -10,14 +10,15 @@ namespace Render {
     class Camera {
         public:
             Camera();
-            ~Camera();
+            ~Camera() {};
 
-            void start3D();
-            void end3D();
+            void start3D() {BeginMode3D(_camera);};
+            void end3D() {EndMode3D();};
 
-            void setTarget(Vector3D);
-            void setDistance(float);
-            void setHeight(float);
+            void setTarget(Vector3D target) {_target = target;};
+            void setDistance(float distance) {_distance = distance;};
+            void setHeight(float height) {_height = height;};
+
             void rotate();
             void rotate(float angle);
             void updateCamera();
