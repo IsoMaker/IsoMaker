@@ -1,5 +1,5 @@
 <map id="2DEditor.hpp" name="2DEditor.hpp">
-<area shape="rect" id="Node000001" title="2D Pixel Art Editor" alt="" coords="227,5,332,31"/>
+<area shape="rect" id="Node000001" title="Declaration of the 2D Pixel Art Editor." alt="" coords="227,5,332,31"/>
 <area shape="rect" id="Node000002" title=" " alt="" coords="5,79,76,104"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="242,33,90,78,89,73,240,28"/>
 <area shape="rect" id="Node000003" title=" " alt="" coords="101,79,175,104"/>
