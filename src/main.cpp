@@ -1,17 +1,21 @@
-#include <iostream>
-#include "raylib.h"
+#define RAYGUI_IMPLEMENTATION
+#include "Editor/2D/2DEditor.hpp"
 
 int main()
 {
     const int screenWidth = 800;
-    const int screenHeight = 450;
+    const int screenHeight = 600;
+    paint::Editor PaintEditor(screenWidth, screenHeight);
 
-    InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
+    InitWindow(screenWidth, screenHeight, "Pixel Art Editor");
     SetTargetFPS(60);
+
     while (!WindowShouldClose()) {
         BeginDrawing();
-            ClearBackground(RAYWHITE);
-            DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
+        ClearBackground(GRAY);
+
+        PaintEditor.update();
+
         EndDrawing();
     }
     CloseWindow();
