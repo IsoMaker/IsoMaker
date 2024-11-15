@@ -1,37 +1,53 @@
 #include "PaintEditor.hpp"
 #include <iostream>
 
-paint::Editor::Editor(unsigned int screenWidth, unsigned int screenHeight)
-    : _screenWidth(screenWidth), _screenHeight(screenHeight),
-      pixelColors(screenWidth / _gridSize, std::vector<Color>(screenHeight / _gridSize, WHITE)) {}
+void paint::Editor::update()
+{
+    if (IsKeyPressed(KEY_UP))
+        zoomIn();
+    else if (IsKeyPressed(KEY_DOWN))
+        zoomOut();
 
-void paint::Editor::setTool(ToolType tool) {
-    _currentTool = tool;
+    if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
+        Vector2 mousePos = GetMousePosition();
+        handlePixel(mousePos.x, mousePos.y);
+    }
+
+    drawPixels();
+    drawGrid();
+    customizationTools();
 }
 
-void paint::Editor::drawGrid() {
-    int cols = _screenWidth / _gridSize;
-    int rows = _screenHeight / _gridSize;
+void paint::Editor::drawGrid()
+{
+    int cols = pixelColors.size();
+    int rows = pixelColors[0].size();
 
     for (int i = 0; i <= cols; i++) {
-        DrawLine(i * _gridSize, 0, i * _gridSize, _screenHeight, LIGHTGRAY);
+        int x = _canvasOffsetX + i * _gridSize;
+        DrawLine(x, _canvasOffsetY, x, _canvasOffsetY + rows * _gridSize, LIGHTGRAY);
     }
     for (int j = 0; j <= rows; j++) {
-        DrawLine(0, j * _gridSize, _screenWidth, j * _gridSize, LIGHTGRAY);
+        int y = _canvasOffsetY + j * _gridSize;
+        DrawLine(_canvasOffsetX, y, _canvasOffsetX + cols * _gridSize, y, LIGHTGRAY);
     }
 }
 
-void paint::Editor::drawPixels() {
+void paint::Editor::drawPixels()
+{
     for (int i = 0; i < pixelColors.size(); i++) {
         for (int j = 0; j < pixelColors[i].size(); j++) {
-            DrawRectangle(i * _gridSize, j * _gridSize, _gridSize, _gridSize, pixelColors[i][j]);
+            int x = _canvasOffsetX + i * _gridSize;
+            int y = _canvasOffsetY + j * _gridSize;
+            DrawRectangle(x, y, _gridSize, _gridSize, pixelColors[i][j]);
         }
     }
 }
 
-void paint::Editor::handlePixel(int x, int y) {
-    int col = x / _gridSize;
-    int row = y / _gridSize;
+void paint::Editor::handlePixel(int x, int y)
+{
+    int col = (x - _canvasOffsetX) / _gridSize;
+    int row = (y - _canvasOffsetY) / _gridSize;
 
     if (col >= 0 && col < pixelColors.size() && row >= 0 && row < pixelColors[0].size()) {
         switch (_currentTool) {
@@ -51,7 +67,8 @@ void paint::Editor::handlePixel(int x, int y) {
     }
 }
 
-void paint::Editor::customizationTools() {
+void paint::Editor::customizationTools()
+{
     DrawText("Custom Color Picker", 20, 480, 10, DARKGRAY);
     GuiSliderBar((Rectangle){ 20, 490, 200, 20 }, "0", "255", &_redParams, 0, 255);
     GuiSliderBar((Rectangle){ 20, 520, 200, 20 }, "0", "255", &_greenParams, 0, 255);
@@ -73,16 +90,22 @@ void paint::Editor::customizationTools() {
 
 void paint::Editor::zoomIn()
 {
-    if (_zoomLevel <= 1.5) {
+    if (_zoomLevel < 2.0f) {
         _zoomLevel += _zoomStep;
-        _gridSize = static_cast<int>(_originalGridSize * _zoomLevel);
+        _gridSize = _originalGridSize * _zoomLevel;
+
+        _canvasOffsetX = (_screenWidth - (pixelColors.size() * _gridSize)) / 2;
+        _canvasOffsetY = (_screenHeight - (pixelColors[0].size() * _gridSize)) / 2;
     }
 }
 
 void paint::Editor::zoomOut()
 {
-    if (_zoomLevel >= 0.6) {
+    if (_zoomLevel > 0.5f) {
         _zoomLevel -= _zoomStep;
-        _gridSize = static_cast<int>(_originalGridSize * _zoomLevel);
+        _gridSize = _originalGridSize * _zoomLevel;
+
+        _canvasOffsetX = (_screenWidth - (pixelColors.size() * _gridSize)) / 2;
+        _canvasOffsetY = (_screenHeight - (pixelColors[0].size() * _gridSize)) / 2;
     }
 }

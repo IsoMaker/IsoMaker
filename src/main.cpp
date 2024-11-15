@@ -6,26 +6,15 @@ int main()
     const int screenWidth = 800;
     const int screenHeight = 600;
     paint::Editor PaintEditor(screenWidth, screenHeight);
-    Vector2 mousePos;
 
     InitWindow(screenWidth, screenHeight, "Pixel Art Editor");
     SetTargetFPS(60);
 
     while (!WindowShouldClose()) {
         BeginDrawing();
-        ClearBackground(RAYWHITE);
+        ClearBackground(GRAY);
 
-        if (IsKeyPressed(KEY_UP)) PaintEditor.zoomIn();
-        if (IsKeyPressed(KEY_DOWN)) PaintEditor.zoomOut();
-
-        PaintEditor.drawPixels();
-        PaintEditor.drawGrid();
-        PaintEditor.customizationTools();
-
-        if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
-            mousePos = GetMousePosition();
-            PaintEditor.handlePixel(mousePos.x, mousePos.y);
-        }
+        PaintEditor.update();
 
         EndDrawing();
     }

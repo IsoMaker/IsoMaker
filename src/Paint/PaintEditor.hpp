@@ -27,23 +27,36 @@ namespace paint {
         float _greenParams = 0;
         float _blueParams = 0;
 
+        int _canvasOffsetX = 0;
+        int _canvasOffsetY = 0;
+
         ToolType _currentTool = ToolType::Pen;
 
-        Editor(unsigned int screenWidth, unsigned int screenHeight);
+        Editor(unsigned int screenWidth, unsigned int screenHeight)
+            : _screenWidth(screenWidth), _screenHeight(screenHeight),
+              pixelColors(screenWidth / _gridSize, std::vector<Color>(screenHeight / _gridSize, WHITE)),
+              _canvasOffsetX((screenWidth - (pixelColors.size() * _gridSize)) / 2),
+              _canvasOffsetY((screenHeight - (pixelColors[0].size() * _gridSize)) / 2) {}
         ~Editor() {};
 
+        void update();
         void drawGrid();
         void drawPixels();
         void handlePixel(int x, int y);
         void customizationTools();
-        void setTool(ToolType tool);
         void zoomIn();
         void zoomOut();
+
+        void setTool(ToolType tool) {
+            _currentTool = tool;
+        }
+
     };
 
 }
 
-inline bool operator==(const Color &firstColor, const Color &secondColor) {
+inline bool operator==(const Color &firstColor, const Color &secondColor)
+{
     return firstColor.r == secondColor.r && firstColor.g == secondColor.g &&
            firstColor.b == secondColor.b && firstColor.a == secondColor.a;
 }
