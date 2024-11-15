@@ -1,3 +1,10 @@
+/**
+* @file 2DEditor.hpp
+ * @brief 2D Pixel Art Editor
+ * @details This file contains the declaration of the 2D Pixel Art Editor class.
+ */
+
+
 #pragma once
 
 #include "raylib.h"
@@ -9,14 +16,29 @@
 
 namespace paint {
 
+    /**
+    * @enum Color
+    */
     enum class ToolType {
         Pen,
         Eraser,
         Pipette
     };
 
+    /**
+    * @class Editor
+    * @brief The 2D Pixel Art Editor class.
+    * @details This class contains the methods and attributes for the 2D Pixel Art Editor.
+    */
+
     class Editor {
     public:
+        /**
+        * @brief Construct a new Editor object.
+        *
+        * @param screenWidth The screen width.
+        * @param screenHeight The screen height.
+        */
         Editor(unsigned int screenWidth, unsigned int screenHeight)
             : _screenWidth(screenWidth), _screenHeight(screenHeight),
               _currentColor(RED),
@@ -24,6 +46,9 @@ namespace paint {
                 updateCanvasOffset();
               }
 
+        /**
+        * @brief Destroy the Editor object.
+        */
         ~Editor() {}
 
         void update();
