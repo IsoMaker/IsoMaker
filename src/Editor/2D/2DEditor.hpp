@@ -20,9 +20,7 @@ namespace paint {
         Editor(unsigned int screenWidth, unsigned int screenHeight)
             : _screenWidth(screenWidth), _screenHeight(screenHeight),
               _currentColor(RED),
-              pixelColors(screenWidth / _gridSize, std::vector<Color>(screenHeight / _gridSize, BLANK)),
-              _canvasOffsetX((screenWidth - (pixelColors.size() * _gridSize)) / 2),
-              _canvasOffsetY((screenHeight - (pixelColors[0].size() * _gridSize)) / 2) {
+              pixelColors(screenWidth / _gridSize, std::vector<Color>(screenHeight / _gridSize, BLANK)) {
                 updateCanvasOffset();
               }
 
