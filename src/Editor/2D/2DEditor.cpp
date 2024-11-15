@@ -1,5 +1,8 @@
 #include "2DEditor.hpp"
 
+/**
+ * @brief Update the editor states.
+ */
 void paint::Editor::update()
 {
     if (IsKeyPressed(KEY_UP))
@@ -17,6 +20,9 @@ void paint::Editor::update()
     customizationTools();
 }
 
+/**
+ * @brief Draw the grid.
+ */
 void paint::Editor::drawGrid()
 {
     int cols = pixelColors.size();
@@ -32,6 +38,9 @@ void paint::Editor::drawGrid()
     }
 }
 
+/**
+ * @brief Draw the pixels.
+ */
 void paint::Editor::drawPixels()
 {
     for (int i = 0; i < pixelColors.size(); i++) {
@@ -43,6 +52,12 @@ void paint::Editor::drawPixels()
     }
 }
 
+/**
+ * @brief Handle the pixel.
+ *
+ * @param x The x position.
+ * @param y The y position.
+ */
 void paint::Editor::handlePixel(int x, int y)
 {
     int col = (x - _canvasOffsetX) / _gridSize;
@@ -63,6 +78,9 @@ void paint::Editor::handlePixel(int x, int y)
     }
 }
 
+/**
+ * @brief Customization tools.
+ */
 void paint::Editor::customizationTools()
 {
     float red = _currentColor.r;
@@ -95,16 +113,27 @@ void paint::Editor::customizationTools()
     }
 }
 
+/**
+ * @brief Zoom in.
+ */
 void paint::Editor::zoomIn()
 {
     setZoomLevel(getZoomLevel() + _zoomStep);
 }
 
+/**
+ * @brief Zoom out.
+ */
 void paint::Editor::zoomOut()
 {
     setZoomLevel(getZoomLevel() - _zoomStep);
 }
 
+/**
+ * @brief Save to file.
+ *
+ * @param filename The filename.
+ */
 void paint::Editor::saveToFile(const std::string& filename)
 {
     int cols = pixelColors.size();
@@ -121,6 +150,11 @@ void paint::Editor::saveToFile(const std::string& filename)
     std::cout << "Saved PNG to: " << filename << std::endl;
 }
 
+/**
+ * @brief Load from file.
+ *
+ * @param filename The filename.
+ */
 void paint::Editor::loadFromFile(const std::string& filename)
 {
     Image image = LoadImage(filename.c_str());
