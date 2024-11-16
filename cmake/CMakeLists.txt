@@ -8,6 +8,7 @@ include(raylib.cmake)
 include(raygui.cmake)
 include(SDL2.cmake)
 
+
 add_executable(IsoMaker
     "../src/main.cpp"
     "../src/Editor/2D/2DEditor.cpp"
