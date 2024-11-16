@@ -19,13 +19,17 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y cmake libgl1-mesa-dev xorg-dev
 
+    - name: Install SDL2 dependencies
+      run: |
+        sudo apt-get install -y libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev
+
     - name: Compile IsoMaker
       run: sh install-linux.sh
 
     - name: Verify binary
       run: |
         if [ ! -f "bin/IsoMaker" ]; then
-          echo "Compilation failed: IsoMaker binary not found."
+          echo "Error: IsoMaker binary not found after compilation."
           exit 1
         fi
       shell: bash
