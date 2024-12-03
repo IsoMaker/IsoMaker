@@ -5,13 +5,7 @@
 using namespace Utilities;
 using namespace Render;
 
-Window::Window() {
-}
-
-Window::~Window() {
-}
-
-void Window::startwindow(Vector2D size) {
+void Window::startWindow(Vector2D size) {
     InitWindow(size.x, size.y, "isomaker");
 }
 
@@ -36,8 +30,8 @@ void Window::startRender() {
     BeginDrawing();
 }
 
-void Window::clearBackground() {
-    ClearBackground(SKYBLUE);
+void Window::clearBackground(Color color) {
+    ClearBackground(color);
 }
 
 void Window::endRender() {

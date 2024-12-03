@@ -4,10 +4,6 @@ using namespace Utilities;
 
 
 // VECTOR 2D
-
-Vector2D::Vector2D() {
-}
-
 Vector2D::Vector2D(const Vector2D& other) {
     x = other.x;
     y = other.y;
@@ -21,9 +17,6 @@ Vector2D::Vector2D(const Vector2& other) {
 Vector2D::Vector2D(float otherX, float otherY) {
     x = otherX;
     y = otherY;
-}
-
-Vector2D::~Vector2D() {
 }
 
 Vector2D Vector2D::operator+ (const Vector2D& v) const { return Vector2D(x + v.x, y + v.y); }
@@ -53,10 +46,6 @@ Vector2 Vector2D::convert() {
 }
 
 //VECTOR 3D
-
-Vector3D::Vector3D() {
-}
-
 Vector3D::Vector3D(const Vector3D& other) {
     x = other.x;
     y = other.y;
@@ -73,9 +62,6 @@ Vector3D::Vector3D(float otherX, float otherY, float otherZ) {
     x = otherX;
     y = otherY;
     z = otherZ;
-}
-
-Vector3D::~Vector3D() {
 }
 
 Vector3D Vector3D::operator+ (const Vector3D& v) const { return Vector3D(x + v.x, y + v.y, z + v.z); }

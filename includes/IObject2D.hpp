@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../Utilities/Vector.hpp"
-#include "../../Assets/Asset2D.hpp"
-#include "../../Utilities/ObjectBox.hpp"
+#include "../src/Utilities/Vector.hpp"
+#include "../src/Assets/Asset2D.hpp"
+#include "../src/Utilities/ObjectBox.hpp"
 
 using namespace Utilities;
 

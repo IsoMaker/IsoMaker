@@ -3,10 +3,6 @@
 using namespace Object3D;
 using namespace Utilities;
 
-BasicObject3D::BasicObject3D() {
-
-}
-
 BasicObject3D::BasicObject3D(Asset3D asset, Vector3D position) {
     setAsset(asset);
     moveTo(position);
@@ -17,10 +13,6 @@ BasicObject3D::BasicObject3D(Asset2D asset, Vector3D position, Vector3D dimensio
     setAsset(asset, dimension3D);
     moveTo(position);
     _assetType = AssetType::ASSET2D;
-}
-
-BasicObject3D::~BasicObject3D() {
-
 }
 
 void BasicObject3D::setAsset(Asset3D newAsset) {
@@ -41,22 +33,4 @@ void BasicObject3D::draw() {
     } else if (_assetType == AssetType::ASSET2D) {
         DrawCubeTexture(_asset2D.getTexture(), _objectBox.position.convert(), _objectBox.assetDimensions.x, _objectBox.assetDimensions.y, _objectBox.assetDimensions.z, WHITE);
     }
-}
-
-void BasicObject3D::move(Vector3D positionModifier) {
-    _objectBox.position = _objectBox.position + positionModifier;
-}
-
-void BasicObject3D::moveTo(Vector3D newPosition) {
-    _objectBox.position = newPosition;
-}
-
-void BasicObject3D::resizePercent(float percentage)
-{
-    _objectBox.scale = percentage;
-}
-
-ObjectBox3D BasicObject3D::getBox( )
-{
-    return _objectBox;
 }

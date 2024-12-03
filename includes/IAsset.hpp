@@ -25,7 +25,4 @@ class IAsset
         virtual bool findTag(std::string) = 0;
 
         virtual void loadFile() = 0;
-
-        //virtual AssetType getType(); ?
-        //set/get/load preview ?
 };

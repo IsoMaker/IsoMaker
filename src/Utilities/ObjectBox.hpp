@@ -25,7 +25,7 @@ namespace Utilities {
             ~ObjectBox3D();
 
             BoundingBox convert();
-            void ObjectBox3D::setAssetDimensionsFromBounding(BoundingBox);
+            void setAssetDimensionsFromBounding(BoundingBox);
 
             Vector3D position;
             Vector3D assetDimensions;

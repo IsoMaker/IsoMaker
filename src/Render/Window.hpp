@@ -9,15 +9,15 @@ namespace Render {
 
     class Window {
         public:
-            Window();
-            ~Window();
-            void startwindow(Vector2D);
+            Window() {};
+            ~Window() {};
+            void startWindow(Vector2D);
             void closeWindow();
             bool isWindowClosing();
             bool isWindowOpen();
             void setWindowSize(Vector2D);
             void startRender();
-            void clearBackground();
+            void clearBackground(Color);
             void endRender();
             void setFPS(int fps);
         private:
