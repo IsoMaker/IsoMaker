@@ -13,7 +13,6 @@ Model Asset3D::getModel()
 {
     if (_modelLoaded)
         return _model;
-    
 }
 
 void Asset3D::loadFile()

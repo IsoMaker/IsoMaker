@@ -57,7 +57,7 @@ namespace Utilities {
 
             bool operator== (const Vector3D& v) const;
             bool operator!= (const Vector3D& v) const;
-            
+
             Vector3 convert();
 
             float x, y, z;
