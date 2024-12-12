@@ -29,6 +29,9 @@ Vector2D Vector2D::operator- (const float& v) const { return Vector2D(x - v, y -
 Vector2D Vector2D::operator* (const float& v) const { return Vector2D(x * v, y * v); }
 Vector2D Vector2D::operator/ (const float& v) const { return Vector2D(x / v, y / v); }
 
+bool Vector2D::operator< (const Vector2D& v) const {return x < v.x && y < v.y;}
+bool Vector2D::operator> (const Vector2D& v) const {return x > v.x && y > v.y;}
+
 bool Vector2D::operator== (const Vector2D& v) const {
     if (x == v.x && y == v.y)
         return true;

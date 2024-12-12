@@ -34,3 +34,9 @@ void BasicObject3D::draw() {
         DrawCubeTexture(_asset2D.getTexture(), _objectBox.position.convert(), _objectBox.assetDimensions.x, _objectBox.assetDimensions.y, _objectBox.assetDimensions.z, WHITE);
     }
 }
+
+void BasicObject3D::resizeTo(float height) {
+    float currentHeight = _objectBox.assetDimensions.z;
+    float newScale = height / currentHeight;
+    _objectBox.scale = newScale;
+}

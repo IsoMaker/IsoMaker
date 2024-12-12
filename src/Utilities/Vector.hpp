@@ -2,6 +2,8 @@
 
 #include "raylib.h"
 #include "raymath.h"
+#include <iostream>
+#include <iomanip>
 
 namespace Utilities {
     class Vector2D {
@@ -20,6 +22,9 @@ namespace Utilities {
             Vector2D operator+ (const float& v) const;
             Vector2D operator* (const float& v) const;
             Vector2D operator/ (const float& v) const;
+
+            bool operator< (const Vector2D& v) const;
+            bool operator> (const Vector2D& v) const;
 
             bool operator== (const Vector2D& v) const;
             bool operator!= (const Vector2D& v) const;
@@ -52,7 +57,7 @@ namespace Utilities {
 
             bool operator== (const Vector3D& v) const;
             bool operator!= (const Vector3D& v) const;
-
+            
             Vector3 convert();
 
             float x, y, z;

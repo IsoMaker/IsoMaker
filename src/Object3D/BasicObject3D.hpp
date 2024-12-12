@@ -27,6 +27,7 @@ namespace Object3D {
             void move(Vector3D positionModifier) {_objectBox.position = _objectBox.position + positionModifier;};
             void moveTo(Vector3D newPosition) {_objectBox.position = newPosition;};
             void resizePercent(float percentage) {_objectBox.scale = percentage;};
+            void resizeTo(float height);
             ObjectBox3D getBox() {return _objectBox;};
 
         private:

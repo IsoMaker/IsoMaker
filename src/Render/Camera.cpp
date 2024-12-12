@@ -12,8 +12,8 @@ Render::Camera::Camera() {
     };
 
     _target = Vector3D(0, 0, 0);
-    _distance = 10;
-    _height = 10;
+    _distance = 5;
+    _height = 5;
     _angle = 0;
 
     _camera.up = Vector3D(0, 1, 0).convert();

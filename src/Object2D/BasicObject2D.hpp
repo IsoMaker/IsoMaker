@@ -19,6 +19,7 @@ namespace Object2D {
             void move(Vector2D positionModifier) {_objectBox.position = _objectBox.position + positionModifier;};
             void moveTo(Vector2D newPosition) {_objectBox.position = newPosition;};
             void resizePercent(float percentage) {_objectBox.scale = percentage;};
+            bool isInObject(Vector2D pos);
             ObjectBox2D getBox() {return _objectBox;};
 
         private:

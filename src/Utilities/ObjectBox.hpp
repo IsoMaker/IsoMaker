@@ -12,6 +12,8 @@ namespace Utilities {
             ObjectBox2D(const ObjectBox2D&);
             ~ObjectBox2D();
 
+            bool isInBox(Vector2D);
+
             Vector2D position;
             Vector2D assetDimensions;
             float scale;

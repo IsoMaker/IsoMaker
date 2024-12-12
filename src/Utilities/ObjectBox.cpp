@@ -8,10 +8,10 @@ ObjectBox2D::ObjectBox2D() {
     scale = 1;
 }
 
-ObjectBox2D::ObjectBox2D(Vector2D position, Vector2D dimensions, float scale) {
-    position = position;
-    assetDimensions = dimensions;
-    scale = scale;
+ObjectBox2D::ObjectBox2D(Vector2D _position, Vector2D _dimensions, float _scale) {
+    position = _position;
+    assetDimensions = _dimensions;
+    scale = _scale;
 }
 
 ObjectBox2D::ObjectBox2D(const ObjectBox2D& other) {
@@ -23,6 +23,11 @@ ObjectBox2D::ObjectBox2D(const ObjectBox2D& other) {
 ObjectBox2D::~ObjectBox2D() {
 }
 
+bool ObjectBox2D::isInBox(Vector2D pos) {
+    if (pos > position && pos < (position + (assetDimensions * scale)))
+        return true;
+    return false;
+}
 
 ObjectBox3D::ObjectBox3D() {
     position = Vector3D(0, 0, 0);
@@ -30,10 +35,10 @@ ObjectBox3D::ObjectBox3D() {
     scale = 1;
 }
 
-ObjectBox3D::ObjectBox3D(Vector3D position, Vector3D dimensions, float scale) {
-    position = position;
-    assetDimensions = dimensions;
-    scale = scale;
+ObjectBox3D::ObjectBox3D(Vector3D _position, Vector3D _dimensions, float _scale) {
+    position = _position;
+    assetDimensions = _dimensions;
+    scale = _scale;
 }
 
 ObjectBox3D::ObjectBox3D(const ObjectBox3D& other) {

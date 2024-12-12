@@ -19,6 +19,8 @@ namespace Render {
             void setDistance(float distance) {_distance = distance;};
             void setHeight(float height) {_height = height;};
 
+            Camera3D getRaylibCam() {return _camera;};
+
             void rotate();
             void rotate(float angle);
             void updateCamera();
