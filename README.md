@@ -2,7 +2,6 @@
 
 IsoMaker is a game engine for creating isometric games. It is written in C++ and uses the Raylib for rendering.
 
----
 
 ## C++ Coding Style
 
@@ -31,7 +30,6 @@ The foundation of the coding style applied to this project is a C++ adapatation 
 - A class' **access specifiers** should be written in the following order: `public`, `protected`, `private`.
 - **Function prototypes** should be declared before **variables**.
 
----
 
 ## Commit Message Standard
 
@@ -94,23 +92,33 @@ All commits contributing to this project must be accompanied by a commit message
 - **Automation**: Supports tools for generating changelogs and release notes.
 - **Consistency**: Encourages contributors to document changes uniformly.
 
----
 
 ## How to add a feature and Pull Request 101
 
-#### 1. Access the repository's [Github Project](https://github.com/AetherStollMetz/IsoMaker/projects?query=is%3Aopen)
+### 1. Access the repository's [Github Project](https://github.com/AetherStollMetz/IsoMaker/projects?query=is%3Aopen)
 
-#### 2. Add an **item** to the list
+<img src="ressources/readme/GithubDoc1.png" width=1000>
 
-#### 3 **Name it** and add a description
+### 2. Add an **item** to the list
 
-#### 4. Click on the inexplicably small **Create a branch**
+<img src="ressources/readme/GithubDoc2.png" width=1000>
 
-#### 5. You may want to make the source branch different from main, otherwise leave everything as is and **create branch**
+### 3 **Name it** and add a description
 
-#### 6. Check out locally and code your feature (make sure to respect [the commit message standard](#commit-message-standard) when pushing onto the branch)
+<img src="ressources/readme/GithubDoc3.png" width=600>
 
----
+### 4. Click on the inexplicably small **Create a branch**
+
+<img src="ressources/readme/GithubDoc4.png" width=800>
+
+### 5. You may want to make the source branch different from main, otherwise leave everything as is and **create branch**
+
+<img src="ressources/readme/GithubDoc5.png" width=500>
+
+### 6. Check out locally and code your feature (make sure to respect [the commit message standard](#commit-message-standard) when pushing onto the branch)
+
+<img src="ressources/readme/GithubDoc6.png" width=500>
+
 
 ## Team ❤️
 
