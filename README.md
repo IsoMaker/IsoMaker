@@ -122,19 +122,30 @@ All commits contributing to this project must be accompanied by a commit message
 
 ## How to add a feature and Pull Request 101
 
-#### 1. Access the repository's [Github Project](https://github.com/AetherStollMetz/IsoMaker/projects?query=is%3Aopen)
+### 1. Access the repository's [Github Project](https://github.com/AetherStollMetz/IsoMaker/projects?query=is%3Aopen)
 
-#### 2. Add an **item** to the list
+<img src="ressources/readme/GithubDoc1.png" width=1000>
 
-#### 3 **Name it** and add a description
+### 2. Add an **item** to the list
 
-#### 4. Click on the inexplicably small **Create a branch**
+<img src="ressources/readme/GithubDoc2.png" width=1000>
 
-#### 5. You may want to make the source branch different from main, otherwise leave everything as is and **create branch**
+### 3 **Name it** and add a description
 
-#### 6. Check out locally and code your feature (make sure to respect [the commit message standard](#commit-message-standard) when pushing onto the branch)
+<img src="ressources/readme/GithubDoc3.png" width=600>
 
----
+### 4. Click on the inexplicably small **Create a branch**
+
+<img src="ressources/readme/GithubDoc4.png" width=800>
+
+### 5. You may want to make the source branch different from main, otherwise leave everything as is and **create branch**
+
+<img src="ressources/readme/GithubDoc5.png" width=500>
+
+### 6. Check out locally and code your feature (make sure to respect [the commit message standard](#commit-message-standard) when pushing onto the branch)
+
+<img src="ressources/readme/GithubDoc6.png" width=500>
+
 
 ## Team ❤️
 
