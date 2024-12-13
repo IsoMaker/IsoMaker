@@ -16,19 +16,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install project dependencies
+      - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake libgl1-mesa-dev xorg-dev
+          sudo apt-get install -y \
+            cmake \
+            libgl1-mesa-dev \
+            xorg-dev \
+            libsdl2-dev \
+            libsdl2-ttf-dev \
+            libsdl2-image-dev
 
-      - name: Install SDL2 dependencies
+      - name: Configure and build tests
         run: |
-          sudo apt-get install -y libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev
+          cmake -B cmake/build -S cmake -DBUILD_TESTS=ON
+          cmake --build cmake/build
 
-      - name: Compile IsoMaker
-        run: sh install-linux.sh
-
-      - name: Run tests
+      - name: Run unit tests
         run: |
-          cd build
+          cd cmake/build
           ctest --output-on-failure
