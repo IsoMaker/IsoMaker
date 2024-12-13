@@ -1,4 +1,4 @@
-name: C++ CI
+name: C++ Unit Tests CI
 
 on:
   push:
@@ -14,7 +14,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install project dependencies
         run: |
@@ -25,24 +25,8 @@ jobs:
         run: |
           sudo apt-get install -y libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev
 
-      - name: Validate Raygui installation
-        run: |
-          if [ ! -f raygui.c ]; then
-            echo "Raygui not found!";
-            exit 1;
-          fi
-
-      - name: Install CMake
-        uses: jwlawson/actions-setup-cmake@v1
-        with:
-          cmake-version: '3.20'
-
-      - name: Build project
-        run: |
-          mkdir build
-          cd build
-          cmake ../cmake
-          make
+      - name: Compile IsoMaker
+        run: sh install-linux.sh
 
       - name: Run tests
         run: |

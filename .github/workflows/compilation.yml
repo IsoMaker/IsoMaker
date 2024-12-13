@@ -1,4 +1,4 @@
-name: C/C++ CI
+name: C++ Compilation and Installation CI
 
 on:
   push:
