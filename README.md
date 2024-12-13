@@ -2,13 +2,40 @@
 
 IsoMaker is a game engine for creating isometric games. It is written in C++ and uses the Raylib for rendering.
 
-Your draft provides a solid foundation! Here's a refined and detailed version that expands on your initial structure:  
+---
+
+## C++ Coding Style
+
+The foundation of the coding style applied to this project is a C++ adapatation of Epitech's C coding style, here are the main rules:
+
+### Naming conventions
+
+- All **subdirectories** and **files** under the `/src` and `/includes` directories should have one word names when possible. These, as well as **classes**, should follow the [UpperCamelCase naming convention](https://www.techtarget.com/whatis/definition/CamelCase), which dictates every compound word in a name is capitalized.
+- **Interfaces** and **abstract classes** must have names starting with a capital I and A respectively (e.g., `IHandler`, `AHandler`).
+- **Namespaces**, **functions** and **variables** should follow the [lowerCamelCase naming convention](https://www.techtarget.com/whatis/definition/CamelCase), which dictates the first compound word should start with a lowercase, and every compound word after that should be capitalized (e.g., `input::KeyboardHandler::startLoop(bool status)`).
+
+
+### Project folder architecture
+
+- `.hpp` files containing **interfaces**, **abstract class implementations**, **project specific variable types** and other such things should be found in `/includes/<subdirectory>` (e.g., `IHandler.hpp`, `AHandler.hpp` and `Types.hpp` in `/includes/Input`).
+- `.cpp` source files required for building the project should be found in `/src/<subdirectory>`, along with their respective `.hpp` files. (e.g., `Keyboard.cpp` and `Keyboard.hpp` in `/src/Input`).
+
+### Files
+
+- All files should start with the standard Epitech header provided by the official Epitech header extension on VSCode.
+- Contents of `.hpp` files should be preceded by `#pragma once`.
+- All files should end with `\n` (newline).
+
+### Classes
+
+- A class' **access specifiers** should be written in the following order: `public`, `protected`, `private`.
+- **Function prototypes** should be declared before **variables**.
 
 ---
 
 ## Commit Message Standard
 
-All commits contributing to this project must adhere to the following message format, inspired by the [Conventional Commits format](https://www.conventionalcommits.org/en/v1.0.0/):  
+All commits contributing to this project must be accompanied by a commit message that adheres to the following format, based on the [Conventional Commits standard](https://www.conventionalcommits.org/en/v1.0.0/):  
 
 ```
 <type>(<scope>): <description>
@@ -31,10 +58,10 @@ All commits contributing to this project must adhere to the following message fo
   - Use `*` for a global change affecting multiple areas.
 
 - **`description`**: A brief, imperative summary of the change.
-  - Start with a verb in the present tense (e.g., *"add,"* *"fix,"* *"update"*).
+  - Start with a verb in the present tense (e.g., `add`, `fix`, `update`).
   - Don't capitalize the first letter or end with a period.
 
-### Examples
+#### Examples
 
 1. Adding a new feature:
    ```
@@ -66,6 +93,8 @@ All commits contributing to this project must adhere to the following message fo
 - **Clarity**: Makes it easier to understand what a commit does at a glance.
 - **Automation**: Supports tools for generating changelogs and release notes.
 - **Consistency**: Encourages contributors to document changes uniformly.
+
+---
 
 ## Team ❤️
 
