@@ -70,27 +70,27 @@ void paint::Editor::customizationTools()
     float blue = _currentColor.b;
 
     DrawText("Custom Color Picker", 20, 480, 10, DARKGRAY);
-    GuiSliderBar((Rectangle){ 20, 490, 200, 20 }, "0", "255", &red, 0, 255);
-    GuiSliderBar((Rectangle){ 20, 520, 200, 20 }, "0", "255", &green, 0, 255);
-    GuiSliderBar((Rectangle){ 20, 550, 200, 20 }, "0", "255", &blue, 0, 255);
+    GuiSliderBar({ 20, 490, 200, 20 }, "0", "255", &red, 0, 255);
+    GuiSliderBar({ 20, 520, 200, 20 }, "0", "255", &green, 0, 255);
+    GuiSliderBar({ 20, 550, 200, 20 }, "0", "255", &blue, 0, 255);
 
-    _currentColor = { (unsigned char)red, (unsigned char)green, (unsigned char)blue, 255 };
+    _currentColor = Color{ (unsigned char)red, (unsigned char)green, (unsigned char)blue, 255 };
     DrawRectangle(250, 520, 50, 50, _currentColor);
 
-    if (GuiButton((Rectangle){ 320, 490, 60, 30 }, "Pen")) {
+    if (GuiButton({ 320, 490, 60, 30 }, "Pen")) {
         setTool(ToolType::Pen);
     }
-    if (GuiButton((Rectangle){ 320, 520, 60, 30 }, "Eraser")) {
+    if (GuiButton({ 320, 520, 60, 30 }, "Eraser")) {
         setTool(ToolType::Eraser);
     }
-    if (GuiButton((Rectangle){ 320, 550, 60, 30 }, "Pipette")) {
+    if (GuiButton({ 320, 550, 60, 30 }, "Pipette")) {
         setTool(ToolType::Pipette);
     }
 
-    if (GuiButton((Rectangle){ 400, 490, 60, 30 }, "Save")) {
+    if (GuiButton({ 400, 490, 60, 30 }, "Save")) {
         saveToFile("pixel_art.png");
     }
-    if (GuiButton((Rectangle){ 400, 520, 60, 30 }, "Load")) {
+    if (GuiButton({ 400, 520, 60, 30 }, "Load")) {
         loadFromFile("pixel_art.png");
     }
 }
