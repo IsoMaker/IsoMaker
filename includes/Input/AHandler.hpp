@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <thread>
 #include <chrono>
 #include <unordered_map>
 
@@ -36,65 +37,36 @@ namespace input {
                 }) {};
             virtual ~AHandler() = default;
 
+            State getState(Generic input) const {
+                return _inputStates.at(input);
+            }
             std::unordered_map<Generic, State> getStates() const {
                 return _inputStates;
             }
-
-            void start() {
-                _running = true;
-                SDL_Event event;
-
-                while (_running) {
-                    while (SDL_PollEvent(&event)) {
-                        if (event.type == SDL_QUIT) {
-                            _running = false;
-                            break;
-                        }
-                        handleInput(event); // handle input events
-                    }
-
-                    handleInput(); // check held states
-                    std::this_thread::sleep_for(std::chrono::milliseconds(16)); // ~60 FPS
-                }
+            std::mutex &getMutex() {
+                return _inputMutex;
             }
+
+            void start();
 
         protected:
+            void checkHeldState();
+            void updateState(Generic input, State state);
+
             void handleInput() {
+                std::lock_guard<std::mutex> lock(_inputMutex);
                 checkHeldState();
             }
-            void handleInput(const SDL_Event &event){
-                setState(getGenericFromEvent(event), getGenericStateFromEvent(event));
+            void handleInput(const SDL_Event &event) {
+                std::lock_guard<std::mutex> lock(_inputMutex);
+                updateState(getGenericFromEvent(event), getGenericStateFromEvent(event));
             }
-            void checkHeldState() {
-                auto now = std::chrono::steady_clock::now();
-                for (auto &inputState : _inputStates) {
-                    if (inputState.second == State::PRESSED) {
-                        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - _holdTimestamps[inputState.first]);
-                        if (elapsed >= _holdThreshold) {
-                            inputState.second = State::HELD;  // Transition to HELD if the threshold is met
-                        }
-                    }
-                }
-            }
-        
+
             void setBinding(T binding, Generic input) {
                 _inputBindings[binding] = input;
             }
             void eraseBinding(T binding) {
                 _inputBindings.erase(binding);
-            }
-
-            void setState(Generic input, State state) {
-                if (input == Generic::VOID || (_inputStates[input] == State::PRESSED && state == State::PRESSED)) {
-                    return;
-                }
-                _inputStates[input] = state;
-
-                if (state == State::PRESSED) {
-                    _holdTimestamps[input] = std::chrono::steady_clock::now();  // Record the press time
-                } else if (state == State::RELEASED) {
-                    _holdTimestamps.erase(input);  // Remove the timestamp on release
-                }
             }
 
             Generic getGenericFromEvent(const SDL_Event &event) const {
@@ -110,6 +82,7 @@ namespace input {
             std::unordered_map<Generic, State> _inputStates;
             std::unordered_map<Generic, TimePoint> _holdTimestamps;
             std::unordered_map<T, Generic> _inputBindings;
+            std::mutex _inputMutex;
         private:
     };
 }

@@ -1,12 +1,12 @@
-message(STATUS "Install SDL2...")
+message(STATUS "Install SDL2 PACKAGES...")
 
-find_package(SDL2 2.0 QUIET)
+find_package(SDL2 CONFIG QUIET)
 
 if (NOT SDL2_FOUND)
     include(FetchContent)
     FetchContent_Declare(
-        SDL2
-        URL https://github.com/libsdl-org/SDL/archive/refs/tags/release-2.0.14.zip # Adjust version as needed
+            SDL2
+            URL https://github.com/libsdl-org/SDL/releases/download/release-2.28.4/SDL2-2.28.4.tar.gz
     )
     FetchContent_GetProperties(SDL2)
     if (NOT SDL2_POPULATED)

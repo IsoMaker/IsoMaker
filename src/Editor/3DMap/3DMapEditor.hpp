@@ -14,7 +14,6 @@ class MapEditor {
         ~MapEditor();
 
         void update();
-        void drawAll();
         void draw2DElements();
         void draw3DElements();
 

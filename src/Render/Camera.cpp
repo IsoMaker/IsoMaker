@@ -19,7 +19,7 @@ Render::Camera::Camera() {
     _camera.up = Vector3D(0, 1, 0).convert();
     _camera.fovy = 55;
     _camera.projection = CAMERA_ORTHOGRAPHIC;
-    //updateCamera();
+    updateCamera();
 }
 
 void Render::Camera::rotate() {

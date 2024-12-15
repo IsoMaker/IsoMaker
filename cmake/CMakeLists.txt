@@ -6,10 +6,15 @@ set(CMAKE_CXX_STANDARD 14)
 include(FetchContent)
 include(raylib.cmake)
 include(raygui.cmake)
+include(SDL2.cmake)
 
 add_executable(IsoMaker
     "../src/main.cpp"
     "../src/Editor/2D/2DEditor.cpp"
+    "../src/Input/AHandler.cpp"
+    "../src/Input/Keyboard.cpp"
+    "../src/Input/Mouse.cpp"
+    "../src/Input/Controller.cpp"
     "../src/Editor/3DMap/3DMapEditor.cpp"
     "../src/Assets/AAsset.cpp"
     "../src/Assets/Asset2D.cpp"
@@ -24,4 +29,4 @@ add_executable(IsoMaker
     "../src/Utilities/Vector.cpp"
 )
 
-target_link_libraries(IsoMaker PRIVATE raylib raygui )
+target_link_libraries(IsoMaker PRIVATE raylib raygui SDL2)

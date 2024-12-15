@@ -19,16 +19,6 @@ void MapEditor::update() {
     //get input and change things according to it
 }
 
-void MapEditor::drawAll() {
-    _window.startRender();
-    _window.clearBackground(SKYBLUE);
-    _camera.start3D();
-    draw3DElements();
-    _camera.end3D();
-    draw2DElements();
-    _window.endRender();
-}
-
 void MapEditor::draw2DElements() {
     for (auto i = _objects2D.begin(); i != _objects2D.end(); i++)
         i->draw();
@@ -45,6 +35,7 @@ void MapEditor::changeCubeType(Asset3D newAsset) {
 }
 
 void MapEditor::addCube(Vector3D position) {
+    std::cout << "Adding cube" << std::endl;
     Object3D::BasicObject3D newObject = Object3D::BasicObject3D(_currentCubeType, position);
     newObject.resizeTo(_cubeHeight);
     _objects3D.push_back(newObject);
@@ -70,7 +61,6 @@ Vector3D MapEditor::alignPosition( Vector2D mousePos) {
         }
     }
 
-    std::cout << "Final block clicked (" << closestObject.getBox().position.x << ", " << closestObject.getBox().position.y << ", " << closestObject.getBox().position.z << ")" << std::endl;
     if (closestHit.hit) {
         ObjectBox3D modelBox = closestObject.getBox();
         Vector3D collisionPoint = closestHit.point;
@@ -80,9 +70,6 @@ Vector3D MapEditor::alignPosition( Vector2D mousePos) {
         if (diff.z >= _cubeHeight)  {result = Vector3D(modelBox.position.x, modelBox.position.y, modelBox.position.z + _cubeHeight); std::cout << "3" << std::endl;}
         if (diff.z <= -_cubeHeight) {result = Vector3D(modelBox.position.x, modelBox.position.y, modelBox.position.z - _cubeHeight); std::cout << "4" << std::endl;}
         if (diff.y >= _cubeHeight)  {result = Vector3D(modelBox.position.x, modelBox.position.y + _cubeHeight, modelBox.position.z); std::cout << "5" << std::endl;}
-        std::cout << "Click detected at (" << collisionPoint.x << ", " << collisionPoint.y << ", " << collisionPoint.z << ")" << std::endl;
-        std::cout << "Diff detected at (" << diff.x << ", " << diff.y << ", " << diff.z << ")" << std::endl;
-        std::cout << "Adding block at coords (" << result.x << ", " << result.y << ", " << result.z << ")" << std::endl;
         return result;
     }
     return result;
