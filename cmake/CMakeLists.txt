@@ -21,5 +21,8 @@ add_executable(IsoMaker
     "../src/Editor/2D/2DEditor.cpp"
 )
 
-#target_link_libraries(IsoMaker PRIVATE raylib raygui SDL2-static glad)
-#target_link_libraries(IsoMaker PRIVATE raylib raygui SDL2 glad)
+if(WIN32)
+    target_link_libraries(IsoMaker PRIVATE raylib raygui SDL2-static glad)
+else()
+    target_link_libraries(IsoMaker PRIVATE raylib raygui SDL2 glad)
+endif()
