@@ -1,7 +1,6 @@
 #pragma once
 
 #include "AAsset.hpp"
-#include <iostream>
 
 class Asset2D : public AAsset
 {
