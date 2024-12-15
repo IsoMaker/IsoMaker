@@ -35,6 +35,5 @@ namespace Object3D {
             Asset3D _asset3D;
             Asset2D _asset2D;
             AssetType _assetType;
-    };  
-
+    };
 }
