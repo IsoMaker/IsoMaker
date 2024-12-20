@@ -16,7 +16,6 @@ void MapEditor::update() {
         if (_objects3D.size() == 0 || click != Vector3D(0, 0, 0))
             addCube(click);
     }
-    //get input and change things according to it
 }
 
 void MapEditor::draw2DElements() {

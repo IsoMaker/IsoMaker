@@ -51,7 +51,7 @@ ObjectBox3D::~ObjectBox3D() {
 }
 
 
-void ObjectBox3D::setAssetDimensionsFromBounding(BoundingBox box) { //maybe there will be a bug where the dimensions will be negative
+void ObjectBox3D::setAssetDimensionsFromBounding(BoundingBox box) { 
     assetDimensions = Vector3D(box.max) - Vector3D(box.min);
 }
 
