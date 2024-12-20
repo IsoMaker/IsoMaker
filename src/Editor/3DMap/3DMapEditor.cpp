@@ -34,41 +34,39 @@ void MapEditor::changeCubeType(Asset3D newAsset) {
 }
 
 void MapEditor::addCube(Vector3D position) {
-    std::cout << "Adding cube" << std::endl;
     BasicObject3D newObject = BasicObject3D(_currentCubeType, position);
     newObject.resizeTo(_cubeHeight);
     _objects3D.push_back(newObject);
 }
 
-void MapEditor::removeCube(Vector3D position) {
-
+void MapEditor::removeCube(std::vector<BasicObject3D>::iterator toRemove) {
+    _objects3D.erase(toRemove);
 }
 
-Vector3D MapEditor::alignPosition( Vector2D mousePos) {
+std::pair<Vector3D, std::vector<BasicObject3D>::iterator> MapEditor::alignPosition( Vector2D mousePos) {
     Ray ray = GetMouseRay(mousePos.convert(), _camera.getRaylibCam());
 
     RayCollision closestHit = { false, std::numeric_limits<float>::max(), { 0, 0, 0 }, { 0, 0, 0 } };
-    BasicObject3D closestObject;
 
-    Vector3D result = Vector3D(0, 0, 0);
+    std::pair<Vector3D, std::vector<BasicObject3D>::iterator> result = std::make_pair<Vector3D, std::vector<BasicObject3D>::iterator>(Vector3D(0, 0, 0), _objects3D.begin());
 
     for (auto i = _objects3D.begin(); i != _objects3D.end(); i++) {
         RayCollision collision = GetRayCollisionBox(ray, i->getBox().convert());
         if (collision.hit && collision.distance < closestHit.distance) {
             closestHit = collision;
-            closestObject = *i;
+            result.second = i;
         }
     }
 
     if (closestHit.hit) {
-        ObjectBox3D modelBox = closestObject.getBox();
+        ObjectBox3D modelBox = result.second->getBox();
         Vector3D collisionPoint = closestHit.point;
         Vector3D diff = collisionPoint - modelBox.position;
-        if (diff.x >= _cubeHeight)  {result = Vector3D(modelBox.position.x + _cubeHeight, modelBox.position.y, modelBox.position.z); std::cout << "1" << std::endl;}
-        if (diff.x <= -_cubeHeight) {result = Vector3D(modelBox.position.x - _cubeHeight, modelBox.position.y, modelBox.position.z); std::cout << "2" << std::endl;}
-        if (diff.z >= _cubeHeight)  {result = Vector3D(modelBox.position.x, modelBox.position.y, modelBox.position.z + _cubeHeight); std::cout << "3" << std::endl;}
-        if (diff.z <= -_cubeHeight) {result = Vector3D(modelBox.position.x, modelBox.position.y, modelBox.position.z - _cubeHeight); std::cout << "4" << std::endl;}
-        if (diff.y >= _cubeHeight)  {result = Vector3D(modelBox.position.x, modelBox.position.y + _cubeHeight, modelBox.position.z); std::cout << "5" << std::endl;}
+        if (diff.x >= _cubeHeight)  {result.first = Vector3D(modelBox.position.x + _cubeHeight, modelBox.position.y, modelBox.position.z);}
+        if (diff.x <= -_cubeHeight) {result.first = Vector3D(modelBox.position.x - _cubeHeight, modelBox.position.y, modelBox.position.z);}
+        if (diff.z >= _cubeHeight)  {result.first = Vector3D(modelBox.position.x, modelBox.position.y, modelBox.position.z + _cubeHeight);}
+        if (diff.z <= -_cubeHeight) {result.first = Vector3D(modelBox.position.x, modelBox.position.y, modelBox.position.z - _cubeHeight);}
+        if (diff.y >= _cubeHeight)  {result.first = Vector3D(modelBox.position.x, modelBox.position.y + _cubeHeight, modelBox.position.z);}
         return result;
     }
     return result;
