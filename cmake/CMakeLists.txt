@@ -3,6 +3,8 @@ project(IsoMaker LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 14)
 
+option(BUILD_TESTS "Build unit tests" OFF)
+
 include(FetchContent)
 include(raylib.cmake)
 include(raygui.cmake)
