@@ -15,7 +15,7 @@ void MapEditor::update() {
         std::pair<Vector3D, std::vector<BasicObject3D>::iterator> click = alignPosition(mousePos);
         if ((_objects3D.size() == 0 || click.first != Vector3D(0, 0, 0)) && IsMouseButtonReleased(MOUSE_LEFT_BUTTON))
             addCube(click.first);
-        if (_objects3D.size() >= 0 && IsMouseButtonReleased(MOUSE_RIGHT_BUTTON))
+        if (_objects3D.size() > 0 && IsMouseButtonReleased(MOUSE_RIGHT_BUTTON))
             removeCube(click.second);
     }
 }
