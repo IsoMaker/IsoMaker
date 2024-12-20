@@ -1,6 +1,5 @@
 #include "BasicObject2D.hpp"
 
-using namespace Object2D;
 using namespace Utilities;
 
 BasicObject2D::BasicObject2D(Asset2D asset, Vector2D position) {

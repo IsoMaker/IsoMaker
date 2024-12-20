@@ -35,7 +35,7 @@ void MapEditor::changeCubeType(Asset3D newAsset) {
 
 void MapEditor::addCube(Vector3D position) {
     std::cout << "Adding cube" << std::endl;
-    Object3D::BasicObject3D newObject = Object3D::BasicObject3D(_currentCubeType, position);
+    BasicObject3D newObject = BasicObject3D(_currentCubeType, position);
     newObject.resizeTo(_cubeHeight);
     _objects3D.push_back(newObject);
 }
@@ -48,7 +48,7 @@ Vector3D MapEditor::alignPosition( Vector2D mousePos) {
     Ray ray = GetMouseRay(mousePos.convert(), _camera.getRaylibCam());
 
     RayCollision closestHit = { false, std::numeric_limits<float>::max(), { 0, 0, 0 }, { 0, 0, 0 } };
-    Object3D::BasicObject3D closestObject;
+    BasicObject3D closestObject;
 
     Vector3D result = Vector3D(0, 0, 0);
 

@@ -10,7 +10,6 @@
 #define SCREENWIDTH 1600
 
 using namespace paint;
-using namespace Object2D;
 
 enum EditorType {
     PAINT,

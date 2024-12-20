@@ -1,6 +1,5 @@
 #include "BasicObject3D.hpp"
 
-using namespace Object3D;
 using namespace Utilities;
 
 BasicObject3D::BasicObject3D(Asset3D asset, Vector3D position) {
