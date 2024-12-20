@@ -1,6 +1,5 @@
 #include "MainUI.hpp"
 
-
 MainUI::MainUI() : _3DMapEditor(_camera, _window), _2DEditor(SCREENWIDTH, SCREENHEIGHT) {
     _window.startWindow(Vector2D(SCREENWIDTH, SCREENHEIGHT));
     _UIsize = ObjectBox2D(Vector2D(0, 0), Vector2D(SCREENWIDTH, 100), 1);
@@ -24,16 +23,16 @@ MainUI::MainUI() : _3DMapEditor(_camera, _window), _2DEditor(SCREENWIDTH, SCREEN
 }
 
 void MainUI::handleClick(Vector2D mousePos) {
+    std::cout << "YEAH" << std::endl;
     for (auto i = _tabs.begin(); i != _tabs.end(); i++) {
         if (i->first->isInObject(mousePos))
-            _currentEditor = i->second;
+            {_currentEditor = i->second; std::cout << "CHANGE TO " << i->second << std::endl;}
     }
 }
 
-void MainUI::update(input::MouseHandler &mouseHandler) {
+void MainUI::update() {
     Vector2D mousePos = GetMousePosition();
-    std::lock_guard<std::mutex> lock(mouseHandler.getMutex());
-    if (mouseHandler.getState(input::Generic::SELECT1) == input::State::PRESSED && _UIsize.isInBox(mousePos)) {
+    if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON) && _UIsize.isInBox(mousePos)) {
         handleClick(mousePos);
     } else if (_currentEditor == MAP) {
         _3DMapEditor.update();
@@ -60,9 +59,9 @@ void MainUI::draw() {
     _window.endRender();
 }
 
-void MainUI::loop(input::MouseHandler &mouseHandler) {
+void MainUI::loop() {
     while (!_window.isWindowClosing()) {
-        update(mouseHandler);
+        update();
         draw();
     }
     _window.closeWindow();

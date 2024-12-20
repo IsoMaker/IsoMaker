@@ -3,13 +3,11 @@
 #include "../Editor/2D/2DEditor.hpp"
 #include "../Editor/3DMap/3DMapEditor.hpp"
 #include "../Object2D/BasicObject2D.hpp"
-#include "../Input/Mouse.hpp"
 
 #define SCREENHEIGHT 1200
 #define SCREENWIDTH 1600
 
 using namespace paint;
-using namespace Object2D;
 
 enum EditorType {
     PAINT,
@@ -22,10 +20,10 @@ class MainUI {
         ~MainUI() {};
 
         void handleClick(Vector2D mousePos);
-        void update(input::MouseHandler &mouseHandler);
+        void update();
         void draw();
         void drawUI();
-        void loop(input::MouseHandler &mouseHandler);
+        void loop();
 
     protected:
         Render::Camera _camera;

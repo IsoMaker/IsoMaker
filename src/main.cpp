@@ -1,31 +1,39 @@
 #define RAYGUI_IMPLEMENTATION
 
-#include "Input/Mouse.hpp"
 #include "MainUI/MainUI.hpp"
 
-void inputLoop(input::MouseHandler &mouseHandler) {
-    mouseHandler.start();
-}
+//int main()
+//{
+//    MainUI mainUI;
+//    mainUI.loop();
+//}
 
-void userInterfaceLoop(MainUI &mainUI, input::MouseHandler &mouseHandler) {
-    mainUI.loop(mouseHandler);
-}
+#include "./Render/Camera.hpp"
+#include "./Render/Window.hpp"
+
+#include "./Assets/Asset2D.hpp"
+#include "./Object3D/BasicObject3D.hpp"
 
 int main()
 {
-    if (SDL_Init(SDL_INIT_EVENTS) != 0) {
-        std::cerr << "SDL_Init Error: " << SDL_GetError() << std::endl;
-        return 1;
+    Render::Window window;
+    Render::Camera camera;
+
+    window.startWindow(Vector2D(1600, 1200));
+    Asset2D test2D;
+    test2D.setFileName("ressources/PaintTab.png");
+    test2D.loadFile();
+
+    BasicObject3D object2D(test2D, Vector3D(0, 0, 0), Vector3D(10, 10, 10));
+
+    while (!window.isWindowClosing()) {
+        window.startRender();
+        window.clearBackground(GRAY);
+        camera.start3D();
+        object2D.draw();
+        DrawGrid(10, 1.0f);
+        camera.end3D();
+        window.endRender();
     }
-
-    MainUI mainUI;
-    input::MouseHandler mouseHandler;
-
-    std::thread uiThread(userInterfaceLoop, std::ref(mainUI), std::ref(mouseHandler));
-    std::thread inputThread(inputLoop, std::ref(mouseHandler));
-
-    uiThread.join();
-    inputThread.join();
-
-    SDL_Quit();
+    window.closeWindow();
 }

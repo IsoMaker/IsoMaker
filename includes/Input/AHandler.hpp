@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <thread>
+/*#include <thread>
 #include <chrono>
 #include <unordered_map>
 
@@ -86,3 +86,4 @@ namespace input {
         private:
     };
 }
+*/
