@@ -23,10 +23,9 @@ MainUI::MainUI() : _3DMapEditor(_camera, _window), _2DEditor(SCREENWIDTH, SCREEN
 }
 
 void MainUI::handleClick(Vector2D mousePos) {
-    std::cout << "YEAH" << std::endl;
     for (auto i = _tabs.begin(); i != _tabs.end(); i++) {
         if (i->first->isInObject(mousePos))
-            {_currentEditor = i->second; std::cout << "CHANGE TO " << i->second << std::endl;}
+            _currentEditor = i->second;
     }
 }
 
