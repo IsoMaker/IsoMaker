@@ -1,5 +1,8 @@
 #pragma once
 
+#include <vector>
+#include <algorithm>
+
 #include "../../includes/IAsset.hpp"
 
 class AAsset : public IAsset

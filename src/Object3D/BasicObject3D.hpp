@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "../../includes/IObject3D.hpp"
 
 using namespace Utilities;
