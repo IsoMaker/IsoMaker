@@ -1,31 +1,39 @@
 #define RAYGUI_IMPLEMENTATION
 
 #include "Input/Mouse.hpp"
+#include "Input/Keyboard.hpp"
 #include "MainUI/MainUI.hpp"
 
-void inputLoop(input::MouseHandler &mouseHandler) {
-    mouseHandler.start();
+void mouseLoop(input::MouseHandler &mouseHandler, bool &running)
+{
+    while (running) {
+        std::lock_guard<std::mutex> lock(mouseHandler.getMutex());
+        mouseHandler.loop();
+        std::this_thread::sleep_for(std::chrono::milliseconds(16));
+    }
 }
 
-void userInterfaceLoop(MainUI &mainUI, input::MouseHandler &mouseHandler) {
-    mainUI.loop(mouseHandler);
+void keyboardLoop(input::KeyboardHandler &keyboardHandler, bool &running)
+{
+    while (running) {
+        std::lock_guard<std::mutex> lock(keyboardHandler.getMutex());
+        keyboardHandler.loop();
+        std::this_thread::sleep_for(std::chrono::milliseconds(16));
+    }
 }
 
 int main()
 {
-    if (SDL_Init(SDL_INIT_EVENTS) != 0) {
-        std::cerr << "SDL_Init Error: " << SDL_GetError() << std::endl;
-        return 1;
-    }
-
+    bool running = true;
     MainUI mainUI;
     input::MouseHandler mouseHandler;
+    input::KeyboardHandler keyboardHandler;
 
-    std::thread uiThread(userInterfaceLoop, std::ref(mainUI), std::ref(mouseHandler));
-    std::thread inputThread(inputLoop, std::ref(mouseHandler));
+    std::thread mouseThread(mouseLoop, std::ref(mouseHandler), std::ref(running));
+    // std::thread keyboardThread(keyboardLoop, std::ref(keyboardHandler), std::ref(running));
 
-    uiThread.join();
-    inputThread.join();
+    mainUI.loop(mouseHandler);
 
-    SDL_Quit();
+    running = false;
+    mouseThread.join();
 }

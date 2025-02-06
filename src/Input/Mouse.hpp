@@ -8,22 +8,27 @@
 #pragma once
 
 #include "../../includes/Input/AHandler.hpp"
+#include "../Utilities/Vector.hpp"
 
 namespace input {
-    class MouseHandler : public AHandler<Uint8> {
+    class MouseHandler : public AHandler<int> {
         public:
-            MouseHandler() : AHandler(Type::MOUSE) {
+            MouseHandler() : AHandler(Type::MOUSE)
+            {
                 _inputBindings = {
-                    {SDL_BUTTON_LEFT, Generic::SELECT1},
-                    {SDL_BUTTON_RIGHT, Generic::SELECT2},
-                    {SDL_BUTTON_MIDDLE, Generic::VOID},
+                    {MOUSE_BUTTON_LEFT, Generic::SELECT1},
+                    {MOUSE_BUTTON_RIGHT, Generic::SELECT2},
+                    {MOUSE_BUTTON_MIDDLE, Generic::VOID},
                 };
             }
 
             ~MouseHandler() = default;
 
+            Utilities::Vector2D getMouseCoords() const { return _mouseCoords; }
+
         private:
-            Generic getGenericFromEvent(const SDL_Event &event) const;
-            State getGenericStateFromEvent(const SDL_Event &event) const;
+            void handleInput();
+
+            Utilities::Vector2D _mouseCoords;
     };
 }

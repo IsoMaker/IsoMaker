@@ -12,7 +12,8 @@
 namespace input {
     class ControllerHandler : public AHandler<Uint8> {
         public:
-            ControllerHandler() : AHandler(Type::GAMEPAD) {
+            ControllerHandler() : AHandler(Type::GAMEPAD)
+            {
                 _inputBindings = {
                     {SDL_CONTROLLER_BUTTON_DPAD_UP, Generic::UP},
                     {SDL_CONTROLLER_BUTTON_DPAD_DOWN, Generic::DOWN},
@@ -27,7 +28,6 @@ namespace input {
             ~ControllerHandler() = default;
 
         private:
-            Generic getGenericFromEvent(const SDL_Event &event) const;
-            State getGenericStateFromEvent(const SDL_Event &event) const;
+            void handleInput();
     };
 }

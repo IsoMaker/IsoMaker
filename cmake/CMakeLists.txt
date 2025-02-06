@@ -14,7 +14,6 @@ if (NOT BUILD_TESTS)
     add_executable(IsoMaker
             "../src/main.cpp"
             "../src/Editor/2D/2DEditor.cpp"
-            "../src/Input/AHandler.cpp"
             "../src/Input/Keyboard.cpp"
             "../src/Input/Mouse.cpp"
             "../src/Input/Controller.cpp"

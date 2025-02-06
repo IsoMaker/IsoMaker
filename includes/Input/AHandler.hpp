@@ -10,7 +10,7 @@
 #include <thread>
 #include <chrono>
 #include <unordered_map>
-
+#include <iostream>
 #include "IHandler.hpp"
 
 namespace input {
@@ -23,7 +23,7 @@ namespace input {
             AHandler(Type type) :
                 _running(false),
                 _type(type),
-                _holdThreshold(std::chrono::milliseconds(200)),
+                _holdThreshold(std::chrono::milliseconds(300)),
                 _inputStates({
                     {Generic::UP, State::RELEASED},
                     {Generic::DOWN, State::RELEASED},
@@ -37,36 +37,43 @@ namespace input {
                 }) {}
             virtual ~AHandler() = default;
 
-            State getState(Generic input) const {
+            State getState(Generic input) const
+            {
                 return _inputStates.at(input);
             }
-            std::unordered_map<Generic, State> getStates() const {
+            bool isPressed(Generic input) const
+            {
+                return _inputStates.at(input) == State::PRESSED;
+            }
+            bool isHeld(Generic input) const
+            {
+                return _inputStates.at(input) == State::HELD;
+            }
+            bool isReleased(Generic input) const
+            {
+                return _inputStates.at(input) == State::RELEASED;
+            }
+            std::unordered_map<Generic, State> getStates() const
+            {
                 return _inputStates;
             }
-            std::mutex &getMutex() {
+            std::mutex &getMutex()
+            {
                 return _inputMutex;
             }
 
-            void start() {
-                _running = true;
-                SDL_Event event;
-
-                while (_running) {
-                    while (SDL_PollEvent(&event)) {
-                        if (event.type == SDL_QUIT) {
-                            _running = false;
-                            break;
-                        }
-                        handleInput(event); // handle input events
-                    }
-
-                    handleInput(); // check held states
-                    std::this_thread::sleep_for(std::chrono::milliseconds(16)); // ~60 FPS
+            void loop()
+            {
+                if (WindowShouldClose()) {
+                    return;
                 }
+                handleInput();
+                checkHeldState(); // check held states
             }
 
         protected:
-            void checkHeldState() {
+            void checkHeldState()
+            {
                 auto now = std::chrono::steady_clock::now();
                 for (auto &inputState : _inputStates) {
                     if (inputState.second == State::PRESSED) {
@@ -78,39 +85,41 @@ namespace input {
                 }
             }
 
-            void updateState(Generic input, State state) {
-            if (input == Generic::VOID || (_inputStates[input] == State::PRESSED && state == State::PRESSED)) {
-                return;
-            }
-            _inputStates[input] = state;
+            void updateState(Generic input, State state)
+            {
+                if (input == Generic::VOID || (_inputStates[input] == State::PRESSED && state == State::PRESSED)) {
+                    return;
+                }
+                _inputStates[input] = state;
 
-            if (state == State::PRESSED) {
-                _holdTimestamps[input] = std::chrono::steady_clock::now();  // record the press time
-            } else if (state == State::RELEASED) {
-                _holdTimestamps.erase(input);  // remove the timestamp on release
-            }
-            }
-
-            void handleInput() {
-                std::lock_guard<std::mutex> lock(_inputMutex);
-                checkHeldState();
-            }
-            void handleInput(const SDL_Event &event) {
-                std::lock_guard<std::mutex> lock(_inputMutex);
-                updateState(getGenericFromEvent(event), getGenericStateFromEvent(event));
+                if (state == State::PRESSED) {
+                    _holdTimestamps[input] = std::chrono::steady_clock::now();  // record the press time
+                } else if (state == State::RELEASED) {
+                    _holdTimestamps.erase(input);  // remove the timestamp on release
+                }
             }
 
-            void setBinding(T binding, Generic input) {
+            void handleInput()
+            {
                 std::lock_guard<std::mutex> lock(_inputMutex);
+            }
+            void handleInput(const SDL_Event &event)
+            {
+                std::cout << "Generic input" << std::endl;
+                std::lock_guard<std::mutex> lock(_inputMutex);
+            }
+
+            void setBinding(T binding, Generic input)
+            {
+                std::lock_guard<std::mutex> lock(_inputMutex);
+                std::cout << "Binding lock" << std::endl;
                 _inputBindings[binding] = input;
             }
-            void eraseBinding(T binding) {
+            void eraseBinding(T binding)
+            {
                 std::lock_guard<std::mutex> lock(_inputMutex);
                 _inputBindings.erase(binding);
             }
-
-            virtual Generic getGenericFromEvent(const SDL_Event &event) const = 0;
-            virtual State getGenericStateFromEvent(const SDL_Event &event) const = 0;
 
             bool _running;
             Type _type;

@@ -9,6 +9,8 @@
 #include "../../Render/Camera.hpp"
 #include "../../Render/Window.hpp"
 
+#include "../../Input/Mouse.hpp"
+
 using namespace Utilities;
 
 class MapEditor {
@@ -16,7 +18,7 @@ class MapEditor {
         MapEditor(Render::Camera&, Render::Window&);
         ~MapEditor();
 
-        void update();
+        void update(input::MouseHandler &mouseHandler);
         void draw2DElements();
         void draw3DElements();
 

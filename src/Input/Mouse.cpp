@@ -9,14 +9,15 @@
 
 using namespace input;
 
-Generic MouseHandler::getGenericFromEvent(const SDL_Event &event) const {
-    if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP) {
-        auto it = _inputBindings.find(event.button.button);
-        return (it != _inputBindings.end()) ? it->second : Generic::VOID;
-    }
-    return Generic::VOID;
-}
+void MouseHandler::handleInput()
+{
+    _mouseCoords = GetMousePosition();
 
-State MouseHandler::getGenericStateFromEvent(const SDL_Event &event) const {
-    return (event.type == SDL_MOUSEBUTTONDOWN) ? State::PRESSED : State::RELEASED;
+    for (auto it = _inputBindings.begin(); it != _inputBindings.end(); it++) {
+        if (IsMouseButtonDown(it->first)) {
+            updateState(it->second, State::PRESSED);
+        } else {
+            updateState(it->second, State::RELEASED);
+        }
+    }
 }

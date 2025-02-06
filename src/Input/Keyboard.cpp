@@ -9,14 +9,13 @@
 
 using namespace input;
 
-Generic KeyboardHandler::getGenericFromEvent(const SDL_Event &event) const {
-    if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) {
-        auto it = _inputBindings.find(event.key.keysym.sym);
-        return (it != _inputBindings.end()) ? it->second : Generic::VOID;
+void KeyboardHandler::handleInput()
+{
+    for (auto it = _inputBindings.begin(); it != _inputBindings.end(); it++) {
+        if (IsKeyDown(it->first)) {
+            updateState(it->second, State::PRESSED);
+        } else {
+            updateState(it->second, State::RELEASED);
+        }
     }
-    return Generic::VOID;
-}
-
-State KeyboardHandler::getGenericStateFromEvent(const SDL_Event &event) const {
-    return (event.type == SDL_KEYDOWN) ? State::PRESSED : State::RELEASED;
 }

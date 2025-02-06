@@ -8,27 +8,29 @@
 #pragma once
 
 #include "../../includes/Input/AHandler.hpp"
+#include "../Utilities/Vector.hpp"
 
 namespace input {
-    class KeyboardHandler : public AHandler<SDL_Keycode> {
+    class KeyboardHandler : public AHandler<int> {
         public:
-            KeyboardHandler() : AHandler(Type::KEYBOARD) {
+            KeyboardHandler() : AHandler(Type::KEYBOARD)
+            {
                 _inputBindings = {
-                    {SDLK_w, Generic::UP},
-                    {SDLK_s, Generic::DOWN},
-                    {SDLK_a, Generic::LEFT},
-                    {SDLK_d, Generic::RIGHT},
-                    {SDLK_RETURN, Generic::INTERACT},
-                    {SDLK_SPACE, Generic::ATTACK},
-                    {SDLK_TAB, Generic::INVENTORY},
-                    {SDLK_ESCAPE, Generic::PAUSE},
-                    {SDLK_RETURN, Generic::ENTER},
+                    {KEY_W, Generic::UP},
+                    {KEY_S, Generic::DOWN},
+                    {KEY_A, Generic::LEFT},
+                    {KEY_D, Generic::RIGHT},
+                    {KEY_ENTER, Generic::INTERACT},
+                    {KEY_SPACE, Generic::ATTACK},
+                    {KEY_TAB, Generic::INVENTORY},
+                    {KEY_ESCAPE, Generic::PAUSE},
                 };
             };
             ~KeyboardHandler() = default;
 
         private:
-            Generic getGenericFromEvent(const SDL_Event &event) const;
-            State getGenericStateFromEvent(const SDL_Event &event) const;
+
+            Generic getGenericFromInput(int) const;
+            void handleInput();
     };
 }
