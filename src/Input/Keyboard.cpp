@@ -11,11 +11,13 @@ using namespace input;
 
 void KeyboardHandler::handleInput()
 {
-    for (auto it = _inputBindings.begin(); it != _inputBindings.end(); it++) {
-        if (IsKeyDown(it->first)) {
-            updateState(it->second, State::PRESSED);
+    for (auto bind = _inputBindings.begin(); bind != _inputBindings.end(); bind++) {
+        if (IsKeyDown(bind->first)) {
+            updateState(bind->second, State::PRESSED);
+        } else if (_inputStates.at(bind->second) == State::PRESSED) {
+            updateState(bind->second, State::RELEASED);
         } else {
-            updateState(it->second, State::RELEASED);
+            updateState(bind->second, State::NOTPRESSED);
         }
     }
 }

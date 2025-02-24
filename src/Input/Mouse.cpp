@@ -16,8 +16,10 @@ void MouseHandler::handleInput()
     for (auto it = _inputBindings.begin(); it != _inputBindings.end(); it++) {
         if (IsMouseButtonDown(it->first)) {
             updateState(it->second, State::PRESSED);
-        } else {
+        } else if (isPressed(it->second)) {
             updateState(it->second, State::RELEASED);
+        } else {
+            updateState(it->second, State::NOTPRESSED);
         }
     }
 }

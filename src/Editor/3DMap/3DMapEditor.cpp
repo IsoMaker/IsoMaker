@@ -10,7 +10,7 @@ MapEditor::~MapEditor() {
 }
 
 void MapEditor::update(input::MouseHandler &mouseHandler) {
-    if (mouseHandler.isPressed(input::Generic::SELECT1)) {
+    if (mouseHandler.isReleased(input::Generic::SELECT1)) {
         Vector2D mousePos = mouseHandler.getMouseCoords();
         Vector3D click = alignPosition(mousePos);
         if (_objects3D.size() == 0 || click != Vector3D(0, 0, 0))

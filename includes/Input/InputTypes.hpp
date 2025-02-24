@@ -15,6 +15,7 @@ namespace input {
     };
 
     enum class State {
+        NOTPRESSED,
         PRESSED,
         RELEASED,
         HELD,
