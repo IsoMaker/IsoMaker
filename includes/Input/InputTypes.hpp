@@ -7,7 +7,7 @@
 
 #pragma once
 
-/*namespace input {
+namespace input {
     enum class Type {
         KEYBOARD,
         MOUSE,
@@ -37,4 +37,4 @@
         SELECT4,
         VOID,
     };
-}*/
+}

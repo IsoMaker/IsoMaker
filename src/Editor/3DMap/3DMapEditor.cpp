@@ -1,5 +1,6 @@
 #include "3DMapEditor.hpp"
 #include "raylib.h"
+#include "../../../includes/Input/InputTypes.hpp"
 
 MapEditor::MapEditor(Render::Camera &camera, Render::Window &window) : _window(window), _camera(camera) {
     _cubeHeight = 1;
@@ -12,9 +13,15 @@ MapEditor::~MapEditor() {
 void MapEditor::update(input::MouseHandler &mouseHandler) {
     if (mouseHandler.isReleased(input::Generic::SELECT1)) {
         Vector2D mousePos = mouseHandler.getMouseCoords();
-        Vector3D click = alignPosition(mousePos);
+        auto click = alignPosition(mousePos).first;
         if (_objects3D.size() == 0 || click != Vector3D(0, 0, 0))
             addCube(click);
+    }
+    if (mouseHandler.isReleased(input::Generic::SELECT2)) {
+        Vector2D mousePos = mouseHandler.getMouseCoords();
+        auto click = alignPosition(mousePos).second;
+        if (click != _objects3D.end())
+            removeCube(click);
     }
 }
 

@@ -7,7 +7,7 @@
 
 #pragma once
 
-/*#include <SDL2/SDL.h>
+#include <SDL2/SDL.h>
 #include <mutex>
 
 #include <raylib.h>
@@ -37,4 +37,3 @@ namespace input {
         private:
     };
 }
-*/

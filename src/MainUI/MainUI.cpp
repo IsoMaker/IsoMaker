@@ -27,9 +27,9 @@ void MainUI::draw() {
     _window.endRender();
 }
 
-void MainUI::loop() {
+void MainUI::loop(input::MouseHandler &mouseHandler) {
     while (!_window.isWindowClosing()) {
-        update();
+        update(mouseHandler);
         draw();
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
     }
