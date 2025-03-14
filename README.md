@@ -120,6 +120,33 @@ All commits contributing to this project must be accompanied by a commit message
 <img src="ressources/readme/GithubDoc6.png" width=500>
 
 
+## How to add a feature and Pull Request 101
+
+### 1. Access the repository's [Github Project](https://github.com/AetherStollMetz/IsoMaker/projects?query=is%3Aopen)
+
+<img src="ressources/readme/GithubDoc1.png" width=1000>
+
+### 2. Add an **item** to the list
+
+<img src="ressources/readme/GithubDoc2.png" width=1000>
+
+### 3 **Name it** and add a description
+
+<img src="ressources/readme/GithubDoc3.png" width=600>
+
+### 4. Click on the inexplicably small **Create a branch**
+
+<img src="ressources/readme/GithubDoc4.png" width=800>
+
+### 5. You may want to make the source branch different from main, otherwise leave everything as is and **create branch**
+
+<img src="ressources/readme/GithubDoc5.png" width=500>
+
+### 6. Check out locally and code your feature (make sure to respect [the commit message standard](#commit-message-standard) when pushing onto the branch)
+
+<img src="ressources/readme/GithubDoc6.png" width=500>
+
+
 ## Team ❤️
 
 | [<img src="https://github.com/Tomi-Tom.png?size=85" width=85><br><sub>Tom BARITEAU-PETER</sub>](https://github.com/Tomi-Tom) | [<img src="https://github.com/AetherStollMetz.png?size=85" width=85><br><sub>Aether Stoll Metz</sub>](https://github.com/AetherStollMetz) | [<img src="https://github.com/steci.png?size=85" width=85><br><sub>Léa Guillemard</sub>](https://github.com/steci) | [<img src="https://github.com/Criticat02.png?size=85" width=85><br><sub>Aless Tosi</sub>](https://github.com/Criticat02)

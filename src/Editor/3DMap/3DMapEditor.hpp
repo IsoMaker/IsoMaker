@@ -24,13 +24,13 @@ class MapEditor {
 
         void changeCubeType(Asset3D);
         void addCube(Vector3D);
-        void removeCube(Vector3D);
+        void removeCube(std::vector<BasicObject3D>::iterator);
 
     protected:
-        Vector3D alignPosition(Vector2D);
+        std::pair<Vector3D, std::vector<BasicObject3D>::iterator> alignPosition(Vector2D);
 
-        std::vector<Object3D::BasicObject3D> _objects3D;
-        std::vector<Object2D::BasicObject2D> _objects2D;
+        std::vector<BasicObject3D> _objects3D;
+        std::vector<BasicObject2D> _objects2D;
 
         Asset3D _currentCubeType;
 
