@@ -1,0 +1,108 @@
+#!/usr/bin/env python3
+
+import os
+import re
+import sys
+import pycodestyle
+
+from regexPatterns import classBase, classPattern, className, interfaceAbstractName
+
+def CheckInterfaceAbstractNamingConvention(filepath):
+    warnings = []
+
+    with open(filepath, 'r') as file:
+        content = file.read()
+
+        # Check interfaces
+        ifaceMatches = re.findall(classPattern, content)
+        for match in ifaceMatches:
+            if re.fullmatch(interfaceAbstractName, match):
+                warnings.append(f"Incorrect interface or abstract class naming in {filepath}: '{match}' should start with 'I' or 'A' respectively.")
+
+    return warnings
+
+def checkClassNamingConvention(filepath):
+    warnings = []
+
+    with open(filepath, 'r') as file:
+        content = file.read()
+
+        # Check classes
+        clsMatches = re.findall(classPattern, content)
+        for match in clsMatches:
+            name = match.split()[1]  # Extract the class name
+            if not re.fullmatch(className, name):
+                warnings.append(f"Incorrect class naming in {filepath}: '{name}' should be UpperCamelCase.")
+
+    return warnings
+
+def checkCodeStyle(filepath):
+    styleGuide = pycodestyle.StyleGuide(quiet=True)
+    report = styleGuide.check_files([filepath])
+
+    warnings = []
+
+    # Check for line length issues (E501)
+    if report.total_errors > 0:
+        for error in report.get_statistics():
+            if error.startswith('E501'):  # Line too long
+                warnings.append(f"Warning: Line exceeds 100 characters in {filepath}.")
+
+    return warnings
+
+def checkFilesInIncludes():
+    warnings = []
+
+    for subdir, dirs, files in os.walk("../includes"):
+        for filename in files:
+            print(filename)
+            if filename.endswith(".hpp"):
+                filepath = os.path.join(subdir, filename)
+                warnings.extend(CheckInterfaceAbstractNamingConvention(filepath))
+                warnings.extend(checkCodeStyle(filepath))
+            if filename.endswith(".cpp"):
+                filepath = os.path.join(subdir, filename)
+                warnings.append(f"Warning: includes directory should only contain header files. Found {filepath}.")
+
+    return warnings
+
+def checkFilesInSrc():
+    warnings = []
+
+    for subdir, dirs, files in os.walk("../src"):
+        for filename in files:
+            if filename.endswith(".hpp"):
+                filepath = os.path.join(subdir, filename)
+                warnings.extend(checkClassNamingConvention(filepath))
+                warnings.extend(checkCodeStyle(filepath))
+            if filename.endswith(".cpp"):
+                filepath = os.path.join(subdir, filename)
+                warnings.extend(checkCodeStyle(filepath))
+
+    return warnings
+
+def checkFiles():
+    warnings = []
+
+    warnings.extend(checkFilesInIncludes())
+    warnings.extend(checkFilesInSrc())
+
+    return warnings
+
+try:
+    if len(sys.argv) != 1:
+        print("Usage: ./codingStyleScript")
+        sys.exit(84)
+
+    warnings = checkFiles()
+
+    if warnings:
+        print("Style issues found:")
+        for warning in warnings:
+            print(warning)
+    else:
+        print("No style issues found.")
+except Exception as e:
+    print(f"An error occurred during the style check: {e}")
+    exit(84)
+exit(0)

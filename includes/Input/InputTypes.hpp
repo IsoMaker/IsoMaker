@@ -8,20 +8,20 @@
 #pragma once
 
 namespace input {
-    enum class Type {
+    enum Type {
         KEYBOARD,
         MOUSE,
         GAMEPAD,
     };
 
-    enum class State {
+    enum State {
         NOTPRESSED,
         PRESSED,
         RELEASED,
         HELD,
     };
 
-    enum class Generic {
+    enum Generic {
         UP,
         DOWN,
         LEFT,
