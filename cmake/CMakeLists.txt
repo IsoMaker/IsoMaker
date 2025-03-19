@@ -8,7 +8,6 @@ option(BUILD_TESTS "Build unit tests" OFF)
 include(FetchContent)
 include(raylib.cmake)
 include(raygui.cmake)
-include(SDL2.cmake)
 
 if (NOT BUILD_TESTS)
     add_executable(IsoMaker
@@ -30,7 +29,7 @@ if (NOT BUILD_TESTS)
         "../src/Utilities/ObjectBox.cpp"
         "../src/Utilities/Vector.cpp"
     )
-    target_link_libraries(IsoMaker PRIVATE raylib raygui SDL2)
+    target_link_libraries(IsoMaker PRIVATE raylib raygui)
 endif()
 
 if (BUILD_TESTS)
@@ -45,7 +44,7 @@ if (BUILD_TESTS)
     add_executable(tests
         "../tests/test_main.cpp"
     )
-    target_link_libraries(tests PRIVATE gtest gtest_main raylib raygui SDL2)
+    target_link_libraries(tests PRIVATE gtest gtest_main raylib raygui)
 
     add_test(NAME IsoMakerTests COMMAND tests)
 endif()
