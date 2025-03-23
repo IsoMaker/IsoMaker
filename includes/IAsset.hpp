@@ -24,5 +24,7 @@ class IAsset
         virtual bool findAnyTags(std::vector<std::string>) = 0;
         virtual bool findTag(std::string) = 0;
 
-        virtual void loadFile() = 0;
+        virtual void displayLibraryAsset(int, int) = 0;
+
+        virtual bool loadFile() = 0;
 };

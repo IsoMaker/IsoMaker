@@ -3,6 +3,7 @@
 
 MapEditor::MapEditor(Render::Camera &camera, Render::Window &window) : _window(window), _camera(camera) {
     _cubeHeight = 1;
+    _screenRectangle = {0, 0, SCREENWIDTH - ASSETWIDTH, SCREENHEIGHT};
 }
 
 MapEditor::~MapEditor() {

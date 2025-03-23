@@ -15,9 +15,15 @@ Model Asset3D::getModel()
         return _model;
 }
 
-void Asset3D::loadFile()
+bool Asset3D::loadFile()
 {
-    _model = LoadModel(_fileName.c_str());
-    _modelLoaded = true;
+    if (!_modelLoaded) {
+        _model = LoadModel(_fileName.c_str());
+        if (_model.meshCount == 0)
+            return false;
+        _modelLoaded = true;
+        std::cout << "ASSET 3D LOADED" << std::endl;
+    }
+    return true;
 }
 

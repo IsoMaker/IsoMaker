@@ -39,4 +39,6 @@ class MapEditor {
 
         float _cubeHeight;
 
+        Rectangle _screenRectangle;
+
 };

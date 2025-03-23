@@ -4,6 +4,8 @@
 #include <algorithm>
 
 #include "../../includes/IAsset.hpp"
+#include "../../includes/macros.hpp"
+
 
 class AAsset : public IAsset
 {
@@ -28,6 +30,8 @@ class AAsset : public IAsset
         bool findAllTags(std::vector<std::string>);
         bool findAnyTags(std::vector<std::string>);
         bool findTag(std::string);
+
+        void displayLibraryAsset(int, int);
 
     protected:
         std::string _fileName;

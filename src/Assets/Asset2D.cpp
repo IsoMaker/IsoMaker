@@ -6,9 +6,10 @@ Texture2D Asset2D::getTexture()
         return _texture;
 }
 
-void Asset2D::loadFile()
+bool Asset2D::loadFile()
 {
     _texture = LoadTexture(_fileName.c_str());
     _textureLoaded = true;
+    return true;
 }
 

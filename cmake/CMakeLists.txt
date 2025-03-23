@@ -12,6 +12,7 @@ include(SDL2.cmake)
 
 if (NOT BUILD_TESTS)
     add_executable(IsoMaker
+<<<<<<< Updated upstream
             "../src/main.cpp"
             "../src/Editor/2D/2DEditor.cpp"
             "../src/Input/Keyboard.cpp"
@@ -29,6 +30,25 @@ if (NOT BUILD_TESTS)
             "../src/Utilities/DrawCubeTexture.cpp"
             "../src/Utilities/ObjectBox.cpp"
             "../src/Utilities/Vector.cpp"
+=======
+        "../src/main.cpp"
+        "../src/Editor/2D/2DEditor.cpp"
+        "../src/Input/Keyboard.cpp"
+        "../src/Input/Mouse.cpp"
+        "../src/Library/Library.cpp"
+        "../src/Editor/3DMap/3DMapEditor.cpp"
+        "../src/Assets/AAsset.cpp"
+        "../src/Assets/Asset2D.cpp"
+        "../src/Assets/Asset3D.cpp"
+        "../src/MainUI/MainUI.cpp"
+        "../src/Object2D/BasicObject2D.cpp"
+        "../src/Object3D/BasicObject3D.cpp"
+        "../src/Render/Camera.cpp"
+        "../src/Render/Window.cpp"
+        "../src/Utilities/DrawCubeTexture.cpp"
+        "../src/Utilities/ObjectBox.cpp"
+        "../src/Utilities/Vector.cpp"
+>>>>>>> Stashed changes
     )
     target_link_libraries(IsoMaker PRIVATE raylib raygui SDL2)
 endif()

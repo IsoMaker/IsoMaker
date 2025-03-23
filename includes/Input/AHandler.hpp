@@ -124,11 +124,6 @@ namespace input {
             {
                 std::lock_guard<std::mutex> lock(_inputMutex);
             }
-            void handleInput(const SDL_Event &event)
-            {
-                std::cout << "Generic input" << std::endl;
-                std::lock_guard<std::mutex> lock(_inputMutex);
-            }
 
             void setBinding(T binding, Generic input)
             {

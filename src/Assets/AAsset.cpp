@@ -41,3 +41,8 @@ bool AAsset::findTag(std::string tag)
     return true;
 }
 
+void AAsset::displayLibraryAsset(int x, int y)
+{
+    DrawRectangle(x, y, ASSETWIDTH, ASSETHEIGHT, LIGHTGRAY);
+    DrawText(_fileName.c_str(), x, y + ASSETHEIGHT/2 - 10, 20, BLACK);
+}

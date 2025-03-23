@@ -18,7 +18,7 @@ namespace input {
                 _inputBindings = {
                     {MOUSE_BUTTON_LEFT, Generic::SELECT1},
                     {MOUSE_BUTTON_RIGHT, Generic::SELECT2},
-                    {MOUSE_BUTTON_MIDDLE, Generic::VOID},
+                    {MOUSE_BUTTON_MIDDLE, Generic::SELECT3},
                 };
             }
 

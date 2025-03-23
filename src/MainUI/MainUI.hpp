@@ -4,10 +4,8 @@
 #include "../Editor/3DMap/3DMapEditor.hpp"
 #include "../Object2D/BasicObject2D.hpp"
 #include "../Input/Mouse.hpp"
+#include "../Library/Library.hpp"
 #include <iostream>
-
-#define SCREENHEIGHT 1200
-#define SCREENWIDTH 1600
 
 using namespace paint;
 using namespace Object2D;
@@ -30,4 +28,5 @@ class MainUI {
         Render::Camera _camera;
         Render::Window _window;
         MapEditor _3DMapEditor;
+        Library _Library;
 };
