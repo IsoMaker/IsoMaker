@@ -106,4 +106,47 @@ std::pair<Vector3D, std::vector<BasicObject3D>::iterator> MapEditor::alignPositi
     if (diff.y == _cubeHeight) alignedPos.y += _cubeHeight; // Y remains unchanged
 
     return {alignedPos, closestObj};
+    return result;
+}
+
+void MapEditor::saveMapBinary(const std::string& filename) {
+    std::ofstream file(filename, std::ios::binary);
+    if (!file.is_open()) {
+        std::cerr << "Failed to open map file for saving!\n";
+        return;
+    }
+
+    size_t objectCount = _objects3D.size();
+
+    file.write(reinterpret_cast<const char*>(&objectCount), sizeof(objectCount));
+    for (auto& obj : _objects3D) {
+        Utilities::Vector3D position = obj.getPosition();
+        file.write(reinterpret_cast<const char*>(&position.x), sizeof(position.x));
+        file.write(reinterpret_cast<const char*>(&position.y), sizeof(position.y));
+        file.write(reinterpret_cast<const char*>(&position.z), sizeof(position.z));
+    }
+    file.close();
+    std::cout << "Map saved in binary format.\n";
+}
+
+void MapEditor::loadMapBinary(const std::string& filename) {
+    std::ifstream file(filename, std::ios::binary);
+    if (!file.is_open()) {
+        std::cerr << "Failed to open map file for loading!\n";
+        return;
+    }
+
+    size_t objectCount;
+
+    file.read(reinterpret_cast<char*>(&objectCount), sizeof(objectCount));
+    _objects3D.clear();
+    for (size_t i = 0; i < objectCount; ++i) {
+        Utilities::Vector3D position;
+        file.read(reinterpret_cast<char*>(&position.x), sizeof(position.x));
+        file.read(reinterpret_cast<char*>(&position.y), sizeof(position.y));
+        file.read(reinterpret_cast<char*>(&position.z), sizeof(position.z));
+        addCube(position);
+    }
+    file.close();
+    std::cout << "Map loaded from binary file.\n";
 }

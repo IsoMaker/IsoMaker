@@ -32,8 +32,14 @@ class BasicObject3D : public IObject3D {
 
         ObjectBox3D &getBox() {return _objectBox;};
     private:
+        Vector3D getPosition();
+        Asset3D getAsset3D();
+        Asset2D getAsset2D();
+
+        private:
         ObjectBox3D _objectBox;
         Asset3D _asset3D;
         Asset2D _asset2D;
         AssetType _assetType;
+        Vector3D _position;
 };

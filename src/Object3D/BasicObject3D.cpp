@@ -6,6 +6,7 @@ BasicObject3D::BasicObject3D(Asset3D asset, Vector3D position) {
     setAsset(asset);
     _assetType = AssetType::ASSET3D;
     moveTo(position);
+    _position = position;
 }
 
 BasicObject3D::BasicObject3D(Asset2D asset, Vector3D position, Vector3D dimension3D) {
@@ -38,4 +39,19 @@ void BasicObject3D::resizeTo(float height) {
     float currentHeight = _objectBox.assetDimensions.z;
     float newScale = height / currentHeight;
     _objectBox.scale = newScale;
+}
+
+Vector3D BasicObject3D::getPosition()
+{
+    return _position;
+}
+
+Asset3D BasicObject3D::getAsset3D()
+{
+    return _asset3D;
+}
+
+Asset2D BasicObject3D::getAsset2D()
+{
+    return _asset2D;
 }

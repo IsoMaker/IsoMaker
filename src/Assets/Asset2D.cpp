@@ -12,4 +12,3 @@ void Asset2D::loadFile()
     _texture = LoadTexture(_fileName.c_str());
     _textureLoaded = true;
 }
-

@@ -5,6 +5,9 @@
 #include "raylib.h"
 #include "rlgl.h"
 
+#include <fstream>
+#include <json/json.h>
+
 #include "../../Object3D/BasicObject3D.hpp"
 #include "../../Object2D/BasicObject2D.hpp"
 
@@ -31,6 +34,10 @@ class MapEditor {
         void changeCubeType(Asset3D);
         void addCube(Vector3D);
         void removeCube(std::vector<BasicObject3D>::iterator);
+
+        void saveMapBinary(const std::string& filename);
+        void loadMapBinary(const std::string& filename);
+
     protected:
     private:
         std::pair<Vector3D, std::vector<BasicObject3D>::iterator> alignPosition(Vector2D);
