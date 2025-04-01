@@ -6,7 +6,6 @@
 #include "rlgl.h"
 
 #include <fstream>
-#include <json/json.h>
 
 #include "../../Object3D/BasicObject3D.hpp"
 #include "../../Object2D/BasicObject2D.hpp"

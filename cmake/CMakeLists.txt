@@ -6,7 +6,6 @@ set(CMAKE_CXX_STANDARD 14)
 option(BUILD_TESTS "Build unit tests" OFF)
 
 include(FetchContent)
-include(jsoncpp.cmake)
 include(raylib.cmake)
 include(raygui.cmake)
 
@@ -31,12 +30,8 @@ if (NOT BUILD_TESTS)
         "../src/Utilities/Vector.cpp"
     )
 
-    target_include_directories(IsoMaker PRIVATE 
-        ${jsoncpp_SOURCE_DIR}/include
-    )
-    target_link_libraries(IsoMaker PRIVATE 
-        raylib 
-        jsoncpp_lib
+    target_link_libraries(IsoMaker PRIVATE
+        raylib
         raygui
     )
 endif()
@@ -54,11 +49,10 @@ if (BUILD_TESTS)
         "../tests/test_main.cpp"
     )
 
-    target_link_libraries(tests PRIVATE 
-        gtest 
-        gtest_main 
-        raylib 
-        jsoncpp_lib
+    target_link_libraries(tests PRIVATE
+        gtest
+        gtest_main
+        raylib
         raygui
     )
 

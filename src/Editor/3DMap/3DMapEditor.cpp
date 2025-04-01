@@ -36,6 +36,14 @@ void MapEditor::update(input::IHandlerBase &inputHandler)
     if (inputHandler.isReleased(input::Generic::RIGHT)) {
         _camera.rotateCounterclock();
     }
+    if (inputHandler.isPressed(input::Generic::DOWN)) {
+        saveMapBinary("game_project/assets/maps/game_map.dat");
+        std::cout << "Save map" << std::endl;
+    }
+    if (inputHandler.isPressed(input::Generic::UP)) {
+        loadMapBinary("game_project/assets/maps/game_map.dat");
+        std::cout << "Load map" << std::endl;
+    }
     // if (inputHandler.isReleased(input::Generic::INTERACT2)) {
     //     _currentCubeType.rotateModel(-PI / 2);
     // }
@@ -109,7 +117,8 @@ std::pair<Vector3D, std::vector<BasicObject3D>::iterator> MapEditor::alignPositi
     return result;
 }
 
-void MapEditor::saveMapBinary(const std::string& filename) {
+void MapEditor::saveMapBinary(const std::string& filename)
+{
     std::ofstream file(filename, std::ios::binary);
     if (!file.is_open()) {
         std::cerr << "Failed to open map file for saving!\n";
@@ -129,7 +138,8 @@ void MapEditor::saveMapBinary(const std::string& filename) {
     std::cout << "Map saved in binary format.\n";
 }
 
-void MapEditor::loadMapBinary(const std::string& filename) {
+void MapEditor::loadMapBinary(const std::string& filename)
+{
     std::ifstream file(filename, std::ios::binary);
     if (!file.is_open()) {
         std::cerr << "Failed to open map file for loading!\n";
