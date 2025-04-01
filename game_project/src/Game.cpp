@@ -3,7 +3,7 @@
 Game::Game(Render::Window& window, Render::Camera& camera) : _window(window), _camera(camera)
 {
     _cubeHeight = 1;
-    _window.startWindow(Vector2D(960, 1080), "Random Game");
+    _window.startWindow(Vector2D(1080, 960), "Random Game");
     _cubeType.setFileName("../ressources/Block1.glb");
     _cubeType.loadFile();
     loadMap("assets/maps/game_map.dat");
