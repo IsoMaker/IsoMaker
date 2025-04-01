@@ -3,10 +3,9 @@
 #include <chrono>
 
 MainUI::MainUI() : _3DMapEditor(_camera, _window) {
-    _window.startWindow(Vector2D(SCREENWIDTH, SCREENHEIGHT));
-
-    //temporary cube asset loading for the 3D map, to change after libraries are implemented
     Asset3D cubeAsset;
+
+    _gameProjectName = "game_project";
     cubeAsset.setFileName("ressources/newBlock.glb");
     cubeAsset.loadFile();
     _3DMapEditor.changeCubeType(cubeAsset);

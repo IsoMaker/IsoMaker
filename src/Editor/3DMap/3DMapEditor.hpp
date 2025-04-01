@@ -37,6 +37,8 @@ class MapEditor {
         void saveMapBinary(const std::string& filename);
         void loadMapBinary(const std::string& filename);
 
+        void gameCompilation(const std::string& gameProjectName);
+
     protected:
     private:
         std::pair<Vector3D, std::vector<BasicObject3D>::iterator> alignPosition(Vector2D);

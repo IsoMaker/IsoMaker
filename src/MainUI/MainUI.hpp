@@ -29,4 +29,5 @@ class MainUI {
         Render::Camera _camera;
         Render::Window _window;
         MapEditor _3DMapEditor;
+        std::string _gameProjectName;
 };

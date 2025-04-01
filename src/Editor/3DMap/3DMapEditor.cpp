@@ -44,6 +44,10 @@ void MapEditor::update(input::IHandlerBase &inputHandler)
         loadMapBinary("game_project/assets/maps/game_map.dat");
         std::cout << "Load map" << std::endl;
     }
+    if (inputHandler.isPressed(input::Generic::ATTACK)) {
+        gameCompilation("game_project");
+        std::cout << "Game compilation" << std::endl;
+    }
     // if (inputHandler.isReleased(input::Generic::INTERACT2)) {
     //     _currentCubeType.rotateModel(-PI / 2);
     // }
@@ -159,4 +163,11 @@ void MapEditor::loadMapBinary(const std::string& filename)
     }
     file.close();
     std::cout << "Map loaded from binary file.\n";
+}
+
+void MapEditor::gameCompilation(const std::string& gameProjectName)
+{
+    std::string script = gameProjectName + "/install-linux.sh";
+
+    system(script.c_str());
 }

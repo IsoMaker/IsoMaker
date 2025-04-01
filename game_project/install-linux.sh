@@ -1,5 +1,6 @@
 #!/bin/bash
 
+cd game_project
 rm -f GenericGame
 cmake -B build -S .
 cmake --build build
