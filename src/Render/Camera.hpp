@@ -17,13 +17,17 @@ namespace Render {
             void start3D() {BeginMode3D(_camera);};
             void end3D() {EndMode3D();};
 
+            int getAngle() {return _angle;};
+            Vector3D getPosition() {return _position;};
+
             void setTarget(Vector3D target) {_target = target;};
             void setDistance(float distance) {_distance = distance;};
             void setHeight(float height) {_height = height;};
 
             Camera3D getRaylibCam() {return _camera;};
 
-            void rotate();
+            void rotateClock();
+            void rotateCounterclock();
             void rotate(float angle);
             void updateCamera();
 

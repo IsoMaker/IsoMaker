@@ -1,80 +1,109 @@
+#include "iostream"
+
 #include "3DMapEditor.hpp"
-#include "raylib.h"
 #include "../../../includes/Input/InputTypes.hpp"
 
-MapEditor::MapEditor(Render::Camera &camera, Render::Window &window) : _window(window), _camera(camera) {
-    _cubeHeight = 1;
+MapEditor::MapEditor(Render::Camera &camera, Render::Window &window) : _window(window), _camera(camera), _grid(), _cubeHeight(1)
+{
 }
 
-MapEditor::~MapEditor() {
-
+MapEditor::~MapEditor()
+{
 }
 
-void MapEditor::update(input::MouseHandler &mouseHandler) {
-    if (mouseHandler.isReleased(input::Generic::SELECT1)) {
-        Vector2D mousePos = mouseHandler.getMouseCoords();
-        auto click = alignPosition(mousePos).first;
+void MapEditor::initGrid()
+{
+    _grid.init();
+}
+
+void MapEditor::update(input::IHandlerBase &inputHandler)
+{
+    if (inputHandler.isReleased(input::Generic::SELECT1)) {
+        Vector2D cursorPos = inputHandler.getCursorCoords();
+        auto click = alignPosition(cursorPos).first;
         if (_objects3D.size() == 0 || click != Vector3D(0, 0, 0))
             addCube(click);
     }
-    if (mouseHandler.isReleased(input::Generic::SELECT2)) {
-        Vector2D mousePos = mouseHandler.getMouseCoords();
-        auto click = alignPosition(mousePos).second;
-        if (click != _objects3D.end())
+    if (inputHandler.isReleased(input::Generic::SELECT2)) {
+        Vector2D cursorPos = inputHandler.getCursorCoords();
+        auto click = alignPosition(cursorPos).second;
+        if (click != _objects3D.end() && !_objects3D.empty())
             removeCube(click);
     }
+    if (inputHandler.isReleased(input::Generic::LEFT)) {
+        _camera.rotateClock();
+    }
+    if (inputHandler.isReleased(input::Generic::RIGHT)) {
+        _camera.rotateCounterclock();
+    }
+    // if (inputHandler.isReleased(input::Generic::INTERACT2)) {
+    //     _currentCubeType.rotateModel(-PI / 2);
+    // }
+    // if (inputHandler.isReleased(input::Generic::INTERACT3)) {
+    //     _currentCubeType.rotateModel(PI / 2);
+    // }
 }
 
-void MapEditor::draw2DElements() {
+void MapEditor::draw2DElements()
+{
     for (auto i = _objects2D.begin(); i != _objects2D.end(); i++)
         i->draw();
 }
 
-void MapEditor::draw3DElements() {
+void MapEditor::draw3DElements()
+{
+    _grid.draw();
     for (auto i = _objects3D.begin(); i != _objects3D.end(); i++)
         i->draw();
-    DrawGrid(10, 1.0f);
 }
 
-void MapEditor::changeCubeType(Asset3D newAsset) {
+void MapEditor::changeCubeType(Asset3D newAsset)
+{
     _currentCubeType = newAsset;
 }
 
-void MapEditor::addCube(Vector3D position) {
+void MapEditor::addCube(Vector3D position)
+{
     BasicObject3D newObject = BasicObject3D(_currentCubeType, position);
     newObject.resizeTo(_cubeHeight);
     _objects3D.push_back(newObject);
 }
 
-void MapEditor::removeCube(std::vector<BasicObject3D>::iterator toRemove) {
+void MapEditor::removeCube(std::vector<BasicObject3D>::iterator toRemove)
+{
     _objects3D.erase(toRemove);
 }
 
-std::pair<Vector3D, std::vector<BasicObject3D>::iterator> MapEditor::alignPosition( Vector2D mousePos) {
-    Ray ray = GetMouseRay(mousePos.convert(), _camera.getRaylibCam());
+std::pair<Vector3D, std::vector<BasicObject3D>::iterator> MapEditor::alignPosition(Vector2D cursorPos)
+{
+    Vector3D cameraPos = _camera.getPosition();
+    Ray ray = GetMouseRay(cursorPos.convert(), _camera.getRaylibCam());
 
     RayCollision closestHit = { false, std::numeric_limits<float>::max(), { 0, 0, 0 }, { 0, 0, 0 } };
-
-    std::pair<Vector3D, std::vector<BasicObject3D>::iterator> result = std::make_pair<Vector3D, std::vector<BasicObject3D>::iterator>(Vector3D(0, 0, 0), _objects3D.begin());
+    auto closestObj = _objects3D.end();
 
     for (auto i = _objects3D.begin(); i != _objects3D.end(); i++) {
         RayCollision collision = GetRayCollisionBox(ray, i->getBox().convert());
         if (collision.hit && collision.distance < closestHit.distance) {
             closestHit = collision;
-            result.second = i;
+            closestObj = i;
         }
     }
 
-    if (closestHit.hit) {
-        ObjectBox3D modelBox = result.second->getBox();
-        Vector3D collisionPoint = closestHit.point;
-        Vector3D diff = collisionPoint - modelBox.position;
-        if (diff.x >= _cubeHeight)  {result.first = Vector3D(modelBox.position.x + _cubeHeight, modelBox.position.y, modelBox.position.z);}
-        if (diff.x <= -_cubeHeight) {result.first = Vector3D(modelBox.position.x - _cubeHeight, modelBox.position.y, modelBox.position.z);}
-        if (diff.z >= _cubeHeight)  {result.first = Vector3D(modelBox.position.x, modelBox.position.y, modelBox.position.z + _cubeHeight);}
-        if (diff.z <= -_cubeHeight) {result.first = Vector3D(modelBox.position.x, modelBox.position.y, modelBox.position.z - _cubeHeight);}
-        if (diff.y >= _cubeHeight)  {result.first = Vector3D(modelBox.position.x, modelBox.position.y + _cubeHeight, modelBox.position.z);}
-        return result;
+    if (!closestHit.hit) {
+        return {Vector3D(0, 0.5f, 0), _objects3D.end()};
     }
-    return result;
+
+    Vector3D collisionPoint = closestHit.point;
+    ObjectBox3D &modelBox = closestObj->getBox();
+    Vector3D diff = collisionPoint - modelBox.position;
+    Vector3D alignedPos = modelBox.position;
+
+    if (diff.x == _cubeHeight)       alignedPos.x += _cubeHeight;
+    else if (diff.x == 0) alignedPos.x -= _cubeHeight;
+    else if (diff.z == _cubeHeight)  alignedPos.z += _cubeHeight;
+    else if (diff.z == 0) alignedPos.z -= _cubeHeight;
+    if (diff.y == _cubeHeight) alignedPos.y += _cubeHeight; // Y remains unchanged
+
+    return {alignedPos, closestObj};
 }

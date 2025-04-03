@@ -2,14 +2,17 @@
 
 #include <vector>
 #include <limits>
+#include "raylib.h"
+#include "rlgl.h"
 
 #include "../../Object3D/BasicObject3D.hpp"
 #include "../../Object2D/BasicObject2D.hpp"
 
-#include "../../Render/Camera.hpp"
 #include "../../Render/Window.hpp"
+#include "../../Render/Camera.hpp"
+#include "Grid.hpp"
 
-#include "../../Input/Mouse.hpp"
+#include "../../Input/MouseKeyboard.hpp"
 
 using namespace Utilities;
 
@@ -18,15 +21,18 @@ class MapEditor {
         MapEditor(Render::Camera&, Render::Window&);
         ~MapEditor();
 
-        void update(input::MouseHandler &mouseHandler);
+        void initGrid();
+
+        void update(input::IHandlerBase &inputHandler);
+
         void draw2DElements();
         void draw3DElements();
 
         void changeCubeType(Asset3D);
         void addCube(Vector3D);
         void removeCube(std::vector<BasicObject3D>::iterator);
-
     protected:
+    private:
         std::pair<Vector3D, std::vector<BasicObject3D>::iterator> alignPosition(Vector2D);
 
         std::vector<BasicObject3D> _objects3D;
@@ -36,7 +42,7 @@ class MapEditor {
 
         Render::Window &_window;
         Render::Camera &_camera;
+        MapGrid _grid;
 
         float _cubeHeight;
-
 };

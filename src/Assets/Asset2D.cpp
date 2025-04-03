@@ -4,6 +4,7 @@ Texture2D Asset2D::getTexture()
 {
     if (_textureLoaded)
         return _texture;
+    return Texture2D();
 }
 
 void Asset2D::loadFile()

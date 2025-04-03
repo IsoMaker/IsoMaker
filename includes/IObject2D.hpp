@@ -6,7 +6,8 @@
 
 using namespace Utilities;
 
-class IObject2D {
+class IObject2D
+{
     public:
     virtual void setAsset(Asset2D) = 0;
     virtual void draw() = 0;
