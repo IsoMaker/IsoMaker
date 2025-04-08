@@ -7,19 +7,19 @@ MainUI::MainUI() : _3DMapEditor(_camera, _window) {
 
     //temporary cube asset loading for the 3D map, to change after libraries are implemented
     Asset3D cubeAsset;
-    cubeAsset.setFileName("ressources/Block1.glb");
+    cubeAsset.setFileName("ressources/newBlock.glb");
     cubeAsset.loadFile();
     _3DMapEditor.changeCubeType(cubeAsset);
 }
 
-void MainUI::update(input::MouseHandler &mouseHandler) {
-    Vector2D mousePos = mouseHandler.getMouseCoords();
-    _3DMapEditor.update(mouseHandler);
+void MainUI::update(input::IHandlerBase &inputHandler) {
+    Vector2D cursorPos = inputHandler.getCursorCoords();
+    _3DMapEditor.update(inputHandler);
 }
 
 void MainUI::draw() {
     _window.startRender();
-    _window.clearBackground(GRAY);
+    _window.clearBackground(DARKBLUE);
     _camera.start3D();
     _3DMapEditor.draw3DElements();
     _camera.end3D();
@@ -27,7 +27,8 @@ void MainUI::draw() {
     _window.endRender();
 }
 
-void MainUI::loop(input::MouseHandler &mouseHandler) {
+void MainUI::loop(input::IHandlerBase &mouseHandler) {
+    _3DMapEditor.initGrid();
     while (!_window.isWindowClosing()) {
         update(mouseHandler);
         draw();

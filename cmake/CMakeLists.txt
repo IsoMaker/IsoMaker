@@ -13,10 +13,10 @@ if (NOT BUILD_TESTS)
     add_executable(IsoMaker
         "../src/main.cpp"
         "../src/Editor/2D/2DEditor.cpp"
-        "../src/Input/Keyboard.cpp"
-        "../src/Input/Mouse.cpp"
-        "../src/Input/Controller.cpp"
+        "../src/Input/MouseKeyboard.cpp"
+        "../src/Input/Gamepad.cpp"
         "../src/Editor/3DMap/3DMapEditor.cpp"
+        "../src/Editor/3DMap/Grid.cpp"
         "../src/Assets/AAsset.cpp"
         "../src/Assets/Asset2D.cpp"
         "../src/Assets/Asset3D.cpp"

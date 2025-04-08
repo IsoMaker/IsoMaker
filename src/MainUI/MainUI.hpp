@@ -3,7 +3,7 @@
 #include "../Editor/2D/2DEditor.hpp"
 #include "../Editor/3DMap/3DMapEditor.hpp"
 #include "../Object2D/BasicObject2D.hpp"
-#include "../Input/Mouse.hpp"
+#include "../Input/MouseKeyboard.hpp"
 #include <iostream>
 
 #define SCREENHEIGHT 1200
@@ -21,9 +21,9 @@ class MainUI {
         MainUI();
         ~MainUI() {};
 
-        void update(input::MouseHandler &mouseHandler);
+        void update(input::IHandlerBase &mouseHandler);
         void draw();
-        void loop(input::MouseHandler &mouseHandler);
+        void loop(input::IHandlerBase &mouseHandler);
 
     protected:
         Render::Camera _camera;

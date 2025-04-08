@@ -28,8 +28,9 @@ class BasicObject3D : public IObject3D {
         void moveTo(Vector3D newPosition) {_objectBox.position = newPosition;};
         void resizePercent(float percentage) {_objectBox.scale = percentage;};
         void resizeTo(float height);
+        void rotateTo(float angle);
 
-        ObjectBox3D getBox() {return _objectBox;};
+        ObjectBox3D &getBox() {return _objectBox;};
     private:
         ObjectBox3D _objectBox;
         Asset3D _asset3D;

@@ -7,26 +7,32 @@
 
 #pragma once
 
-namespace input {
-    enum class Type {
-        KEYBOARD,
-        MOUSE,
+namespace input
+{
+    enum class Type
+    {
+        KEYBOARDMOUSE,
         GAMEPAD,
     };
 
-    enum class State {
+    enum class State
+    {
         NOTPRESSED,
         PRESSED,
         RELEASED,
         HELD,
     };
 
-    enum class Generic {
+    enum class Generic
+    {
         UP,
         DOWN,
         LEFT,
         RIGHT,
-        INTERACT,
+        INTERACT1,
+        INTERACT2,
+        INTERACT3,
+        INTERACT4,
         ATTACK,
         INVENTORY,
         PAUSE,

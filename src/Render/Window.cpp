@@ -7,6 +7,7 @@ using namespace Render;
 
 void Window::startWindow(Vector2D size) {
     InitWindow(size.x, size.y, "isomaker");
+    setFPS(60);
 }
 
 void Window::closeWindow() {

@@ -4,14 +4,14 @@ using namespace Utilities;
 
 BasicObject3D::BasicObject3D(Asset3D asset, Vector3D position) {
     setAsset(asset);
-    moveTo(position);
     _assetType = AssetType::ASSET3D;
+    moveTo(position);
 }
 
 BasicObject3D::BasicObject3D(Asset2D asset, Vector3D position, Vector3D dimension3D) {
     setAsset(asset, dimension3D);
-    moveTo(position);
     _assetType = AssetType::ASSET2D;
+    moveTo(position);
 }
 
 void BasicObject3D::setAsset(Asset3D newAsset) {
@@ -21,8 +21,8 @@ void BasicObject3D::setAsset(Asset3D newAsset) {
 }
 
 void BasicObject3D::setAsset(Asset2D newAsset, Vector3D dimension3D) {
-    _assetType = AssetType::ASSET2D;
     _asset2D = newAsset;
+    _assetType = AssetType::ASSET2D;
     _objectBox.assetDimensions = dimension3D;
 }
 
