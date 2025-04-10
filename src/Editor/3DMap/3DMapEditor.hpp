@@ -53,7 +53,12 @@ class MapEditor {
 
     protected:
     private:
-        std::pair<Vector3D, std::vector<BasicObject>::iterator> alignPosition(Vector2D);
+
+        std::pair<Vector3D, std::optional<std::vector<BasicObject>::iterator>> alignPosition(Vector2D);
+        void findPositionFromHit(RayCollision &hit);
+        void findPositionFromGrid(Ray &ray);
+        void updateCursorInfo(Vector2D cursorPos, Vector3D cameraPos);
+
 
         std::vector<BasicObject> _objects3D;
         std::vector<BasicObject> _objects2D;
@@ -69,4 +74,8 @@ class MapEditor {
 
         bool _drawWireframe = false;
         float _cubeHeight;
+
+        Vector3D _alignedPosition;
+        BasicObject _previewObject;
+        std::optional<std::vector<BasicObject>::iterator> _closestObject;
 };

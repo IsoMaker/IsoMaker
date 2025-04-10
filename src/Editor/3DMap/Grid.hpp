@@ -9,6 +9,7 @@
 
 #include <raylib.h>
 #include "rlgl.h"
+#include <optional>
 
 #include "Utilities/Vector.hpp"
 
@@ -17,14 +18,14 @@ using namespace Utilities;
 namespace map {
     class MapGrid {
         public:
-            MapGrid(int gridSize = 22, int cellSize = 1, Color gridColor = MAGENTA, Color backgroundColor = BLACK);
+            MapGrid(int cellAmount = 21, int cellSize = 1, Color gridColor = MAGENTA, Color backgroundColor = BLACK);
             ~MapGrid();
 
             void init();
 
             void draw();
 
-            std::pair<bool, Vector3D> getCellFromRay(const Ray &ray) const;
+            std::optional<Vector3D> getCellFromRay(const Ray &ray) const;
         protected:
         private:
             void drawMesh();

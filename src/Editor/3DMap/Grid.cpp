@@ -9,9 +9,9 @@
 
 using namespace map;
 
-MapGrid::MapGrid(int gridSize, int cellSize, Color gridColor, Color backgroundColor)
+MapGrid::MapGrid(int cellAmount, int cellSize, Color gridColor, Color backgroundColor)
 {
-    _cellAmount = gridSize;
+    _cellAmount = cellAmount;
     _cellSize = cellSize;
     _color = gridColor;
     _backgroundColor = backgroundColor;
@@ -96,33 +96,29 @@ void MapGrid::draw()
     drawWireframe();
 }
 
-std::pair<bool, Vector3D> MapGrid::getCellFromRay(const Ray &ray) const
+std::optional<Vector3D> MapGrid::getCellFromRay(const Ray &ray) const
 {
-    // Avoid divide by zero
     if (ray.direction.y == 0.0f)
-        return std::pair<bool, Vector3D>(false, Vector3D(0, 0, 0));
+        return std::nullopt;
 
-    // Intersect ray with Y = 0 plane
     float t = -ray.position.y / ray.direction.y;
     if (t < 0.0f)
-        return std::pair<bool, Vector3D>(false, Vector3D(0, 0, 0));
+        return std::nullopt;
 
     Vector3 hit = Vector3Add(ray.position, Vector3Scale(ray.direction, t));
 
     float halfExtent = (_cellAmount * _cellSize) / 2.0f;
 
-    // Check if hit point is within grid bounds
     if (hit.x < -halfExtent || hit.x >= halfExtent || hit.z < -halfExtent || hit.z >= halfExtent)
-        return std::pair<bool, Vector3D>(false, Vector3D(0, 0, 0));
+        return std::nullopt;
 
     int gridX = static_cast<int>(floor((hit.x + halfExtent) / _cellSize));
     int gridZ = static_cast<int>(floor((hit.z + halfExtent) / _cellSize));
 
-    // Convert back to world position (cell center)
     float worldX = gridX * _cellSize - halfExtent + _cellSize / 2.0f;
     float worldZ = gridZ * _cellSize - halfExtent + _cellSize / 2.0f;
 
-    return std::pair<bool, Vector3D>(true, Vector3D(worldX + 0.5f, 0.5f, worldZ + 0.5f));
+    return std::optional<Vector3D>(Vector3D(worldX, 0.5f, worldZ));
 }
 
 void MapGrid::drawMesh()
@@ -154,9 +150,9 @@ void MapGrid::drawWireframe()
     rlBegin(RL_LINES);
     rlColor4ub(_backgroundColor.r, _backgroundColor.g, _backgroundColor.b, _backgroundColor.a);
 
-    float gridExtent = (_cellAmount - 1) * (_cellSize * 0.5f); // Center the grid
+    float gridExtent = _cellAmount * (_cellSize * 0.5f); // Center the grid
 
-    for (int i = 0; i < _cellAmount; i++) {
+    for (int i = 0; i < _cellAmount + 1; i++) {
         float offset = i * _cellSize - gridExtent;
         drawLines(gridExtent, 0.01f, offset);
     }
