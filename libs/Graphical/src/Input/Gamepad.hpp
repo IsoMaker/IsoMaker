@@ -26,7 +26,7 @@ namespace input {
                 };
             };
             ~GamepadHandler() = default;
-
+        protected:
         private:
             void handleInput();
     };

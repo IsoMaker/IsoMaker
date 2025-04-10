@@ -4,9 +4,6 @@ project(IsoMaker LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 
 option(BUILD_TESTS "Build unit tests" OFF)
-include(FetchContent)
-include(raylib.cmake)
-include(raygui.cmake)
 
 set(GRAPHICAL_PATH "${CMAKE_SOURCE_DIR}/../libs/Graphical")
 
@@ -19,15 +16,12 @@ endif()
 if (NOT BUILD_TESTS)
     add_executable(IsoMaker
         "../src/main.cpp"
-        "../src/Editor/2D/2DEditor.cpp"
         "../src/Editor/3DMap/3DMapEditor.cpp"
         "../src/Editor/3DMap/Grid.cpp"
         "../src/MainUI/MainUI.cpp"
     )
 
     target_link_libraries(IsoMaker PRIVATE
-        raylib
-        raygui
         Graphical
     )
 endif()
@@ -37,7 +31,7 @@ if (BUILD_TESTS)
         googletest
         URL https://github.com/google/googletest/archive/refs/heads/main.zip
     )
-    FetchContent_MakeAvailable(googletest)
+    FetchContent_Populate(googletest)
 
     enable_testing()
 
@@ -48,8 +42,6 @@ if (BUILD_TESTS)
     target_link_libraries(tests PRIVATE
         gtest
         gtest_main
-        raylib
-        raygui
     )
 
     add_test(NAME IsoMakerTests COMMAND tests)

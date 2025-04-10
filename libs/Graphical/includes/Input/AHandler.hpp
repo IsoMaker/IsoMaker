@@ -15,7 +15,6 @@
 
 namespace input
 {
-
     using TimePoint = std::chrono::steady_clock::time_point;
 
     template <typename T>

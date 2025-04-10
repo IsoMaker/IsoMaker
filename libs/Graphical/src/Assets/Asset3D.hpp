@@ -11,7 +11,6 @@ class Asset3D : public AAsset
         ~Asset3D();
         Model getModel();
         void loadFile();
-        // void rotateModel(float angle);
 
     protected:
         Model _model;

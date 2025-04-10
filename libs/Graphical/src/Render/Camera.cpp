@@ -5,10 +5,10 @@ using namespace Utilities;
 Render::Camera::Camera() {
     _angle = 0;
     _cameraAngles = {
-    {0, Vector2D(1, 1)},
-    {90, Vector2D(1, -1)},
-    {180, Vector2D(-1, -1)},
-    {270, Vector2D(-1, 1)},
+        {0, Vector2D(1, 1)},
+        {90, Vector2D(1, -1)},
+        {180, Vector2D(-1, -1)},
+        {270, Vector2D(-1, 1)},
     };
 
     _distance = 18;

@@ -66,6 +66,9 @@ void MapEditor::update(input::IHandlerBase &inputHandler)
         } else
             _placePlayer = true;
     }
+    if (inputHandler.isReleased(input::Generic::INTERACT1)) {
+        _drawWireframe = !_drawWireframe;
+    }
     // if (inputHandler.isReleased(input::Generic::INTERACT2)) {
     //     _currentCubeType.rotateModel(-PI / 2);
     // }
@@ -84,8 +87,14 @@ void MapEditor::draw2DElements()
 void MapEditor::draw3DElements()
 {
     _grid.draw();
-    for (auto i = _objects3D.begin(); i != _objects3D.end(); i++)
-        i->draw();
+    if (_drawWireframe) {
+        for (auto i = _objects3D.begin(); i != _objects3D.end(); i++) {
+            i->drawWireframe();
+        }
+    } else {
+        for (auto i = _objects3D.begin(); i != _objects3D.end(); i++)
+            i->draw();
+    }
 }
 
 void MapEditor::changeCubeType(Asset3D newAsset)
@@ -138,7 +147,12 @@ std::pair<Vector3D, std::vector<BasicObject>::iterator> MapEditor::alignPosition
     }
 
     if (!closestHit.hit) {
-        return {Vector3D(0, 0.5f, 0), _objects3D.end()};
+        auto gridPosOpt = _grid.getCellFromRay(ray);
+        if (gridPosOpt.first) {
+            return { gridPosOpt.second, _objects3D.end() };
+        } else {
+            return { Vector3D(0, 0, 0), _objects3D.end() };
+        }
     }
 
     Vector3D collisionPoint = closestHit.point;

@@ -3,8 +3,8 @@
 #include "Vector.hpp"
 #include "raylib.h"
 
-namespace Utilities {
-
+namespace Utilities
+{
     class ObjectBox2D {
         public:
             ObjectBox2D();
@@ -17,6 +17,8 @@ namespace Utilities {
             Vector2D position;
             Vector2D assetDimensions;
             float scale;
+        protected:
+        private:
     };
 
     class ObjectBox3D {
@@ -32,6 +34,8 @@ namespace Utilities {
             Vector3D position;
             Vector3D assetDimensions;
             float scale;
-
+        protected:
+        private:
     };
 }
+

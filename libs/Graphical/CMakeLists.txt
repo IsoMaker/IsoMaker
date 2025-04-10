@@ -1,6 +1,11 @@
 project(Graphical)
 cmake_minimum_required(VERSION 3.28)
 
+include(FetchContent)
+include(../raylib.cmake)
+include(../raygui.cmake)
+include(../glad.cmake)
+
 file(GLOB GRAPHICAL_SOURCES
     "src/Assets/AAsset.cpp"
     "src/Assets/Asset3D.cpp"
@@ -16,25 +21,14 @@ file(GLOB GRAPHICAL_SOURCES
 )
 
 add_library(Graphical STATIC ${GRAPHICAL_SOURCES})
-target_link_libraries(Graphical PUBLIC raylib)
+target_link_libraries(Graphical PUBLIC
+    raylib
+    raygui
+    glad
+)
 
-# Ensure the compiler can find headers from "includes/" and "src/"
 target_include_directories(Graphical PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/includes
     ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${glad_SOURCE_DIR}/include
 )
-
-
-
-
-    # recreate this in a library but for now lets copy paste ugly ew side
-    # "../src/Render/Camera.cpp"
-    # "../src/Render/Window.cpp"
-    # "../src/Utilities/Vector.cpp"
-    # "../src/Assets/AAsset.cpp"
-    # "../src/Assets/Asset3D.cpp"
-    # "../src/Assets/Asset2D.cpp"
-    # "../src/Utilities/DrawCubeTexture.cpp"
-    # "../src/Utilities/ObjectBox.cpp"
-    # "../src/Object3D/BasicObject3D.cpp"
-    # "../src/Object2D/BasicObject2D.cpp"

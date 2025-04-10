@@ -30,8 +30,8 @@ namespace Render {
             void rotateCounterclock();
             void rotate(float angle);
             void updateCamera();
-
         protected:
+        private:
             Vector3D _position;
             Vector3D _target;
             int _distance;

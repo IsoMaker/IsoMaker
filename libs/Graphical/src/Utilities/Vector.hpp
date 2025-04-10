@@ -5,7 +5,8 @@
 #include <iostream>
 #include <iomanip>
 
-namespace Utilities {
+namespace Utilities
+{
     class Vector2D {
         public:
             Vector2D() {};
@@ -32,6 +33,8 @@ namespace Utilities {
             Vector2 convert();
 
             float x, y;
+        protected:
+        private:
     };
 
     class Vector3D {
@@ -61,6 +64,8 @@ namespace Utilities {
             Vector3 convert();
 
             float x, y, z;
+        protected:
+        private:
     };
 
 }

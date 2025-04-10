@@ -63,9 +63,10 @@ class MapEditor {
 
         Render::Window &_window;
         Render::Camera &_camera;
-        MapGrid _grid;
+        map::MapGrid _grid;
 
         bool _placePlayer;
 
+        bool _drawWireframe = false;
         float _cubeHeight;
 };
