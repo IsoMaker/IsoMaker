@@ -1,12 +1,21 @@
 #include "Game.hpp"
+#include <filesystem>
+#include "Utilities/PathHelper.hpp"
 
 Game::Game(Render::Window& window, Render::Camera& camera) : _window(window), _camera(camera)
 {
     _cubeHeight = 1;
     _window.startWindow(Vector2D(1080, 960), "Random Game");
-    _cubeType.setFileName("../ressources/Block1.glb");
+
+    std::filesystem::path exePath = Utilities::getExecutablePath();
+    std::filesystem::path basePath = exePath.parent_path();
+
+    std::string modelPath = (basePath / "ressources" / "Block1.glb").string();
+    std::string mapPath   = (exePath / "assets" / "maps" / "game_map.dat").string();
+
+    _cubeType.setFileName(modelPath);
     _cubeType.loadFile();
-    loadMap("assets/maps/game_map.dat");
+    loadMap(mapPath);
 }
 
 Game::~Game()

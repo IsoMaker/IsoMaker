@@ -19,12 +19,10 @@ int main()
     MainUI mainUI;
     input::MouseKeyboardHandler inputHandler;
 
-    std::thread mouseThread(mouseLoop, std::ref(mouseHandler), std::ref(running));
-    std::thread keyboardThread(keyboardLoop, std::ref(keyboardHandler), std::ref(running));
+    std::thread mouseKeyboardThread(mouseLoop, std::ref(inputHandler), std::ref(running));
 
-    mainUI.loop(mouseHandler, keyboardHandler);
+    mainUI.loop(inputHandler);
 
     running = false;
-    mouseThread.join();
-    keyboardThread.join();
+    mouseKeyboardThread.join();
 }

@@ -32,9 +32,11 @@ void MapEditor::update(input::IHandlerBase &inputHandler)
     }
     if (inputHandler.isReleased(input::Generic::LEFT)) {
         _camera.rotateClock();
+        std::cout << "Rotate Camera" << std::endl;
     }
     if (inputHandler.isReleased(input::Generic::RIGHT)) {
         _camera.rotateCounterclock();
+        std::cout << "Other Rotate Camera" << std::endl;
     }
     if (inputHandler.isPressed(input::Generic::DOWN)) {
         saveMapBinary("game_project/assets/maps/game_map.dat");
@@ -118,7 +120,6 @@ std::pair<Vector3D, std::vector<BasicObject3D>::iterator> MapEditor::alignPositi
     if (diff.y == _cubeHeight) alignedPos.y += _cubeHeight; // Y remains unchanged
 
     return {alignedPos, closestObj};
-    return result;
 }
 
 void MapEditor::saveMapBinary(const std::string& filename)
@@ -170,4 +171,5 @@ void MapEditor::gameCompilation(const std::string& gameProjectName)
     std::string script = gameProjectName + "/install-linux.sh";
 
     system(script.c_str());
+    system("./game_project/GenericGame");
 }

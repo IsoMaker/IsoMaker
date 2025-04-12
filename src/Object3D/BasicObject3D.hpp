@@ -31,8 +31,8 @@ class BasicObject3D : public IObject3D {
         void rotateTo(float angle);
 
         ObjectBox3D &getBox() {return _objectBox;};
-    private:
         Vector3D getPosition();
+    private:
         Asset3D getAsset3D();
         Asset2D getAsset2D();
 

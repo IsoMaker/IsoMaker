@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.28)
 project(GenericGame LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(GRAPHICAL_PATH "${CMAKE_SOURCE_DIR}/../libs/Graphical")
 
@@ -15,6 +15,7 @@ endif()
 add_executable(GenericGame
     "src/main.cpp"
     "src/Game.cpp"
+    "src/Utilities/PathHelper.cpp"
 )
 
 target_link_libraries(GenericGame PRIVATE Graphical)
