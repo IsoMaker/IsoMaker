@@ -14,8 +14,11 @@ Game::Game(Render::Window& window, Render::Camera& camera) : _window(window), _c
     std::string mapPath = (exePath / "assets" / "maps" / "game_map.dat").string();
     std::string playerPath = (exePath / "assets" / "entities" / "shy_guy_red.png").string();
 
+    _playerPos = Vector2D(100, 100);
     _playerAsset.setFileName(playerPath);
     _playerAsset.loadFile();
+    _player.setTexture(_playerAsset, 32, 40, 4);
+    _player.setPosition(_playerPos);
     _cubeType.setFileName(modelPath);
     _cubeType.loadFile();
     loadMap(mapPath);
@@ -67,37 +70,47 @@ void Game::draw3DElements()
 
 void Game::draw2DElements()
 {
-    for (auto i = _objects2D.begin(); i != _objects2D.end(); i++)
-        i->draw();
+    for (auto& obj : _objects2D)
+        obj.draw();
+    _player.draw();
 }
+
 
 void Game::handleInput(input::IHandlerBase &inputHandler)
 {
-    if (inputHandler.isReleased(input::Generic::SELECT1)) {
-        _camera.rotateClock();
-        std::cout << "Rotate Camera" << std::endl;
+    float speed = 4.0f;
+    bool moving = false;
+
+    if (inputHandler.isPressed(input::Generic::LEFT)) {
+        _playerPos.x -= speed;
+        moving = true;
     }
-    if (inputHandler.isReleased(input::Generic::SELECT2)) {
-        _camera.rotateCounterclock();
-        std::cout << "Other Rotate Camera" << std::endl;
-    }
-    if (inputHandler.isReleased(input::Generic::LEFT)) {
-        // TBD
-    }
-    if (inputHandler.isReleased(input::Generic::RIGHT)) {
-        // TBD
-    }
-    if (inputHandler.isPressed(input::Generic::DOWN)) {
-        // TBD
+    if (inputHandler.isPressed(input::Generic::RIGHT)) {
+        _playerPos.x += speed;
+        moving = true;
     }
     if (inputHandler.isPressed(input::Generic::UP)) {
-        // TBD
+        _playerPos.y -= speed;
+        moving = true;
     }
+    if (inputHandler.isPressed(input::Generic::DOWN)) {
+        _playerPos.y += speed;
+        moving = true;
+    }
+
+    _player.setMoving(moving);
+    _player.setPosition(_playerPos);
+    _playerIsMoving = moving;
 }
+
 
 void Game::update(input::IHandlerBase &inputHandler)
 {
     handleInput(inputHandler);
+
+    if (_playerIsMoving) {
+        _player.updateAnimation();
+    }
 }
 
 void drawVerticalGradient(Rectangle rect, Color top, Color bottom) {

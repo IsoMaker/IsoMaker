@@ -2,19 +2,26 @@
 
 #include "Entities/BasicObject2D.hpp"
 
-class Character : public BasicObject2D {
-public:
-    Character();
-    Character(Asset2D asset, Vector2D position, int frameWidth, int frameCount, float frameSpeed);
+class Character {
+    public:
 
-    void update();  // to advance animation
-    void draw();    // override draw to only draw one frame
+        void setPosition(const Vector2D &pos);
+        void setTexture(const Asset2D &asset, int frameWidth, int frameHeight, int totalFrames);
+        void draw();
+        void updateAnimation();
+        void setMoving(bool moving);
 
-private:
-    int _frameWidth;
-    int _frameHeight;
-    int _frameCount;
-    int _currentFrame;
-    float _frameSpeed;
-    float _frameTimer;
+    
+    private:
+        Vector2D _pos;
+        Asset2D _texture;
+    
+        int _frameWidth = 32;
+        int _frameHeight = 32;
+        int _totalFrames = 1;
+        int _currentFrame = 0;
+        int _frameCounter = 0;
+        int _frameSpeed = 8;
+    
+        bool _isMoving = false;
 };

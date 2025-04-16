@@ -1,35 +1,42 @@
 #include "Character.hpp"
 
-Character::Character() : BasicObject2D() {}
-
-Character::Character(Asset2D asset, Vector2D position, int frameWidth, int frameCount, float frameSpeed)
-    : BasicObject2D(asset, position), _frameWidth(frameWidth), _frameCount(frameCount), _frameSpeed(frameSpeed), _currentFrame(0), _frameTimer(0.0f) {
-    _frameHeight = asset.getTexture().height; // Assuming sprite sheet is one row
+void Character::setPosition(const Vector2D &pos)
+{
+    _pos = pos;
 }
 
-void Character::update() {
-    _frameTimer += GetFrameTime();
-    if (_frameTimer >= _frameSpeed) {
-        _frameTimer = 0.0f;
-        _currentFrame = (_currentFrame + 1) % _frameCount;
+void Character::setTexture(const Asset2D &asset, int frameWidth, int frameHeight, int totalFrames)
+{
+    _texture = asset;
+    _frameWidth = frameWidth;
+    _frameHeight = frameHeight;
+    _totalFrames = totalFrames;
+}
+
+void Character::draw()
+{
+    if (_texture.isLoaded()) {
+        Rectangle source = {
+            _currentFrame * _frameWidth,
+            0,
+            (float)_frameWidth,
+            (float)_frameHeight
+        };
+        DrawTextureRec(_texture.getTexture(), source, {_pos.x, _pos.y}, WHITE);
     }
 }
 
-void Character::draw() {
-    Rectangle source = {
-        (float)_currentFrame * _frameWidth,
-        0.0f,
-        (float)_frameWidth,
-        (float)_frameHeight
-    };
-    Vector2 position = getBox().position.convert();
+void Character::updateAnimation()
+{
+    _frameCounter++;
+    if (_frameCounter >= _frameSpeed) {
+        _frameCounter = 0;
+        _currentFrame = (_currentFrame + 1) % _totalFrames;
+    }
+}
 
-    DrawTexturePro(
-        getAsset().getTexture(), // inherited from Asset2D via BasicObject2D
-        source,
-        { position.x, position.y, _frameWidth * getBox().scale, _frameHeight * getBox().scale },
-        { 0, 0 },
-        0.0f,
-        WHITE
-    );
+void Character::setMoving(bool moving)
+{
+    _isMoving = moving;
+    if (!moving) _currentFrame = 0;
 }
