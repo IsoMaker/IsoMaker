@@ -7,14 +7,14 @@
 
 #include <fstream>
 
-#include "../../Object3D/BasicObject3D.hpp"
-#include "../../Object2D/BasicObject2D.hpp"
+#include "Entities/BasicObject3D.hpp"
+#include "Entities/BasicObject2D.hpp"
 
-#include "../../Render/Window.hpp"
-#include "../../Render/Camera.hpp"
+#include "Render/Window.hpp"
+#include "Render/Camera.hpp"
 #include "Grid.hpp"
 
-#include "../../Input/MouseKeyboard.hpp"
+#include "Input/MouseKeyboard.hpp"
 
 using namespace Utilities;
 

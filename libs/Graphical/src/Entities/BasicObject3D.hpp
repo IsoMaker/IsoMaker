@@ -30,7 +30,7 @@ class BasicObject3D : public IObject3D {
         void resizePercent(float percentage) {_objectBox.scale = percentage;};
         void resizeTo(float height);
 
-        ObjectBox3D getBox() {return _objectBox;};
+        ObjectBox3D &getBox() override {return _objectBox;};
         Vector3D getPosition();
         Asset3D getAsset3D();
         Asset2D getAsset2D();

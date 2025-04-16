@@ -1,11 +1,13 @@
 #include "./Window.hpp"
+#include "../Utilities/Vector.hpp"
 #include <fstream>
 
 using namespace Utilities;
 using namespace Render;
 
-void Window::startWindow(Vector2D size, std::string name) {
-    InitWindow(size.x, size.y, name.c_str());
+void Window::startWindow(Vector2D size) {
+    InitWindow(size.x, size.y, "isomaker");
+    setFPS(60);
 }
 
 void Window::closeWindow() {

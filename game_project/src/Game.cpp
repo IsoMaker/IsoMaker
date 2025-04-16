@@ -5,7 +5,7 @@
 Game::Game(Render::Window& window, Render::Camera& camera) : _window(window), _camera(camera)
 {
     _cubeHeight = 1;
-    _window.startWindow(Vector2D(1080, 960), "Random Game");
+    _window.startWindow(Vector2D(SCREENWIDTH, SCREENHEIGHT));
 
     std::filesystem::path exePath = Utilities::getExecutablePath();
     std::filesystem::path basePath = exePath.parent_path();
@@ -62,7 +62,7 @@ void Game::draw3DElements()
         i->draw();
 }
 
-void Game::update(input::MouseHandler &mouseHandler, input::KeyboardHandler &keyboardHandler)
+void Game::update(input::IHandlerBase &mouseHandler)
 {
     // TBD
 }
@@ -78,10 +78,10 @@ void Game::render()
     _window.endRender();
 }
 
-void Game::loop(input::MouseHandler &mouseHandler, input::KeyboardHandler &keyboardHandler)
+void Game::loop(input::IHandlerBase &mouseHandler)
 {
     while (!_window.isWindowClosing()) {
-        update(mouseHandler, keyboardHandler);
+        update(mouseHandler);
         render();
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
     }

@@ -1,39 +1,27 @@
 #include "Game.hpp"
 
-void mouseLoop(input::MouseHandler &mouseHandler, bool &running)
+void mouseLoop(input::MouseKeyboardHandler &inputHandler, bool &running)
 {
     while (running) {
-        std::lock_guard<std::mutex> lock(mouseHandler.getMutex());
-        mouseHandler.loop();
-        std::this_thread::sleep_for(std::chrono::milliseconds(16));
-    }
-}
-
-void keyboardLoop(input::KeyboardHandler &keyboardHandler, bool &running)
-{
-    while (running) {
-        std::lock_guard<std::mutex> lock(keyboardHandler.getMutex());
-        keyboardHandler.loop();
+        std::lock_guard<std::mutex> lock(inputHandler.getMutex());
+        inputHandler.loop();
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
     }
 }
 
 int main()
 {
-    input::MouseHandler mouseHandler;
-    input::KeyboardHandler keyboardHandler;
+    input::MouseKeyboardHandler inputHandler;
     Render::Camera camera;
     Render::Window window;
     bool running = true;
     Game game(window, camera);
 
-    std::thread mouseThread(mouseLoop, std::ref(mouseHandler), std::ref(running));
-    std::thread keyboardThread(keyboardLoop, std::ref(keyboardHandler), std::ref(running));
+    std::thread mouseKeyboardThread(mouseLoop, std::ref(inputHandler), std::ref(running));
 
-    game.loop(mouseHandler, keyboardHandler);
+    game.loop(inputHandler);
 
     running = false;
-    mouseThread.join();
-    keyboardThread.join();
+    mouseKeyboardThread.join();
     return 0;
 }

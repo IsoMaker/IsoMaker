@@ -7,9 +7,12 @@
 #include "Render/Window.hpp"
 #include "Entities/BasicObject3D.hpp"
 #include "Entities/BasicObject2D.hpp"
-#include "Input/Mouse.hpp"
-#include "Input/Keyboard.hpp"
+#include "Input/Gamepad.hpp"
+#include "Input/MouseKeyboard.hpp"
 #include "Utilities/Vector.hpp"
+
+#define SCREENHEIGHT 1200
+#define SCREENWIDTH 1600
 
 class Game {
     public:
@@ -20,9 +23,9 @@ class Game {
         void loadMap(const std::string& filename);
         void draw3DElements();
 
-        void update(input::MouseHandler &mouseHandler, input::KeyboardHandler &keyboardHandler);
+        void update(input::IHandlerBase &mouseHandler);
         void render();
-        void loop(input::MouseHandler &mouseHandler, input::KeyboardHandler &keyboardHandler);
+        void loop(input::IHandlerBase &mouseHandler);
 
     protected:
 

@@ -1,7 +1,7 @@
 #include "iostream"
 
 #include "3DMapEditor.hpp"
-#include "../../../includes/Input/InputTypes.hpp"
+#include "Input/InputTypes.hpp"
 
 MapEditor::MapEditor(Render::Camera &camera, Render::Window &window) : _window(window), _camera(camera), _grid(), _cubeHeight(1)
 {

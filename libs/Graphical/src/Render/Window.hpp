@@ -11,7 +11,7 @@ namespace Render {
         public:
             Window() {};
             ~Window() {};
-            void startWindow(Vector2D, std::string);
+            void startWindow(Vector2D);
             void closeWindow();
             bool isWindowClosing();
             bool isWindowOpen();
