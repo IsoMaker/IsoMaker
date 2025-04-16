@@ -51,7 +51,7 @@ ObjectBox3D::~ObjectBox3D() {
 }
 
 
-void ObjectBox3D::setAssetDimensionsFromBounding(BoundingBox box) { 
+void ObjectBox3D::setAssetDimensionsFromBounding(BoundingBox box) {
     assetDimensions = Vector3D(box.max) - Vector3D(box.min);
 }
 

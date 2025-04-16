@@ -7,8 +7,7 @@
 
 #include <fstream>
 
-#include "Entities/BasicObject3D.hpp"
-#include "Entities/BasicObject2D.hpp"
+#include "Entities/BasicObject.hpp"
 
 #include "Render/Window.hpp"
 #include "Render/Camera.hpp"
@@ -32,7 +31,7 @@ class MapEditor {
 
         void changeCubeType(Asset3D);
         void addCube(Vector3D);
-        void removeCube(std::vector<BasicObject3D>::iterator);
+        void removeCube(std::vector<BasicObject>::iterator);
 
         void saveMapBinary(const std::string& filename);
         void loadMapBinary(const std::string& filename);
@@ -41,10 +40,10 @@ class MapEditor {
 
     protected:
     private:
-        std::pair<Vector3D, std::vector<BasicObject3D>::iterator> alignPosition(Vector2D);
+        std::pair<Vector3D, std::vector<BasicObject>::iterator> alignPosition(Vector2D);
 
-        std::vector<BasicObject3D> _objects3D;
-        std::vector<BasicObject2D> _objects2D;
+        std::vector<BasicObject> _objects3D;
+        std::vector<BasicObject> _objects2D;
 
         Asset3D _currentCubeType;
 

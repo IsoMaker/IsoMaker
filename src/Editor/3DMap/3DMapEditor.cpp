@@ -78,17 +78,17 @@ void MapEditor::changeCubeType(Asset3D newAsset)
 
 void MapEditor::addCube(Vector3D position)
 {
-    BasicObject3D newObject = BasicObject3D(_currentCubeType, position);
+    BasicObject newObject = BasicObject(_currentCubeType, position);
     newObject.resizeTo(_cubeHeight);
     _objects3D.push_back(newObject);
 }
 
-void MapEditor::removeCube(std::vector<BasicObject3D>::iterator toRemove)
+void MapEditor::removeCube(std::vector<BasicObject>::iterator toRemove)
 {
     _objects3D.erase(toRemove);
 }
 
-std::pair<Vector3D, std::vector<BasicObject3D>::iterator> MapEditor::alignPosition(Vector2D cursorPos)
+std::pair<Vector3D, std::vector<BasicObject>::iterator> MapEditor::alignPosition(Vector2D cursorPos)
 {
     Vector3D cameraPos = _camera.getPosition();
     Ray ray = GetMouseRay(cursorPos.convert(), _camera.getRaylibCam());

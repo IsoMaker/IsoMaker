@@ -14,12 +14,12 @@ enum AssetType {
     ASSET2D,
 };
 
-class BasicObject3D : public IObject3D {
+class BasicObject : public IObject3D {
     public:
-        BasicObject3D() {moveTo(Vector3D(0, 0, 0));};
-        BasicObject3D(Asset3D, Vector3D);
-        BasicObject3D(Asset2D, Vector3D, Vector3D dimension3D);
-        ~BasicObject3D() {};
+        BasicObject() {moveTo(Vector3D(0, 0, 0));};
+        BasicObject(Asset3D, Vector3D);
+        BasicObject(Asset2D, Vector3D, Vector3D dimension3D);
+        ~BasicObject() {};
 
         void setAsset(Asset3D);
         void setAsset(Asset2D, Vector3D dimension3D);
@@ -34,6 +34,8 @@ class BasicObject3D : public IObject3D {
         Vector3D getPosition();
         Asset3D getAsset3D();
         Asset2D getAsset2D();
+
+        AssetType getAssetType() { return _assetType; };
 
         private:
         ObjectBox3D _objectBox;

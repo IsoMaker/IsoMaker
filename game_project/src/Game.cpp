@@ -81,6 +81,14 @@ void Game::handleInput(input::IHandlerBase &inputHandler)
     float speed = 4.0f;
     bool moving = false;
 
+    if (inputHandler.isReleased(input::Generic::SELECT1)) {
+        _camera.rotateClock();
+        std::cout << "Rotate Camera" << std::endl;
+    }
+    if (inputHandler.isReleased(input::Generic::SELECT2)) {
+        _camera.rotateCounterclock();
+        std::cout << "Other Rotate Camera" << std::endl;
+    }
     if (inputHandler.isPressed(input::Generic::LEFT)) {
         _playerPos.x -= speed;
         moving = true;
