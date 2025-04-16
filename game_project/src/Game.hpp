@@ -6,8 +6,7 @@
 // Library
 #include "Render/Camera.hpp"
 #include "Render/Window.hpp"
-#include "Entities/BasicObject3D.hpp"
-#include "Entities/BasicObject2D.hpp"
+#include "Entities/BasicObject.hpp"
 #include "Input/Gamepad.hpp"
 #include "Input/MouseKeyboard.hpp"
 #include "Utilities/Vector.hpp"
@@ -36,8 +35,8 @@ class Game {
     protected:
 
     private:
-        std::vector<BasicObject3D> _objects3D;
-        std::vector<BasicObject2D> _objects2D;
+        std::vector<BasicObject> _objects;
+        // std::vector<BasicObject2D> _objects2D;
 
         Asset3D _cubeType;
         Asset2D _playerAsset;
@@ -53,16 +52,3 @@ class Game {
 
 
 };
-
-/*
-    - Window
-    - Camera ? Entities ??
-    - Map3D
-    - Entities
-    - Event
-        - Audio
-            - SFX
-            - Music
-        - Log
-        - VFX
-*/

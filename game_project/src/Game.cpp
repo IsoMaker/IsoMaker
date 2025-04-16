@@ -14,7 +14,7 @@ Game::Game(Render::Window& window, Render::Camera& camera) : _window(window), _c
     std::string mapPath = (exePath / "assets" / "maps" / "game_map.dat").string();
     std::string playerPath = (exePath / "assets" / "entities" / "shy_guy_red.png").string();
 
-    _playerPos = Vector2D(100, 100);
+    _playerPos = Vector2D(0, 0);
     _playerAsset.setFileName(playerPath);
     _playerAsset.loadFile();
     _player.setTexture(_playerAsset, 32, 40, 4);
@@ -31,10 +31,15 @@ Game::~Game()
 
 void Game::addCube(Vector3D position)
 {
-    BasicObject3D newObject = BasicObject3D(_cubeType, position);
+    for (auto i = _objects.begin(); i != _objects.end(); i++) {
+        if (i->getPosition() == position) {
+            return;
+        }
+    }
 
+    BasicObject newObject = BasicObject(_cubeType, position);
     newObject.resizeTo(_cubeHeight);
-    _objects3D.push_back(newObject);
+    _objects.push_back(newObject);
 }
 
 void Game::loadMap(const std::string& filename)
@@ -48,14 +53,13 @@ void Game::loadMap(const std::string& filename)
     size_t objectCount;
 
     file.read(reinterpret_cast<char*>(&objectCount), sizeof(objectCount));
-    _objects3D.clear();
+    _objects.clear();
     for (size_t i = 0; i < objectCount; ++i) {
         Utilities::Vector3D position;
 
         file.read(reinterpret_cast<char*>(&position.x), sizeof(position.x));
         file.read(reinterpret_cast<char*>(&position.y), sizeof(position.y));
         file.read(reinterpret_cast<char*>(&position.z), sizeof(position.z));
-        std::cout << position.x << " " << position.y << " " << position.z;
         addCube(position);
     }
     file.close();
@@ -64,17 +68,27 @@ void Game::loadMap(const std::string& filename)
 
 void Game::draw3DElements()
 {
-    for (auto i = _objects3D.begin(); i != _objects3D.end(); i++)
-        i->draw();
+    for (auto i = _objects.begin(); i != _objects.end(); i++) {
+        if (i->getAssetType() == AssetType::ASSET3D)
+            i->draw();
+    }
 }
 
 void Game::draw2DElements()
 {
-    for (auto& obj : _objects2D)
-        obj.draw();
-    _player.draw();
-}
+    float isoX = (_playerPos.x - _playerPos.y);
+    float isoY = (_playerPos.x + _playerPos.y) / 2;
 
+    Vector2D isoPos(isoX + SCREENWIDTH / 2, isoY + SCREENHEIGHT / 2);
+
+    _player.setPosition(isoPos);
+    _player.draw();
+    for (auto i = _objects.begin(); i != _objects.end(); i++) {
+        if (i->getAssetType() == AssetType::ASSET2D) {
+            i->draw();
+        }
+    }
+}
 
 void Game::handleInput(input::IHandlerBase &inputHandler)
 {
