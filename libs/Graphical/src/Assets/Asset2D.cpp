@@ -10,5 +10,9 @@ Texture2D Asset2D::getTexture()
 void Asset2D::loadFile()
 {
     _texture = LoadTexture(_fileName.c_str());
-    _textureLoaded = true;
+    if (_texture.id != 0) {
+        _textureLoaded = true;
+    } else {
+        _textureLoaded = false;
+    }
 }
