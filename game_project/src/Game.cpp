@@ -104,19 +104,19 @@ void Game::handleInput(input::IHandlerBase &inputHandler)
         std::cout << "Other Rotate Camera" << std::endl;
     }
     if (inputHandler.isPressed(input::Generic::LEFT)) {
-        _playerPos.x -= speed;
+        _playerPos.y += speed;
         moving = true;
     }
     if (inputHandler.isPressed(input::Generic::RIGHT)) {
-        _playerPos.x += speed;
-        moving = true;
-    }
-    if (inputHandler.isPressed(input::Generic::UP)) {
         _playerPos.y -= speed;
         moving = true;
     }
+    if (inputHandler.isPressed(input::Generic::UP)) {
+        _playerPos.x -= speed;
+        moving = true;
+    }
     if (inputHandler.isPressed(input::Generic::DOWN)) {
-        _playerPos.y += speed;
+        _playerPos.x += speed;
         moving = true;
     }
 
