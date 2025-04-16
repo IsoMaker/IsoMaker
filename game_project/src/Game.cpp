@@ -11,8 +11,11 @@ Game::Game(Render::Window& window, Render::Camera& camera) : _window(window), _c
     std::filesystem::path basePath = exePath.parent_path();
 
     std::string modelPath = (basePath / "ressources" / "Block1.glb").string();
-    std::string mapPath   = (exePath / "assets" / "maps" / "game_map.dat").string();
+    std::string mapPath = (exePath / "assets" / "maps" / "game_map.dat").string();
+    std::string playerPath = (exePath / "assets" / "entities" / "shy_guy_red.png").string();
 
+    _playerAsset.setFileName(playerPath);
+    _playerAsset.loadFile();
     _cubeType.setFileName(modelPath);
     _cubeType.loadFile();
     loadMap(mapPath);
@@ -62,26 +65,70 @@ void Game::draw3DElements()
         i->draw();
 }
 
-void Game::update(input::IHandlerBase &mouseHandler)
+void Game::draw2DElements()
 {
-    // TBD
+    for (auto i = _objects2D.begin(); i != _objects2D.end(); i++)
+        i->draw();
+}
+
+void Game::handleInput(input::IHandlerBase &inputHandler)
+{
+    if (inputHandler.isReleased(input::Generic::SELECT1)) {
+        _camera.rotateClock();
+        std::cout << "Rotate Camera" << std::endl;
+    }
+    if (inputHandler.isReleased(input::Generic::SELECT2)) {
+        _camera.rotateCounterclock();
+        std::cout << "Other Rotate Camera" << std::endl;
+    }
+    if (inputHandler.isReleased(input::Generic::LEFT)) {
+        // TBD
+    }
+    if (inputHandler.isReleased(input::Generic::RIGHT)) {
+        // TBD
+    }
+    if (inputHandler.isPressed(input::Generic::DOWN)) {
+        // TBD
+    }
+    if (inputHandler.isPressed(input::Generic::UP)) {
+        // TBD
+    }
+}
+
+void Game::update(input::IHandlerBase &inputHandler)
+{
+    handleInput(inputHandler);
+}
+
+void drawVerticalGradient(Rectangle rect, Color top, Color bottom) {
+    for (int y = 0; y < rect.height; y++) {
+        float alpha = (float)y / rect.height;
+        Color c = {
+            (unsigned char)(top.r + alpha * (bottom.r - top.r)),
+            (unsigned char)(top.g + alpha * (bottom.g - top.g)),
+            (unsigned char)(top.b + alpha * (bottom.b - top.b)),
+            255
+        };
+        DrawRectangle(rect.x, rect.y + y, rect.width, 1, c);
+    }
 }
 
 void Game::render()
 {
     _window.startRender();
     _window.clearBackground(GRAY);
+    drawVerticalGradient({ 0, 0, SCREENWIDTH, SCREENHEIGHT }, SKYBLUE, WHITE);
     _camera.start3D();
     draw3DElements();
     _camera.end3D();
-    //draw2DElements();
+    draw2DElements();
     _window.endRender();
 }
 
-void Game::loop(input::IHandlerBase &mouseHandler)
+void Game::loop(input::IHandlerBase &inputHandler)
 {
     while (!_window.isWindowClosing()) {
-        update(mouseHandler);
+        update(inputHandler);
         render();
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
     }

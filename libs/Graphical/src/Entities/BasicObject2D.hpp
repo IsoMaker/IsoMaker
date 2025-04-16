@@ -21,6 +21,7 @@ class BasicObject2D : public IObject2D {
         void resizePercent(float percentage) {_objectBox.scale = percentage;};
         bool isInObject(Vector2D pos);
         ObjectBox2D getBox() {return _objectBox;};
+        Asset2D getAsset() {return _asset;};
     private:
         ObjectBox2D _objectBox;
         Asset2D _asset;

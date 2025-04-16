@@ -15,6 +15,7 @@ endif()
 add_executable(GenericGame
     "src/main.cpp"
     "src/Game.cpp"
+    "src/Character.cpp"
     "src/Utilities/PathHelper.cpp"
 )
 
