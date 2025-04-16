@@ -10,11 +10,13 @@ class Character {
         void draw();
         void updateAnimation();
         void setMoving(bool moving);
+        Asset2D getAsset() { return _asset2D; };
+
 
     
     private:
         Vector2D _pos;
-        Asset2D _texture;
+        Asset2D _asset2D;
     
         int _frameWidth = 32;
         int _frameHeight = 32;

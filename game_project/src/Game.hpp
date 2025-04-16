@@ -45,7 +45,7 @@ class Game {
         Render::Camera &_camera;
 
         Character _player;
-        Vector2D _playerPos;
+        Vector3D _playerPos;
         bool _playerIsMoving = false;
 
         float _cubeHeight;

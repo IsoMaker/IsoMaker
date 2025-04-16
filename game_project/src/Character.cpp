@@ -7,7 +7,7 @@ void Character::setPosition(const Vector2D &pos)
 
 void Character::setTexture(const Asset2D &asset, int frameWidth, int frameHeight, int totalFrames)
 {
-    _texture = asset;
+    _asset2D = asset;
     _frameWidth = frameWidth;
     _frameHeight = frameHeight;
     _totalFrames = totalFrames;
@@ -15,14 +15,14 @@ void Character::setTexture(const Asset2D &asset, int frameWidth, int frameHeight
 
 void Character::draw()
 {
-    if (_texture.isLoaded()) {
+    if (_asset2D.isLoaded()) {
         Rectangle source = {
             _currentFrame * _frameWidth,
             0,
             (float)_frameWidth,
             (float)_frameHeight
         };
-        DrawTextureRec(_texture.getTexture(), source, {_pos.x, _pos.y}, WHITE);
+        DrawTextureRec(_asset2D.getTexture(), source, {_pos.x, _pos.y}, WHITE);
     }
 }
 

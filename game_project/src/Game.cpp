@@ -14,14 +14,18 @@ Game::Game(Render::Window& window, Render::Camera& camera) : _window(window), _c
     std::string mapPath = (exePath / "assets" / "maps" / "game_map.dat").string();
     std::string playerPath = (exePath / "assets" / "entities" / "shy_guy_red.png").string();
 
-    _playerPos = Vector2D(0, 0);
-    _playerAsset.setFileName(playerPath);
-    _playerAsset.loadFile();
-    _player.setTexture(_playerAsset, 32, 40, 4);
-    _player.setPosition(_playerPos);
     _cubeType.setFileName(modelPath);
     _cubeType.loadFile();
     loadMap(mapPath);
+    if (!_objects.empty()) {
+        Vector3D firstCubePos = _objects[0].getPosition();
+        _player.setPosition(Vector2D(firstCubePos.x, firstCubePos.z));
+        _playerPos = {0, 0, 0};
+        std::cout << "X POS: " << firstCubePos.x << " Z POS: " << firstCubePos.z << std::endl;
+    }
+    _playerAsset.setFileName(playerPath);
+    _playerAsset.loadFile();
+    _player.setTexture(_playerAsset, 32, 40, 4);
 }
 
 Game::~Game()
@@ -38,6 +42,7 @@ void Game::addCube(Vector3D position)
     }
 
     BasicObject newObject = BasicObject(_cubeType, position);
+    std::cout << position.x << " " << position.y << " " << position.z << std::endl;
     newObject.resizeTo(_cubeHeight);
     _objects.push_back(newObject);
 }
@@ -76,12 +81,12 @@ void Game::draw3DElements()
 
 void Game::draw2DElements()
 {
-    float isoX = (_playerPos.x - _playerPos.y);
-    float isoY = (_playerPos.x + _playerPos.y) / 2;
+    float isoX = (_playerPos.x - _playerPos.z) * 32;
+    float isoY = (_playerPos.x + _playerPos.z) * 16 - (_playerPos.y * 32);
 
-    Vector2D isoPos(isoX + SCREENWIDTH / 2, isoY + SCREENHEIGHT / 2);
-
+    Vector2D isoPos((isoX + SCREENWIDTH / 2) - 48, (isoY + SCREENHEIGHT / 2) - 26);
     _player.setPosition(isoPos);
+    //std::cout << "X POS: " << isoPos.x << " Y POS: " << isoPos.y << std::endl;
     _player.draw();
     for (auto i = _objects.begin(); i != _objects.end(); i++) {
         if (i->getAssetType() == AssetType::ASSET2D) {
@@ -92,7 +97,6 @@ void Game::draw2DElements()
 
 void Game::handleInput(input::IHandlerBase &inputHandler)
 {
-    float speed = 4.0f;
     bool moving = false;
 
     if (inputHandler.isReleased(input::Generic::SELECT1)) {
@@ -104,24 +108,23 @@ void Game::handleInput(input::IHandlerBase &inputHandler)
         std::cout << "Other Rotate Camera" << std::endl;
     }
     if (inputHandler.isPressed(input::Generic::LEFT)) {
-        _playerPos.y += speed;
+        _playerPos.x -= 0.1f;
         moving = true;
     }
     if (inputHandler.isPressed(input::Generic::RIGHT)) {
-        _playerPos.y -= speed;
+        _playerPos.x += 0.1f;
         moving = true;
     }
     if (inputHandler.isPressed(input::Generic::UP)) {
-        _playerPos.x -= speed;
+        _playerPos.z -= 0.1f;
         moving = true;
     }
     if (inputHandler.isPressed(input::Generic::DOWN)) {
-        _playerPos.x += speed;
+        _playerPos.z += 0.1f;
         moving = true;
     }
 
     _player.setMoving(moving);
-    _player.setPosition(_playerPos);
     _playerIsMoving = moving;
 }
 
