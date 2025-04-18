@@ -1,5 +1,4 @@
 #include "Game.hpp"
-#include "Character.hpp"
 
 void mouseLoop(input::MouseKeyboardHandler &inputHandler, bool &running)
 {

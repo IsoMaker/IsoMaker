@@ -11,9 +11,6 @@
 #include "Input/MouseKeyboard.hpp"
 #include "Utilities/Vector.hpp"
 
-// Generic Game
-#include "Character.hpp"
-
 #define SCREENHEIGHT 1200
 #define SCREENWIDTH 1600
 
@@ -44,7 +41,7 @@ class Game {
         Render::Window &_window;
         Render::Camera &_camera;
 
-        Character _player;
+        BasicObject _player;
         Vector3D _playerPos;
         bool _playerIsMoving = false;
 

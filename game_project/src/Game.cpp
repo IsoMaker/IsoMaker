@@ -17,12 +17,8 @@ Game::Game(Render::Window& window, Render::Camera& camera) : _window(window), _c
     _cubeType.setFileName(modelPath);
     _cubeType.loadFile();
     loadMap(mapPath);
-    if (!_objects.empty()) {
-        Vector3D firstCubePos = _objects[0].getPosition();
-        _player.setPosition(Vector2D(firstCubePos.x, firstCubePos.z));
-        _playerPos = {0, 0, 0};
-        std::cout << "X POS: " << firstCubePos.x << " Z POS: " << firstCubePos.z << std::endl;
-    }
+    _playerPos = {0, 0, 0};
+    _player.moveTo(_playerPos);
     _playerAsset.setFileName(playerPath);
     _playerAsset.loadFile();
     _player.setTexture(_playerAsset, 32, 40, 4);
@@ -84,9 +80,8 @@ void Game::draw2DElements()
     float isoX = (_playerPos.x - _playerPos.z) * 32;
     float isoY = (_playerPos.x + _playerPos.z) * 16 - (_playerPos.y * 32);
 
-    Vector2D isoPos((isoX + SCREENWIDTH / 2) - 48, (isoY + SCREENHEIGHT / 2) - 26);
-    _player.setPosition(isoPos);
-    //std::cout << "X POS: " << isoPos.x << " Y POS: " << isoPos.y << std::endl;
+    Vector3D isoPos = {(isoX + SCREENWIDTH / 2) - 48, (isoY + SCREENHEIGHT / 2) - 26, _playerPos.z};
+    _player.moveTo(isoPos);
     _player.draw();
     for (auto i = _objects.begin(); i != _objects.end(); i++) {
         if (i->getAssetType() == AssetType::ASSET2D) {

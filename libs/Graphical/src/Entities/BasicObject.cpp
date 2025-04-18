@@ -27,11 +27,38 @@ void BasicObject::setAsset(Asset2D newAsset, Vector3D dimension3D) {
     _objectBox.assetDimensions = dimension3D;
 }
 
+void BasicObject::setTexture(Asset2D asset, int frameWidth, int frameHeight, int totalFrames) {
+    _asset2D = asset;
+    _assetType = AssetType::ASSET2D;
+
+    _frameWidth = frameWidth;
+    _frameHeight = frameHeight;
+    _totalFrames = totalFrames;
+
+    _objectBox.assetDimensions = Vector3D((float)frameWidth, (float)frameHeight, 1.0f);
+}
+
+void BasicObject::updateAnimation() {
+    _frameCounter++;
+    if (_frameCounter >= _frameSpeed) {
+        _frameCounter = 0;
+        _currentFrame = (_currentFrame + 1) % _totalFrames;
+    }
+}
+
 void BasicObject::draw() {
     if (_assetType == AssetType::ASSET3D) {
         DrawModel(_asset3D.getModel(), _objectBox.position.convert(), _objectBox.scale, WHITE);
     } else if (_assetType == AssetType::ASSET2D) {
-        DrawCubeTexture(_asset2D.getTexture(), _objectBox.position.convert(), _objectBox.assetDimensions.x, _objectBox.assetDimensions.y, _objectBox.assetDimensions.z, WHITE);
+        Rectangle source = {
+            (float)(_currentFrame * _frameWidth),
+            0,
+            (float)_frameWidth,
+            (float)_frameHeight
+        };
+
+        Vector2 position = { _objectBox.position.x, _objectBox.position.y };
+        DrawTextureRec(_asset2D.getTexture(), source, position, WHITE);
     }
 }
 
