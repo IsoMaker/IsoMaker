@@ -18,6 +18,10 @@ Game::Game(Render::Window& window, Render::Camera& camera) : _window(window), _c
     _cubeType.loadFile();
     loadMap(mapPath);
     _playerPos = {0, 0, 0};
+    if (!_objects.empty()) {
+        _playerPos = _objects[0].getPosition();
+    }
+    _playerPos.z -= 0.5f;
     _player.moveTo(_playerPos);
     _playerAsset.setFileName(playerPath);
     _playerAsset.loadFile();
@@ -45,26 +49,33 @@ void Game::addCube(Vector3D position)
 
 void Game::loadMap(const std::string& filename)
 {
-    std::ifstream file(filename, std::ios::binary);
+    std::ifstream file(filename);
     if (!file.is_open()) {
         std::cerr << "Failed to open map file for loading!\n";
         return;
     }
+    std::string header;
+    int count = 0;
 
-    size_t objectCount;
+    file >> header;
+    if (header == "MAP") {
+        file >> count;
+        _objects.clear();
+        for (int i = 0; i < count; ++i) {
+            Vector3 position;
+            file >> position.x >> position.y >> position.z;
+            addCube(position);
+        }
+    }
 
-    file.read(reinterpret_cast<char*>(&objectCount), sizeof(objectCount));
-    _objects.clear();
-    for (size_t i = 0; i < objectCount; ++i) {
-        Utilities::Vector3D position;
-
-        file.read(reinterpret_cast<char*>(&position.x), sizeof(position.x));
-        file.read(reinterpret_cast<char*>(&position.y), sizeof(position.y));
-        file.read(reinterpret_cast<char*>(&position.z), sizeof(position.z));
-        addCube(position);
+    file >> header;
+    if (header == "PLAYER") {
+        Vector3D playerPos = {0, 0, 0};
+        file >> playerPos.x >> playerPos.y;
+        //addPlayer({playerPos.x, playerPos.y});
     }
     file.close();
-    std::cout << "Map loaded from binary file.\n";
+    std::cout << "Map loaded.\n";
 }
 
 void Game::draw3DElements()
@@ -77,11 +88,7 @@ void Game::draw3DElements()
 
 void Game::draw2DElements()
 {
-    float isoX = (_playerPos.x - _playerPos.z) * 32;
-    float isoY = (_playerPos.x + _playerPos.z) * 16 - (_playerPos.y * 32);
-
-    Vector3D isoPos = {(isoX + SCREENWIDTH / 2) - 48, (isoY + SCREENHEIGHT / 2) - 26, _playerPos.z};
-    _player.moveTo(isoPos);
+    _player.moveTo(_playerPos);
     _player.draw();
     for (auto i = _objects.begin(); i != _objects.end(); i++) {
         if (i->getAssetType() == AssetType::ASSET2D) {

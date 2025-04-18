@@ -56,8 +56,13 @@ void BasicObject::draw() {
             (float)_frameWidth,
             (float)_frameHeight
         };
+        const float tileWidth = 64.0f;
+        const float tileHeight = 32.0f;
+        float isoX = (_objectBox.position.x - _objectBox.position.z) * tileWidth / 2.0f;
+        float isoY = (_objectBox.position.x + _objectBox.position.z) * tileHeight / 2.0f - _objectBox.position.y * tileHeight;
 
-        Vector2 position = { _objectBox.position.x, _objectBox.position.y };
+        Vector2 position = {(isoX + SCREENWIDTH / 2) - 32, (isoY + SCREENHEIGHT / 2) - 16};
+
         DrawTextureRec(_asset2D.getTexture(), source, position, WHITE);
     }
 }

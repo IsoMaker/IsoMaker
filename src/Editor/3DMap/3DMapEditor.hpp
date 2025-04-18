@@ -17,6 +17,15 @@
 
 using namespace Utilities;
 
+namespace asset {
+
+    enum class Type
+    {
+       PLAYER,
+       CUBE,
+    };
+}
+
 class MapEditor {
     public:
         MapEditor(Render::Camera&, Render::Window&);
@@ -33,6 +42,10 @@ class MapEditor {
         void addCube(Vector3D);
         void removeCube(std::vector<BasicObject>::iterator);
 
+        void changeSpriteType(Asset2D newAsset);
+        void addPlayer(Vector2D);
+        void removePlayer(std::vector<BasicObject>::iterator toRemove);
+
         void saveMapBinary(const std::string& filename);
         void loadMapBinary(const std::string& filename);
 
@@ -46,10 +59,13 @@ class MapEditor {
         std::vector<BasicObject> _objects2D;
 
         Asset3D _currentCubeType;
+        Asset2D _currentSpireType;
 
         Render::Window &_window;
         Render::Camera &_camera;
         MapGrid _grid;
+
+        bool _placePlayer;
 
         float _cubeHeight;
 };

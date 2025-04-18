@@ -5,6 +5,9 @@
 
 #include "IObject3D.hpp"
 
+#define SCREENHEIGHT 1200
+#define SCREENWIDTH 1600
+
 using namespace Utilities;
 
 void DrawCubeTexture(Texture2D texture, Vector3 position, float width, float height, float length, Color color);
