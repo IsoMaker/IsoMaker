@@ -6,10 +6,17 @@ MainUI::MainUI() : _3DMapEditor(_camera, _window) {
     _window.startWindow(Vector2D(SCREENWIDTH, SCREENHEIGHT));
 
     //temporary cube asset loading for the 3D map, to change after libraries are implemented
+    _gameProjectName = "game_project";
+
     Asset3D cubeAsset;
     cubeAsset.setFileName("ressources/newBlock.glb");
     cubeAsset.loadFile();
     _3DMapEditor.changeCubeType(cubeAsset);
+
+    Asset2D playerAsset;
+    playerAsset.setFileName("ressources/shy_guy_red.png");
+    playerAsset.loadFile();
+    _3DMapEditor.changeSpriteType(playerAsset);
 }
 
 void MainUI::update(input::IHandlerBase &inputHandler) {

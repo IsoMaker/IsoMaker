@@ -3,7 +3,7 @@
 #include <vector>
 #include <algorithm>
 
-#include "../../includes/IAsset.hpp"
+#include "IAsset.hpp"
 
 class AAsset : public IAsset
 {

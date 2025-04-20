@@ -2,8 +2,8 @@
 
 #include "../Editor/2D/2DEditor.hpp"
 #include "../Editor/3DMap/3DMapEditor.hpp"
-#include "../Object2D/BasicObject2D.hpp"
-#include "../Input/MouseKeyboard.hpp"
+#include "Entities/BasicObject2D.hpp"
+#include "Input/MouseKeyboard.hpp"
 #include <iostream>
 
 #define SCREENHEIGHT 1200
@@ -29,4 +29,5 @@ class MainUI {
         Render::Camera _camera;
         Render::Window _window;
         MapEditor _3DMapEditor;
+        std::string _gameProjectName;
 };

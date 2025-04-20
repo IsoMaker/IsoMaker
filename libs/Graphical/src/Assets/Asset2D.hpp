@@ -9,6 +9,7 @@ class Asset2D : public AAsset
         ~Asset2D() {};
         Texture2D getTexture();
         void loadFile();
+        bool isLoaded() { return _textureLoaded; };
 
     protected:
         bool _textureLoaded;

@@ -1,12 +1,15 @@
 #pragma once
 
-#include "../../includes/IObject2D.hpp"
-#include "../Assets/Asset2D.hpp"
-#include "../Utilities/ObjectBox.hpp"
+#include "IObject2D.hpp"
+
+#include "Assets/Asset2D.hpp"
+#include "Utilities/ObjectBox.hpp"
+#include <raylib.h>
 
 using namespace Utilities;
 
 class BasicObject2D : public IObject2D {
+
     public:
         BasicObject2D() {};
         BasicObject2D(Asset2D, Vector2D);
@@ -18,6 +21,7 @@ class BasicObject2D : public IObject2D {
         void resizePercent(float percentage) {_objectBox.scale = percentage;};
         bool isInObject(Vector2D pos);
         ObjectBox2D getBox() {return _objectBox;};
+        Asset2D getAsset() {return _asset;};
     private:
         ObjectBox2D _objectBox;
         Asset2D _asset;

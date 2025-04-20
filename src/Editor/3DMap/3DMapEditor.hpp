@@ -5,16 +5,26 @@
 #include "raylib.h"
 #include "rlgl.h"
 
-#include "../../Object3D/BasicObject3D.hpp"
-#include "../../Object2D/BasicObject2D.hpp"
+#include <fstream>
 
-#include "../../Render/Window.hpp"
-#include "../../Render/Camera.hpp"
+#include "Entities/BasicObject.hpp"
+
+#include "Render/Window.hpp"
+#include "Render/Camera.hpp"
 #include "Grid.hpp"
 
-#include "../../Input/MouseKeyboard.hpp"
+#include "Input/MouseKeyboard.hpp"
 
 using namespace Utilities;
+
+namespace asset {
+
+    enum class Type
+    {
+       PLAYER,
+       CUBE,
+    };
+}
 
 class MapEditor {
     public:
@@ -30,19 +40,32 @@ class MapEditor {
 
         void changeCubeType(Asset3D);
         void addCube(Vector3D);
-        void removeCube(std::vector<BasicObject3D>::iterator);
+        void removeCube(std::vector<BasicObject>::iterator);
+
+        void changeSpriteType(Asset2D newAsset);
+        void addPlayer(Vector2D);
+        void removePlayer(std::vector<BasicObject>::iterator toRemove);
+
+        void saveMapBinary(const std::string& filename);
+        void loadMapBinary(const std::string& filename);
+
+        void gameCompilation(const std::string& gameProjectName);
+
     protected:
     private:
-        std::pair<Vector3D, std::vector<BasicObject3D>::iterator> alignPosition(Vector2D);
+        std::pair<Vector3D, std::vector<BasicObject>::iterator> alignPosition(Vector2D);
 
-        std::vector<BasicObject3D> _objects3D;
-        std::vector<BasicObject2D> _objects2D;
+        std::vector<BasicObject> _objects3D;
+        std::vector<BasicObject> _objects2D;
 
         Asset3D _currentCubeType;
+        Asset2D _currentSpireType;
 
         Render::Window &_window;
         Render::Camera &_camera;
         MapGrid _grid;
+
+        bool _placePlayer;
 
         float _cubeHeight;
 };
