@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "===== IsoMaker Installation Script for Linux ====="
+echo "===== IsoMaker Installation Script for macOS ====="
 
 if [ ! -d "bin" ]; then
     echo "Creating bin directory..."
@@ -10,20 +10,20 @@ fi
 
 echo "Checking dependencies..."
 
-if ! command -v cmake > /dev/null; then
+if ! command -v cmake &> /dev/null; then
     echo "Error: cmake not found. Please install cmake."
+    echo "You can install it with: brew install cmake"
     exit 1
 fi
 
-if ! command -v g++ > /dev/null; then
-    echo "Error: g++ not found. Please install a C++ compiler."
+if ! command -v clang++ &> /dev/null; then
+    echo "Error: clang++ not found. Please install Xcode Command Line Tools."
+    echo "You can install it with: xcode-select --install"
     exit 1
 fi
-
-echo "Cleaning previous build directory..."
-rm -rf cmake/build
 
 echo "Building IsoMaker..."
+rm -f bin/IsoMaker
 cmake -B cmake/build -S cmake
 cmake --build cmake/build
 

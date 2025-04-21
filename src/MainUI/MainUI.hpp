@@ -4,6 +4,7 @@
 #include "../Editor/3DMap/3DMapEditor.hpp"
 #include "Entities/BasicObject2D.hpp"
 #include "Input/MouseKeyboard.hpp"
+#include "../UI/UIManager.hpp"
 #include <iostream>
 
 #define SCREENHEIGHT 1200
@@ -21,13 +22,14 @@ class MainUI {
         MainUI();
         ~MainUI() {};
 
-        void update(input::IHandlerBase &mouseHandler);
+        void update(input::IHandlerBase &inputHandler);
         void draw();
-        void loop(input::IHandlerBase &mouseHandler);
+        void loop(input::IHandlerBase &inputHandler);
 
     protected:
         Render::Camera _camera;
         Render::Window _window;
         MapEditor _3DMapEditor;
         std::string _gameProjectName;
+        UI::UIManager _uiManager;
 };
