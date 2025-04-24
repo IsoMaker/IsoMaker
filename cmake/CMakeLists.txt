@@ -18,20 +18,7 @@ if (NOT BUILD_TESTS)
         "../src/main.cpp"
         "../src/Editor/3DMap/3DMapEditor.cpp"
         "../src/Editor/3DMap/Grid.cpp"
-        "../src/Input/Keyboard.cpp"
-        "../src/Input/Mouse.cpp"
-        "../src/Input/Controller.cpp"
-        "../src/Assets/AAsset.cpp"
-        "../src/Assets/Asset2D.cpp"
-        "../src/Assets/Asset3D.cpp"
         "../src/MainUI/MainUI.cpp"
-        "../src/Object2D/BasicObject2D.cpp"
-        "../src/Object3D/BasicObject3D.cpp"
-        "../src/Render/Camera.cpp"
-        "../src/Render/Window.cpp"
-        "../src/Utilities/DrawCubeTexture.cpp"
-        "../src/Utilities/ObjectBox.cpp"
-        "../src/Utilities/Vector.cpp"
         "../src/UI/UIManager.cpp"
         "../src/UI/UIComponents.cpp"
         "../src/UI/RayguiImpl.cpp"
@@ -40,6 +27,12 @@ if (NOT BUILD_TESTS)
 
     target_link_libraries(IsoMaker PRIVATE
         Graphical
+    )
+    
+    # Add include directories for header files
+    target_include_directories(IsoMaker PRIVATE
+        "${CMAKE_SOURCE_DIR}/../libs/Graphical/includes"
+        "${CMAKE_SOURCE_DIR}/../libs/Graphical/src"
     )
 endif()
 
