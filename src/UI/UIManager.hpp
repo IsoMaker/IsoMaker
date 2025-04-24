@@ -4,10 +4,10 @@
 #include "raygui.h"
 #include "UITheme.hpp"
 #include "UIComponents.hpp"
-#include "../Input/Mouse.hpp"
+#include "Input/MouseKeyboard.hpp"
 #include "../Editor/3DMap/3DMapEditor.hpp"
-#include "../Assets/Asset2D.hpp"
-#include "../Assets/Asset3D.hpp"
+#include "Assets/Asset2D.hpp"
+#include "Assets/Asset3D.hpp"
 #include <string>
 #include <vector>
 #include <unordered_map>
@@ -34,7 +34,7 @@ public:
     ~UIManager();
 
     void initialize();
-    void update(input::MouseHandler &mouseHandler);
+    void update(input::IHandlerBase &inputHandler);
     void draw(MapEditor &mapEditor);
 
     // UI Component functions

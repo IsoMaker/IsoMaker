@@ -58,13 +58,13 @@ void UIManager::initialize()
     loadIcons();
 }
 
-void UIManager::update(input::MouseHandler &mouseHandler)
+void UIManager::update(input::IHandlerBase &inputHandler)
 {
-    Vector2 mousePos = { static_cast<float>(mouseHandler.getMouseCoords().x), 
-                         static_cast<float>(mouseHandler.getMouseCoords().y) };
+    Vector2 mousePos = { static_cast<float>(inputHandler.getCursorCoords().x), 
+                         static_cast<float>(inputHandler.getCursorCoords().y) };
     
     // Check for clicks outside menus to close them
-    if (mouseHandler.isMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+    if (inputHandler.isInputActive(input::Generic::SELECT1)) {
         // Close menus if clicked outside
         if (_fileMenuOpen && mousePos.y > 30) _fileMenuOpen = false;
         if (_editMenuOpen && mousePos.y > 30) _editMenuOpen = false;
@@ -73,7 +73,7 @@ void UIManager::update(input::MouseHandler &mouseHandler)
     }
     
     // Check tool selection in left toolbar
-    if (mouseHandler.isMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+    if (inputHandler.isInputActive(input::Generic::SELECT1)) {
         if (CheckCollisionPointRec(mousePos, {0.0f, static_cast<float>(_topBarHeight), static_cast<float>(_leftToolbarWidth), 
                                              static_cast<float>(_screenHeight - _topBarHeight - _bottomAssetsBarHeight)})) {
             int toolIndex = (mousePos.y - _topBarHeight) / 60; // Each tool is 60px tall
