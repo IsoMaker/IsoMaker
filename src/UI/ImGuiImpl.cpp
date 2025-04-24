@@ -58,11 +58,11 @@ void ImGuiInit() {
         ImGuiStyle& style = ImGui::GetStyle();
         
         // Convert colors from UITheme
-        ImVec4 primary = ImVec4(PRIMARY.r/255.0f, PRIMARY.g/255.0f, PRIMARY.b/255.0f, PRIMARY.a/255.0f);
-        ImVec4 secondary = ImVec4(SECONDARY.r/255.0f, SECONDARY.g/255.0f, SECONDARY.b/255.0f, SECONDARY.a/255.0f);
+        ImVec4 primary = ImVec4(UI_PRIMARY.r/255.0f, UI_PRIMARY.g/255.0f, UI_PRIMARY.b/255.0f, UI_PRIMARY.a/255.0f);
+        ImVec4 secondary = ImVec4(UI_SECONDARY.r/255.0f, UI_SECONDARY.g/255.0f, UI_SECONDARY.b/255.0f, UI_SECONDARY.a/255.0f);
         ImVec4 background = ImVec4(BACKGROUND.r/255.0f, BACKGROUND.g/255.0f, BACKGROUND.b/255.0f, BACKGROUND.a/255.0f);
-        ImVec4 textPrimary = ImVec4(TEXT_PRIMARY.r/255.0f, TEXT_PRIMARY.g/255.0f, TEXT_PRIMARY.b/255.0f, TEXT_PRIMARY.a/255.0f);
-        ImVec4 textSecondary = ImVec4(TEXT_SECONDARY.r/255.0f, TEXT_SECONDARY.g/255.0f, TEXT_SECONDARY.b/255.0f, TEXT_SECONDARY.a/255.0f);
+        ImVec4 textPrimary = ImVec4(UI_TEXT_PRIMARY.r/255.0f, UI_TEXT_PRIMARY.g/255.0f, UI_TEXT_PRIMARY.b/255.0f, UI_TEXT_PRIMARY.a/255.0f);
+        ImVec4 textSecondary = ImVec4(UI_TEXT_SECONDARY.r/255.0f, UI_TEXT_SECONDARY.g/255.0f, UI_TEXT_SECONDARY.b/255.0f, UI_TEXT_SECONDARY.a/255.0f);
         ImVec4 accentPrimary = ImVec4(ACCENT_PRIMARY.r/255.0f, ACCENT_PRIMARY.g/255.0f, ACCENT_PRIMARY.b/255.0f, ACCENT_PRIMARY.a/255.0f);
         ImVec4 accentSecondary = ImVec4(ACCENT_SECONDARY.r/255.0f, ACCENT_SECONDARY.g/255.0f, ACCENT_SECONDARY.b/255.0f, ACCENT_SECONDARY.a/255.0f);
         ImVec4 accentTertiary = ImVec4(ACCENT_TERTIARY.r/255.0f, ACCENT_TERTIARY.g/255.0f, ACCENT_TERTIARY.b/255.0f, ACCENT_TERTIARY.a/255.0f);

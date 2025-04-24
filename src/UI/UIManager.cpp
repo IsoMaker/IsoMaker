@@ -41,16 +41,16 @@ UIManager::~UIManager()
 void UIManager::initialize()
 {
     // Set custom gui style
-    GuiSetStyle(DEFAULT, TEXT_COLOR_NORMAL, ColorToInt(TEXT_PRIMARY));
-    GuiSetStyle(DEFAULT, TEXT_COLOR_FOCUSED, ColorToInt(TEXT_PRIMARY));
-    GuiSetStyle(DEFAULT, TEXT_COLOR_PRESSED, ColorToInt(TEXT_PRIMARY));
-    GuiSetStyle(DEFAULT, TEXT_COLOR_DISABLED, ColorToInt(TEXT_SECONDARY));
+    GuiSetStyle(DEFAULT, TEXT_COLOR_NORMAL, ColorToInt(UI_TEXT_PRIMARY));
+    GuiSetStyle(DEFAULT, TEXT_COLOR_FOCUSED, ColorToInt(UI_TEXT_PRIMARY));
+    GuiSetStyle(DEFAULT, TEXT_COLOR_PRESSED, ColorToInt(UI_TEXT_PRIMARY));
+    GuiSetStyle(DEFAULT, TEXT_COLOR_DISABLED, ColorToInt(UI_TEXT_SECONDARY));
     
-    GuiSetStyle(DEFAULT, BASE_COLOR_NORMAL, ColorToInt(SECONDARY));
-    GuiSetStyle(DEFAULT, BASE_COLOR_FOCUSED, ColorToInt(PRIMARY));
+    GuiSetStyle(DEFAULT, BASE_COLOR_NORMAL, ColorToInt(UI_SECONDARY));
+    GuiSetStyle(DEFAULT, BASE_COLOR_FOCUSED, ColorToInt(UI_PRIMARY));
     GuiSetStyle(DEFAULT, BASE_COLOR_PRESSED, ColorToInt(ACCENT_PRIMARY));
     
-    GuiSetStyle(DEFAULT, BORDER_COLOR_NORMAL, ColorToInt(SECONDARY));
+    GuiSetStyle(DEFAULT, BORDER_COLOR_NORMAL, ColorToInt(UI_SECONDARY));
     GuiSetStyle(DEFAULT, BORDER_COLOR_FOCUSED, ColorToInt(ACCENT_TERTIARY));
     GuiSetStyle(DEFAULT, BORDER_COLOR_PRESSED, ColorToInt(ACCENT_PRIMARY));
     
@@ -111,7 +111,7 @@ void UIManager::draw(MapEditor &mapEditor)
 void UIManager::drawTopMenuBar()
 {
     // Draw top bar background
-    DrawRectangle(0, 0, static_cast<int>(_screenWidth), static_cast<int>(_topBarHeight), PRIMARY);
+    DrawRectangle(0, 0, static_cast<int>(_screenWidth), static_cast<int>(_topBarHeight), UI_PRIMARY);
     
     // Menu items
     int menuItemWidth = 80;
@@ -222,7 +222,7 @@ void UIManager::drawLeftToolbar()
 {
     // Draw toolbar background
     DrawRectangle(0, static_cast<int>(_topBarHeight), static_cast<int>(_leftToolbarWidth), 
-                 static_cast<int>(_screenHeight - _topBarHeight - _bottomAssetsBarHeight), PRIMARY);
+                 static_cast<int>(_screenHeight - _topBarHeight - _bottomAssetsBarHeight), UI_PRIMARY);
     
     // Tool definitions
     const char* toolTips[6] = {
@@ -269,7 +269,7 @@ void UIManager::drawRightPanels()
         
         // Use the CollapsiblePanel component - though always open for scene
         bool alwaysOpen = true;
-        CollapsiblePanel(panelBounds, "Scene", &alwaysOpen, PRIMARY, SECONDARY);
+        CollapsiblePanel(panelBounds, "Scene", &alwaysOpen, UI_PRIMARY, UI_SECONDARY);
         
         // Scene objects list
         for (int i = 0; i < _sceneObjects.size(); i++) {
@@ -286,7 +286,7 @@ void UIManager::drawRightPanels()
             }
             
             // Draw object name
-            DrawText(_sceneObjects[i].c_str(), itemBounds.x + 5, itemBounds.y + 5, 10, TEXT_PRIMARY);
+            DrawText(_sceneObjects[i].c_str(), itemBounds.x + 5, itemBounds.y + 5, 10, UI_TEXT_PRIMARY);
             
             // Check for selection
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(GetMousePosition(), itemBounds)) {
@@ -300,11 +300,11 @@ void UIManager::drawRightPanels()
         panelY += panelHeight;
         
         // Panel background
-        DrawRectangle(static_cast<int>(_screenWidth - _rightPanelsWidth), static_cast<int>(panelY), static_cast<int>(_rightPanelsWidth), static_cast<int>(panelHeight), SECONDARY);
+        DrawRectangle(static_cast<int>(_screenWidth - _rightPanelsWidth), static_cast<int>(panelY), static_cast<int>(_rightPanelsWidth), static_cast<int>(panelHeight), UI_SECONDARY);
         
         // Panel header
-        DrawRectangle(static_cast<int>(_screenWidth - _rightPanelsWidth), static_cast<int>(panelY), static_cast<int>(_rightPanelsWidth), 30, PRIMARY);
-        DrawText("Properties", static_cast<int>(_screenWidth - _rightPanelsWidth + 10), static_cast<int>(panelY + 10), 10, TEXT_PRIMARY);
+        DrawRectangle(static_cast<int>(_screenWidth - _rightPanelsWidth), static_cast<int>(panelY), static_cast<int>(_rightPanelsWidth), 30, UI_PRIMARY);
+        DrawText("Properties", static_cast<int>(_screenWidth - _rightPanelsWidth + 10), static_cast<int>(panelY + 10), 10, UI_TEXT_PRIMARY);
         
         int sectionY = panelY + 35;
         int sectionHeight = 30;
@@ -318,7 +318,7 @@ void UIManager::drawRightPanels()
         };
         
         // Use CollapsiblePanel component
-        CollapsiblePanel(transformBounds, "Transform", &_transformSectionOpen, PRIMARY, SECONDARY);
+        CollapsiblePanel(transformBounds, "Transform", &_transformSectionOpen, UI_PRIMARY, UI_SECONDARY);
         
         // Transform properties if section is open
         if (_transformSectionOpen) {
@@ -366,7 +366,7 @@ void UIManager::drawRightPanels()
         };
         
         // Use CollapsiblePanel component
-        CollapsiblePanel(lightingBounds, "Lighting", &_lightingSectionOpen, PRIMARY, SECONDARY);
+        CollapsiblePanel(lightingBounds, "Lighting", &_lightingSectionOpen, UI_PRIMARY, UI_SECONDARY);
         
         if (_lightingSectionOpen) {
             // Lighting properties would go here
@@ -384,7 +384,7 @@ void UIManager::drawRightPanels()
         };
         
         // Use CollapsiblePanel component
-        CollapsiblePanel(physicsBounds, "Physics", &_physicsSectionOpen, PRIMARY, SECONDARY);
+        CollapsiblePanel(physicsBounds, "Physics", &_physicsSectionOpen, UI_PRIMARY, UI_SECONDARY);
         
         if (_physicsSectionOpen) {
             // Physics properties would go here
@@ -400,11 +400,11 @@ void UIManager::drawBottomAssetsBar()
     int barY = _screenHeight - _bottomAssetsBarHeight;
     
     // Draw assets bar background
-    DrawRectangle(0, static_cast<int>(barY), static_cast<int>(_screenWidth), static_cast<int>(_bottomAssetsBarHeight), SECONDARY);
+    DrawRectangle(0, static_cast<int>(barY), static_cast<int>(_screenWidth), static_cast<int>(_bottomAssetsBarHeight), UI_SECONDARY);
     
     // Draw header
-    DrawRectangle(0, static_cast<int>(barY), static_cast<int>(_screenWidth), 30, PRIMARY);
-    DrawText("Assets", 10, static_cast<int>(barY + 10), 10, TEXT_PRIMARY);
+    DrawRectangle(0, static_cast<int>(barY), static_cast<int>(_screenWidth), 30, UI_PRIMARY);
+    DrawText("Assets", 10, static_cast<int>(barY + 10), 10, UI_TEXT_PRIMARY);
     
     // Draw asset grid (placeholders)
     int assetSize = 80;
