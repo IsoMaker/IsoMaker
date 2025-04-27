@@ -64,7 +64,7 @@ void UIManager::update(input::IHandlerBase &inputHandler)
                          static_cast<float>(inputHandler.getCursorCoords().y) };
     
     // Check for clicks outside menus to close them
-    if (inputHandler.isInputActive(input::Generic::SELECT1)) {
+    if (inputHandler.isPressed(input::Generic::SELECT1)) {
         // Close menus if clicked outside
         if (_fileMenuOpen && mousePos.y > 30) _fileMenuOpen = false;
         if (_editMenuOpen && mousePos.y > 30) _editMenuOpen = false;
@@ -73,7 +73,7 @@ void UIManager::update(input::IHandlerBase &inputHandler)
     }
     
     // Check tool selection in left toolbar
-    if (inputHandler.isInputActive(input::Generic::SELECT1)) {
+    if (inputHandler.isPressed(input::Generic::SELECT1)) {
         if (CheckCollisionPointRec(mousePos, {0.0f, static_cast<float>(_topBarHeight), static_cast<float>(_leftToolbarWidth), 
                                              static_cast<float>(_screenHeight - _topBarHeight - _bottomAssetsBarHeight)})) {
             int toolIndex = (mousePos.y - _topBarHeight) / 60; // Each tool is 60px tall
@@ -105,7 +105,7 @@ void UIManager::draw(MapEditor &mapEditor)
     
     // Draw main view area border
     Rectangle mainViewArea = getMainViewArea();
-    DrawRectangleLinesEx(mainViewArea, 1, SECONDARY);
+    DrawRectangleLinesEx(mainViewArea, 1, UI_SECONDARY);
 }
 
 void UIManager::drawTopMenuBar()
@@ -436,8 +436,8 @@ void UIManager::drawBottomAssetsBar()
 void UIManager::drawSubmenu(const char** items, int count, int x, int y, int width)
 {
     // Background
-    DrawRectangle(static_cast<int>(x), static_cast<int>(y), static_cast<int>(width), static_cast<int>(count * 30), SECONDARY);
-    DrawRectangleLinesEx({static_cast<float>(x), static_cast<float>(y), static_cast<float>(width), count * 30.0f}, 1, PRIMARY);
+    DrawRectangle(static_cast<int>(x), static_cast<int>(y), static_cast<int>(width), static_cast<int>(count * 30), UI_SECONDARY);
+    DrawRectangleLinesEx({static_cast<float>(x), static_cast<float>(y), static_cast<float>(width), count * 30.0f}, 1, UI_PRIMARY);
     
     // Draw items
     for (int i = 0; i < count; i++) {
@@ -452,7 +452,7 @@ void UIManager::drawSubmenu(const char** items, int count, int x, int y, int wid
         }
         
         // Draw item text
-        DrawText(items[i], static_cast<int>(x + 10), static_cast<int>(y + i * 30 + 10), 10, TEXT_PRIMARY);
+        DrawText(items[i], static_cast<int>(x + 10), static_cast<int>(y + i * 30 + 10), 10, UI_TEXT_PRIMARY);
     }
 }
 
