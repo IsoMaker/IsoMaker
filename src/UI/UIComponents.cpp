@@ -119,9 +119,9 @@ Vector3 PropertyEditor(Rectangle bounds, const char* label, Vector3 value) {
     Rectangle zBounds = {bounds.x + 2 * componentWidth + 80, bounds.y + yOffset - 2, componentWidth, 15};
     
     // Draw text boxes for values (simplified - would use GuiTextBox in actual implementation)
-    DrawRectangleRec(xBounds, SECONDARY);
-    DrawRectangleRec(yBounds, SECONDARY);
-    DrawRectangleRec(zBounds, SECONDARY);
+    DrawRectangleRec(xBounds, UI_SECONDARY);
+    DrawRectangleRec(yBounds, UI_SECONDARY);
+    DrawRectangleRec(zBounds, UI_SECONDARY);
     
     // Format and draw current values
     char xText[32], yText[32], zText[32];
@@ -145,7 +145,7 @@ int TabBar(Rectangle bounds, const char** names, int count, int* active) {
         Rectangle tabBounds = {bounds.x + i * tabWidth, bounds.y, tabWidth, bounds.height};
         
         // Draw tab background
-        Color tabColor = (i == *active) ? ACCENT_PRIMARY : SECONDARY;
+        Color tabColor = (i == *active) ? ACCENT_PRIMARY : UI_SECONDARY;
         DrawRectangleRec(tabBounds, tabColor);
         
         // Draw tab name
@@ -163,7 +163,7 @@ int TabBar(Rectangle bounds, const char** names, int count, int* active) {
 
 bool ToolButton(Rectangle bounds, Texture2D icon, const char* tooltip, bool isSelected) {
     bool pressed = false;
-    Color bgColor = isSelected ? ACCENT_PRIMARY : SECONDARY;
+    Color bgColor = isSelected ? ACCENT_PRIMARY : UI_SECONDARY;
     
     // Draw background
     DrawRectangleRec(bounds, bgColor);
@@ -200,7 +200,7 @@ bool AssetTile(Rectangle bounds, Texture2D texture, const char* name, bool isSel
     bool clicked = false;
     
     // Draw tile background
-    Color bgColor = isSelected ? ACCENT_TERTIARY : SECONDARY;
+    Color bgColor = isSelected ? ACCENT_TERTIARY : UI_SECONDARY;
     DrawRectangleRec(bounds, bgColor);
     
     // Draw asset preview (texture)
