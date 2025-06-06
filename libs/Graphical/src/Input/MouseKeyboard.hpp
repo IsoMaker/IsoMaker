@@ -33,7 +33,7 @@ namespace input {
             }
 
             ~MouseKeyboardHandler() = default;
-
+        protected:
         private:
             void handleInput();
     };

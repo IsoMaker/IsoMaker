@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Editor/2D/2DEditor.hpp"
+// #include "../Editor/2D/2DEditor.hpp"
 #include "../Editor/3DMap/3DMapEditor.hpp"
 #include "Entities/BasicObject2D.hpp"
 #include "Input/MouseKeyboard.hpp"
@@ -9,7 +9,7 @@
 #define SCREENHEIGHT 1200
 #define SCREENWIDTH 1600
 
-using namespace paint;
+// using namespace paint;
 
 enum EditorType {
     PAINT,

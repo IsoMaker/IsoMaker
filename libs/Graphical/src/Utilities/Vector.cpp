@@ -2,7 +2,6 @@
 
 using namespace Utilities;
 
-
 // VECTOR 2D
 Vector2D::Vector2D(const Vector2D& other) {
     x = other.x;

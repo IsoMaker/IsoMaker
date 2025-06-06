@@ -30,6 +30,7 @@ class BasicObject : public IObject3D {
         void setMoving(bool moving) { _isMoving = moving; };
 
         void draw();
+        void drawWireframe();
         void updateAnimation();
 
         void move(Vector3D positionModifier) {_objectBox.position = _objectBox.position + positionModifier;};

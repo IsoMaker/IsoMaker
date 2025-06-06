@@ -23,12 +23,12 @@ void paint::Editor::drawGrid()
     int rows = pixelColors[0].size();
 
     for (int i = 0; i <= cols; i++) {
-        int x = _canvasOffsetX + i * _gridSize;
-        DrawLine(x, _canvasOffsetY, x, _canvasOffsetY + rows * _gridSize, LIGHTGRAY);
+        int x = _canvasOffsetX + i * _cellAmount;
+        DrawLine(x, _canvasOffsetY, x, _canvasOffsetY + rows * _cellAmount, LIGHTGRAY);
     }
     for (int j = 0; j <= rows; j++) {
-        int y = _canvasOffsetY + j * _gridSize;
-        DrawLine(_canvasOffsetX, y, _canvasOffsetX + cols * _gridSize, y, LIGHTGRAY);
+        int y = _canvasOffsetY + j * _cellAmount;
+        DrawLine(_canvasOffsetX, y, _canvasOffsetX + cols * _cellAmount, y, LIGHTGRAY);
     }
 }
 
@@ -36,17 +36,17 @@ void paint::Editor::drawPixels()
 {
     for (int i = 0; i < pixelColors.size(); i++) {
         for (int j = 0; j < pixelColors[i].size(); j++) {
-            int x = _canvasOffsetX + i * _gridSize;
-            int y = _canvasOffsetY + j * _gridSize;
-            DrawRectangle(x, y, _gridSize, _gridSize, pixelColors[i][j]);
+            int x = _canvasOffsetX + i * _cellAmount;
+            int y = _canvasOffsetY + j * _cellAmount;
+            DrawRectangle(x, y, _cellAmount, _cellAmount, pixelColors[i][j]);
         }
     }
 }
 
 void paint::Editor::handlePixel(int x, int y)
 {
-    int col = (x - _canvasOffsetX) / _gridSize;
-    int row = (y - _canvasOffsetY) / _gridSize;
+    int col = (x - _canvasOffsetX) / _cellAmount;
+    int row = (y - _canvasOffsetY) / _cellAmount;
 
     if (col >= 0 && col < pixelColors.size() && row >= 0 && row < pixelColors[0].size()) {
         switch (getTool()) {

@@ -153,7 +153,7 @@ void drawVerticalGradient(Rectangle rect, Color top, Color bottom) {
     }
 }
 
-void Game::render()
+void Game::Render()
 {
     _window.startRender();
     _window.clearBackground(GRAY);
@@ -169,7 +169,7 @@ void Game::loop(input::IHandlerBase &inputHandler)
 {
     while (!_window.isWindowClosing()) {
         update(inputHandler);
-        render();
+        Render();
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
     }
     _window.closeWindow();

@@ -16,7 +16,6 @@
 
 namespace input
 {
-
     class IHandlerBase
     {
         public:

@@ -25,7 +25,7 @@ class Game {
         void draw2DElements();
 
         void update(input::IHandlerBase &mouseHandler);
-        void render();
+        void Render();
         void loop(input::IHandlerBase &mouseHandler);
         void handleInput(input::IHandlerBase &mouseHandler);
 

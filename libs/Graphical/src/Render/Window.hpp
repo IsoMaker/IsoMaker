@@ -5,8 +5,8 @@
 
 using namespace Utilities;
 
-namespace Render {
-
+namespace Render
+{
     class Window {
         public:
             Window() {};
@@ -20,8 +20,8 @@ namespace Render {
             void clearBackground(Color);
             void endRender();
             void setFPS(int fps);
+        protected:
         private:
             bool _windowOpen;
     };
-
 }

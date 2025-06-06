@@ -23,7 +23,7 @@ var classpaint_1_1Editor =
     [ "_canvasOffsetY", "classpaint_1_1Editor.html#a602bbf27f4049abdc39d8d95b3c61f13", null ],
     [ "_currentColor", "classpaint_1_1Editor.html#a4a9a0179ef1cbbac5008181faeda1356", null ],
     [ "_currentTool", "classpaint_1_1Editor.html#ab67db0574ea49b17708b7b40795099cc", null ],
-    [ "_gridSize", "classpaint_1_1Editor.html#a7596819e0b02fb21f1497c843a3dfde2", null ],
+    [ "_cellAmount", "classpaint_1_1Editor.html#a7596819e0b02fb21f1497c843a3dfde2", null ],
     [ "_originalGridSize", "classpaint_1_1Editor.html#a91b240da211b3d73a3f09437d6af1f85", null ],
     [ "_screenHeight", "classpaint_1_1Editor.html#a649bdaa1afcb68631703ede97bf66d23", null ],
     [ "_screenWidth", "classpaint_1_1Editor.html#ac30bfb16145614a5adccb1f8a572aea7", null ],
