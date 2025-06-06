@@ -94,8 +94,6 @@ void UIManager::update(input::IHandlerBase &inputHandler)
 
 void UIManager::draw(MapEditor &mapEditor)
 {
-    // Draw main background
-    DrawRectangle(0, 0, static_cast<int>(_screenWidth), static_cast<int>(_screenHeight), BACKGROUND);
     
     // Draw UI components
     drawTopMenuBar();

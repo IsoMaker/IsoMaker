@@ -1,5 +1,3 @@
-#define RAYGUI_IMPLEMENTATION
-
 #include "Input/MouseKeyboard.hpp"
 #include "Input/Gamepad.hpp"
 #include "MainUI/MainUI.hpp"
