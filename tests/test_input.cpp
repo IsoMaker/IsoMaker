@@ -163,9 +163,9 @@ TEST(InputTest, GamepadInput)
     // Check binding management
 
     // Add binding
-    EXPECT_TRUE(testGamepad.getBindings().find(SDL_CONTROLLER_BUTTON_BACK) == testGamepad.getBindings().end());
-    testGamepad.simAddBinding(SDL_CONTROLLER_BUTTON_BACK, input::Generic::INVENTORY);
-    EXPECT_TRUE(testGamepad.getBindings()[SDL_CONTROLLER_BUTTON_BACK] == input::Generic::INVENTORY);
+    EXPECT_TRUE(testGamepad.getBindings().find(SDL_CONTROLLER_BUTTON_LEFTSTICK) == testGamepad.getBindings().end());
+    testGamepad.simAddBinding(SDL_CONTROLLER_BUTTON_LEFTSTICK, input::Generic::INVENTORY);
+    EXPECT_TRUE(testGamepad.getBindings()[SDL_CONTROLLER_BUTTON_LEFTSTICK] == input::Generic::INVENTORY);
 
     // Modify binding
     EXPECT_FALSE(testGamepad.getBindings()[SDL_CONTROLLER_BUTTON_START] == input::Generic::INVENTORY);
