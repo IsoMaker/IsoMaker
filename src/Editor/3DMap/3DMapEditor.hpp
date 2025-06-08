@@ -325,17 +325,6 @@ class MapEditor : public UI::ISceneProvider {
     private:
         // Internal helper methods
         /**
-         * @brief Align cursor position to grid
-         * 
-         * Calculates grid-aligned position and finds the closest object.
-         * 
-         * @param cursorPos 2D cursor position
-         * @return std::pair<Vector3D, std::optional<std::vector<BasicObject>::iterator>> 
-         *         Aligned position and optional closest object iterator
-         */
-        std::pair<Vector3D, std::optional<std::vector<BasicObject>::iterator>> alignPosition(Vector2D cursorPos);
-        
-        /**
          * @brief Find position from ray collision
          * 
          * Determines object placement position from a ray collision result.
