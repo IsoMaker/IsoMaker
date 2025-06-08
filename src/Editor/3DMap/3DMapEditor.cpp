@@ -6,8 +6,6 @@
 MapEditor::MapEditor(Render::Camera &camera, Render::Window &window) : _window(window), _camera(camera), _grid(), _cubeHeight(1), _placePlayer(false)
 {
     _alignedPosition = Vector3D(0, 0.5f, 0);
-    _previewObject = BasicObject(_currentCubeType, _alignedPosition);
-    _previewObject.resizeTo(_cubeHeight);
     _closestObject = std::nullopt;
     _drawWireframe = false;
 }
@@ -136,11 +134,12 @@ void MapEditor::findPositionFromHit(RayCollision &hit)
     Vector3D diff = collisionPoint - modelBox.position;
     Vector3D alignedPos = modelBox.position;
 
-    if (diff.x == _cubeHeight)       alignedPos.x += _cubeHeight;
+    if (diff.x == _cubeHeight) alignedPos.x += _cubeHeight;
     else if (diff.x == 0) alignedPos.x -= _cubeHeight;
     else if (diff.z == _cubeHeight)  alignedPos.z += _cubeHeight;
     else if (diff.z == 0) alignedPos.z -= _cubeHeight;
-    if (diff.y == _cubeHeight) alignedPos.y += _cubeHeight; // Y remains unchanged
+    else if (diff.y == _cubeHeight) alignedPos.y += _cubeHeight;
+    else return; // No valid alignment found
 
     _alignedPosition = alignedPos;
 }
@@ -151,7 +150,7 @@ void MapEditor::findPositionFromGrid(Ray &ray)
     if (gridCell.has_value()) {
         _alignedPosition = gridCell.value();
     } else {
-        _alignedPosition = Vector3D(0, 0, 0);
+        _alignedPosition = Vector3D(0, 0.5f, 0);
     }
 }
 
@@ -176,44 +175,6 @@ void MapEditor::updateCursorInfo(Vector2D cursorPos, Vector3D cameraPos)
         findPositionFromHit(closestHit);
     } else { // otherwise, we check if we are over the grid
         findPositionFromGrid(ray);
-    }
-}
-
-std::pair<Vector3D, std::optional<std::vector<BasicObject>::iterator>> MapEditor::alignPosition(Vector2D cursorPos)
-{
-    Vector3D cameraPos = _camera.getPosition();
-    Ray ray = GetMouseRay(cursorPos.convert(), _camera.getRaylibCam());
-
-    RayCollision closestHit = { false, std::numeric_limits<float>::max(), { 0, 0, 0 }, { 0, 0, 0 } };
-    std::optional<std::vector<BasicObject>::iterator> closestObj = std::nullopt;
-
-    for (auto i = _objects3D.begin(); i != _objects3D.end(); i++) {
-        RayCollision collision = GetRayCollisionBox(ray, i->getBox().convert());
-        if (collision.hit && collision.distance < closestHit.distance) {
-            closestHit = collision;
-            closestObj = i;
-        }
-    }
-
-    if (closestHit.hit) {
-        Vector3D collisionPoint = closestHit.point;
-        ObjectBox3D &modelBox = closestObj.value()->getBox();
-        Vector3D diff = collisionPoint - modelBox.position;
-        Vector3D alignedPos = modelBox.position;
-    
-        if (diff.x == _cubeHeight)       alignedPos.x += _cubeHeight;
-        else if (diff.x == 0) alignedPos.x -= _cubeHeight;
-        else if (diff.z == _cubeHeight)  alignedPos.z += _cubeHeight;
-        else if (diff.z == 0) alignedPos.z -= _cubeHeight;
-        if (diff.y == _cubeHeight) alignedPos.y += _cubeHeight; // Y remains unchanged
-    
-        return {alignedPos, closestObj};
-    }
-    auto gridCell = _grid.getCellFromRay(ray);
-    if (gridCell.has_value()) {
-        return { gridCell.value(), std::nullopt };
-    } else {
-        return { Vector3D(0, 0.5, 0), std::nullopt };
     }
 }
 

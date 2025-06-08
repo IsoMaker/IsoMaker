@@ -9,8 +9,10 @@
 
 #include "../../includes/Input/AHandler.hpp"
 
-namespace input {
-    class GamepadHandler : public AHandler<Uint8> {
+namespace input
+{
+    class GamepadHandler : public AHandler<Uint8>
+    {
         public:
             GamepadHandler() : AHandler(Type::GAMEPAD)
             {
@@ -25,7 +27,10 @@ namespace input {
                     {SDL_CONTROLLER_BUTTON_START, Generic::PAUSE},
                 };
             };
+
             ~GamepadHandler() = default;
+
+            std::unordered_map<Uint8, Generic> getBindings() const { return _inputBindings; }
         protected:
         private:
             void handleInput();
