@@ -37,7 +37,13 @@ enum class EditorEventType {
     
     // Asset events
     ASSET_SELECTED,
-    ASSET_LOADED
+    ASSET_LOADED,
+    
+    // Scene synchronization events
+    SCENE_UPDATED,
+    SCENE_OBJECT_ADDED,
+    SCENE_OBJECT_REMOVED,
+    SCENE_OBJECT_RENAMED
 };
 
 // Event data variants to hold different types of event payload
@@ -97,6 +103,12 @@ namespace Events {
     void fileAction(EditorEventType type, const std::string& filepath = "");
     void editorModeChanged(int modeIndex);
     void assetSelected(int assetIndex);
+    
+    // Scene synchronization events
+    void sceneUpdated();
+    void sceneObjectAdded(int objectId);
+    void sceneObjectRemoved(int objectId);
+    void sceneObjectRenamed(int objectId, const std::string& newName);
 }
 
 } // namespace UI

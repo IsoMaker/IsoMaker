@@ -20,7 +20,8 @@ UIManager::UIManager(int screenWidth, int screenHeight)
       _renderMenuOpen(false),
       _helpMenuOpen(false),
       _searchActive(false),
-      _currentEditorType(0)
+      _currentEditorType(0),
+      _currentSceneProvider(nullptr)
 {
     // Initialize search text
     _searchText[0] = '\0';
@@ -28,9 +29,6 @@ UIManager::UIManager(int screenWidth, int screenHeight)
     // Initialize panel visibility
     _panelVisibility[PanelType::SCENE] = true;
     _panelVisibility[PanelType::PROPERTIES] = true;
-    
-    // Initialize scene objects (example)
-    _sceneObjects = {"Cube1", "Cube2", "Camera", "Light"};
 }
 
 UIManager::~UIManager()
@@ -97,6 +95,11 @@ void UIManager::update(input::IHandlerBase &inputHandler)
 
 void UIManager::draw(MapEditor &mapEditor)
 {
+    // Update scene provider reference
+    if (_currentSceneProvider != &mapEditor) {
+        _currentSceneProvider = &mapEditor;
+        refreshSceneObjects();
+    }
     
     // Draw UI components
     drawTopMenuBar();
@@ -288,18 +291,37 @@ void UIManager::drawRightPanels()
                 25
             };
             
+            const SceneObjectInfo& obj = _sceneObjects[i];
+            
             // Background for selected item
-            if (i == _selectedObjectIndex) {
+            if (obj.isSelected || i == _selectedObjectIndex) {
                 DrawRectangleRec(itemBounds, ACCENT_TERTIARY);
             }
             
+            // Add type indicator color
+            Color typeColor = UI_TEXT_PRIMARY;
+            switch (obj.type) {
+                case SceneObjectType::CUBE_3D: typeColor = {100, 150, 255, 255}; break;
+                case SceneObjectType::SPRITE_2D: typeColor = {255, 150, 100, 255}; break;
+                case SceneObjectType::CAMERA: typeColor = {150, 255, 150, 255}; break;
+                case SceneObjectType::LIGHT: typeColor = {255, 255, 100, 255}; break;
+                default: typeColor = UI_TEXT_PRIMARY; break;
+            }
+            
+            // Draw visibility indicator
+            const char* visibilityIcon = obj.isVisible ? "👁" : "🚫";
+            DrawText(visibilityIcon, itemBounds.x + 5, itemBounds.y + 5, 10, typeColor);
+            
             // Draw object name
-            DrawText(_sceneObjects[i].c_str(), itemBounds.x + 5, itemBounds.y + 5, 10, UI_TEXT_PRIMARY);
+            DrawText(obj.getDisplayName().c_str(), itemBounds.x + 25, itemBounds.y + 5, 10, typeColor);
             
             // Check for selection
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(GetMousePosition(), itemBounds)) {
                 _selectedObjectIndex = i;
-                Events::objectSelected(i);
+                if (_currentSceneProvider) {
+                    _currentSceneProvider->selectObject(obj.id);
+                }
+                Events::objectSelected(obj.id);
             }
         }
     }
@@ -520,10 +542,31 @@ void UIManager::setupEventHandlers()
         // Update selected object in scene panel
         if (std::holds_alternative<int>(event.data)) {
             int objectId = std::get<int>(event.data);
-            if (objectId >= 0 && objectId < _sceneObjects.size()) {
-                _selectedObjectIndex = objectId;
+            // Find the object in the scene list and update selection
+            for (int i = 0; i < _sceneObjects.size(); ++i) {
+                if (_sceneObjects[i].id == objectId) {
+                    _selectedObjectIndex = i;
+                    // Update properties panel with selected object data
+                    _position = _sceneObjects[i].position;
+                    _rotation = _sceneObjects[i].rotation;
+                    _scale = _sceneObjects[i].scale;
+                    break;
+                }
             }
         }
+    });
+    
+    // Subscribe to scene update events
+    g_eventDispatcher.subscribe(EditorEventType::SCENE_UPDATED, [this](const EditorEvent& event) {
+        refreshSceneObjects();
+    });
+    
+    g_eventDispatcher.subscribe(EditorEventType::SCENE_OBJECT_ADDED, [this](const EditorEvent& event) {
+        refreshSceneObjects();
+    });
+    
+    g_eventDispatcher.subscribe(EditorEventType::SCENE_OBJECT_REMOVED, [this](const EditorEvent& event) {
+        refreshSceneObjects();
     });
     
     g_eventDispatcher.subscribe(EditorEventType::CAMERA_MOVED, [this](const EditorEvent& event) {
@@ -623,7 +666,7 @@ int UIManager::getSelectedObjectCount() const
 std::string UIManager::getSelectedObjectName() const
 {
     if (_selectedObjectIndex >= 0 && _selectedObjectIndex < _sceneObjects.size()) {
-        return _sceneObjects[_selectedObjectIndex];
+        return _sceneObjects[_selectedObjectIndex].getDisplayName();
     }
     return "";
 }
@@ -631,6 +674,36 @@ std::string UIManager::getSelectedObjectName() const
 Vector3 UIManager::getSelectedObjectTransform() const
 {
     return _position; // Return current transform values
+}
+
+void UIManager::updateSceneObjectsList(ISceneProvider* sceneProvider)
+{
+    if (sceneProvider) {
+        _currentSceneProvider = sceneProvider;
+        refreshSceneObjects();
+    }
+}
+
+void UIManager::refreshSceneObjects()
+{
+    if (_currentSceneProvider) {
+        _sceneObjects = _currentSceneProvider->getSceneObjects();
+        
+        // Update selected object index if needed
+        int selectedObjectId = _currentSceneProvider->getSelectedObjectId();
+        _selectedObjectIndex = -1;
+        
+        for (int i = 0; i < _sceneObjects.size(); ++i) {
+            if (_sceneObjects[i].id == selectedObjectId) {
+                _selectedObjectIndex = i;
+                // Update properties panel with selected object data
+                _position = _sceneObjects[i].position;
+                _rotation = _sceneObjects[i].rotation;
+                _scale = _sceneObjects[i].scale;
+                break;
+            }
+        }
+    }
 }
 
 } // namespace UI

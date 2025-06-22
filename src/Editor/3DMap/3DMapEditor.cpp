@@ -32,11 +32,14 @@ void MapEditor::update(input::IHandlerBase &inputHandler)
         if (_currentTool == 4 && _alignedPosition != Vector3D(0, 0, 0)) { // CUBE tool
             addCube(_alignedPosition);
             UI::Events::objectCreated(_alignedPosition.convert());
+            notifySceneChanged();
         }
     }
     if (inputHandler.isReleased(input::Generic::SELECT2)) {
-        if (!_objects3D.empty() && _closestObject.has_value())
+        if (!_objects3D.empty() && _closestObject.has_value()) {
             removeCube(_closestObject.value());
+            notifySceneChanged();
+        }
     }
     if (inputHandler.isReleased(input::Generic::LEFT)) {
         _camera.rotateClock();
@@ -366,6 +369,7 @@ void MapEditor::handleFileAction(UI::EditorEventType actionType, const std::stri
             // Clear current scene
             _objects3D.clear();
             _objects2D.clear();
+            notifySceneChanged();
             std::cout << "New scene created" << std::endl;
             break;
         case UI::EditorEventType::FILE_SAVE:
@@ -374,6 +378,7 @@ void MapEditor::handleFileAction(UI::EditorEventType actionType, const std::stri
             break;
         case UI::EditorEventType::FILE_OPEN:
             loadMapBinary("game_project/assets/maps/game_map.dat");
+            notifySceneChanged();
             std::cout << "Map loaded" << std::endl;
             break;
         case UI::EditorEventType::FILE_EXPORT:
@@ -418,4 +423,186 @@ Vector3 MapEditor::getCameraPosition() const
 bool MapEditor::isGridVisible() const
 {
     return _gridVisible;
+}
+
+// ISceneProvider interface implementation
+std::vector<UI::SceneObjectInfo> MapEditor::getSceneObjects() const
+{
+    std::vector<UI::SceneObjectInfo> sceneObjects;
+    
+    // Add 3D objects (cubes)
+    for (size_t i = 0; i < _objects3D.size(); ++i) {
+        const BasicObject& obj = _objects3D[i];
+        Vector3D pos = const_cast<BasicObject&>(obj).getBox().position;
+        
+        UI::SceneObjectInfo objInfo(
+            static_cast<int>(i),
+            "Cube_" + std::to_string(i),
+            UI::SceneObjectType::CUBE_3D,
+            pos.convert(),
+            {0, 0, 0}, // rotation - could get from object if available
+            {1, 1, 1}  // scale - could get from object if available
+        );
+        
+        objInfo.isSelected = (static_cast<int>(i) == _selectedObjectId);
+        sceneObjects.push_back(objInfo);
+    }
+    
+    // Add 2D objects (sprites)
+    for (size_t i = 0; i < _objects2D.size(); ++i) {
+        const BasicObject& obj = _objects2D[i];
+        Vector3D pos = const_cast<BasicObject&>(obj).getBox().position;
+        
+        UI::SceneObjectInfo objInfo(
+            static_cast<int>(_objects3D.size() + i),
+            "Sprite_" + std::to_string(i),
+            UI::SceneObjectType::SPRITE_2D,
+            pos.convert(),
+            {0, 0, 0},
+            {1, 1, 1}
+        );
+        
+        objInfo.isSelected = (static_cast<int>(_objects3D.size() + i) == _selectedObjectId);
+        sceneObjects.push_back(objInfo);
+    }
+    
+    // Add camera as a scene object
+    UI::SceneObjectInfo cameraInfo(
+        static_cast<int>(_objects3D.size() + _objects2D.size()),
+        "Main_Camera",
+        UI::SceneObjectType::CAMERA,
+        getCameraPosition(),
+        {0, 0, 0},
+        {1, 1, 1}
+    );
+    sceneObjects.push_back(cameraInfo);
+    
+    return sceneObjects;
+}
+
+UI::SceneObjectInfo MapEditor::getObjectInfo(int objectId) const
+{
+    // Check if it's a 3D object
+    if (objectId >= 0 && objectId < static_cast<int>(_objects3D.size())) {
+        const BasicObject& obj = _objects3D[objectId];
+        Vector3D pos = const_cast<BasicObject&>(obj).getBox().position;
+        
+        return UI::SceneObjectInfo(
+            objectId,
+            "Cube_" + std::to_string(objectId),
+            UI::SceneObjectType::CUBE_3D,
+            pos.convert(),
+            {0, 0, 0},
+            {1, 1, 1}
+        );
+    }
+    
+    // Check if it's a 2D object
+    int sprite2DIndex = objectId - static_cast<int>(_objects3D.size());
+    if (sprite2DIndex >= 0 && sprite2DIndex < static_cast<int>(_objects2D.size())) {
+        const BasicObject& obj = _objects2D[sprite2DIndex];
+        Vector3D pos = const_cast<BasicObject&>(obj).getBox().position;
+        
+        return UI::SceneObjectInfo(
+            objectId,
+            "Sprite_" + std::to_string(sprite2DIndex),
+            UI::SceneObjectType::SPRITE_2D,
+            pos.convert(),
+            {0, 0, 0},
+            {1, 1, 1}
+        );
+    }
+    
+    // Check if it's the camera
+    int cameraId = static_cast<int>(_objects3D.size() + _objects2D.size());
+    if (objectId == cameraId) {
+        return UI::SceneObjectInfo(
+            objectId,
+            "Main_Camera",
+            UI::SceneObjectType::CAMERA,
+            getCameraPosition(),
+            {0, 0, 0},
+            {1, 1, 1}
+        );
+    }
+    
+    // Return default if not found
+    return UI::SceneObjectInfo();
+}
+
+bool MapEditor::selectObject(int objectId)
+{
+    // Check if it's a valid 3D object
+    if (objectId >= 0 && objectId < static_cast<int>(_objects3D.size())) {
+        _selectedObjectId = objectId;
+        UI::Events::objectSelected(objectId);
+        return true;
+    }
+    
+    // Check if it's a valid 2D object
+    int sprite2DIndex = objectId - static_cast<int>(_objects3D.size());
+    if (sprite2DIndex >= 0 && sprite2DIndex < static_cast<int>(_objects2D.size())) {
+        _selectedObjectId = objectId;
+        UI::Events::objectSelected(objectId);
+        return true;
+    }
+    
+    // Check if it's the camera
+    int cameraId = static_cast<int>(_objects3D.size() + _objects2D.size());
+    if (objectId == cameraId) {
+        _selectedObjectId = objectId;
+        UI::Events::objectSelected(objectId);
+        return true;
+    }
+    
+    // Invalid object ID
+    return false;
+}
+
+bool MapEditor::deleteObject(int objectId)
+{
+    // Check if it's a 3D object
+    if (objectId >= 0 && objectId < static_cast<int>(_objects3D.size())) {
+        auto it = _objects3D.begin() + objectId;
+        removeCube(it);
+        
+        // Update selected object ID if needed
+        if (_selectedObjectId == objectId) {
+            _selectedObjectId = -1;
+        } else if (_selectedObjectId > objectId) {
+            _selectedObjectId--;
+        }
+        
+        notifySceneChanged();
+        return true;
+    }
+    
+    // Check if it's a 2D object
+    int sprite2DIndex = objectId - static_cast<int>(_objects3D.size());
+    if (sprite2DIndex >= 0 && sprite2DIndex < static_cast<int>(_objects2D.size())) {
+        auto it = _objects2D.begin() + sprite2DIndex;
+        removePlayer(it);
+        
+        // Update selected object ID if needed
+        if (_selectedObjectId == objectId) {
+            _selectedObjectId = -1;
+        }
+        
+        notifySceneChanged();
+        return true;
+    }
+    
+    // Cannot delete camera
+    return false;
+}
+
+void MapEditor::updateSceneObjects()
+{
+    // This method can be called to force a scene update
+    notifySceneChanged();
+}
+
+void MapEditor::notifySceneChanged()
+{
+    UI::Events::sceneUpdated();
 }

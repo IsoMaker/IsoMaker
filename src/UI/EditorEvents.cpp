@@ -67,6 +67,23 @@ namespace Events {
     void assetSelected(int assetIndex) {
         g_eventDispatcher.dispatch(EditorEvent(EditorEventType::ASSET_SELECTED, assetIndex, "Asset selected"));
     }
+    
+    // Scene synchronization events
+    void sceneUpdated() {
+        g_eventDispatcher.dispatch(EditorEvent(EditorEventType::SCENE_UPDATED, 0, "Scene updated"));
+    }
+    
+    void sceneObjectAdded(int objectId) {
+        g_eventDispatcher.dispatch(EditorEvent(EditorEventType::SCENE_OBJECT_ADDED, objectId, "Scene object added"));
+    }
+    
+    void sceneObjectRemoved(int objectId) {
+        g_eventDispatcher.dispatch(EditorEvent(EditorEventType::SCENE_OBJECT_REMOVED, objectId, "Scene object removed"));
+    }
+    
+    void sceneObjectRenamed(int objectId, const std::string& newName) {
+        g_eventDispatcher.dispatch(EditorEvent(EditorEventType::SCENE_OBJECT_RENAMED, newName, "Scene object renamed"));
+    }
 }
 
 } // namespace UI

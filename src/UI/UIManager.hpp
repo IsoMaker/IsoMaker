@@ -5,6 +5,7 @@
 #include "UITheme.hpp"
 #include "UIComponents.hpp"
 #include "EditorEvents.hpp"
+#include "SceneObject.hpp"
 #include "Input/MouseKeyboard.hpp"
 #include "../Editor/3DMap/3DMapEditor.hpp"
 #include "Assets/Asset2D.hpp"
@@ -67,6 +68,10 @@ public:
     std::string getSelectedObjectName() const;
     Vector3 getSelectedObjectTransform() const;
     
+    // Scene management
+    void updateSceneObjectsList(ISceneProvider* sceneProvider);
+    void refreshSceneObjects();
+    
 private:
     // Window dimensions
     int _screenWidth;
@@ -96,8 +101,9 @@ private:
     int _selectedAssetIndex;
 
     // Scene objects
-    std::vector<std::string> _sceneObjects;
+    std::vector<SceneObjectInfo> _sceneObjects;
     int _selectedObjectIndex;
+    ISceneProvider* _currentSceneProvider;
     
     // Property sections
     bool _transformSectionOpen;
