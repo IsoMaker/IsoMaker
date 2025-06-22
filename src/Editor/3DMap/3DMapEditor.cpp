@@ -10,6 +10,8 @@ MapEditor::MapEditor(Render::Camera &camera, Render::Window &window) : _window(w
     _previewObject.resizeTo(_cubeHeight);
     _closestObject = std::nullopt;
     _drawWireframe = false;
+    
+    setupEventHandlers();
 }
 
 MapEditor::~MapEditor()
@@ -27,8 +29,10 @@ void MapEditor::update(input::IHandlerBase &inputHandler)
     updateCursorInfo(cursorPos, _camera.getPosition());
 
     if (inputHandler.isReleased(input::Generic::SELECT1)) {
-        if (_alignedPosition != Vector3D(0, 0, 0))
+        if (_currentTool == 4 && _alignedPosition != Vector3D(0, 0, 0)) { // CUBE tool
             addCube(_alignedPosition);
+            UI::Events::objectCreated(_alignedPosition.convert());
+        }
     }
     if (inputHandler.isReleased(input::Generic::SELECT2)) {
         if (!_objects3D.empty() && _closestObject.has_value())
@@ -36,10 +40,12 @@ void MapEditor::update(input::IHandlerBase &inputHandler)
     }
     if (inputHandler.isReleased(input::Generic::LEFT)) {
         _camera.rotateClock();
+        UI::Events::cameraMove(_camera.getPosition().convert());
         std::cout << "Rotate Camera" << std::endl;
     }
     if (inputHandler.isReleased(input::Generic::RIGHT)) {
         _camera.rotateCounterclock();
+        UI::Events::cameraMove(_camera.getPosition().convert());
         std::cout << "Other Rotate Camera" << std::endl;
     }
     if (inputHandler.isPressed(input::Generic::DOWN)) {
@@ -63,6 +69,8 @@ void MapEditor::update(input::IHandlerBase &inputHandler)
     }
     if (inputHandler.isReleased(input::Generic::INTERACT1)) {
         _drawWireframe = !_drawWireframe;
+        _gridVisible = !_gridVisible;
+        UI::Events::gridToggled(_gridVisible);
     }
     // if (inputHandler.isReleased(input::Generic::INTERACT2)) {
     //     _currentCubeType.rotateModel(-PI / 2);
@@ -277,4 +285,137 @@ void MapEditor::gameCompilation(const std::string& gameProjectName)
 
     system(script.c_str());
     system("./game_project/GenericGame");
+}
+
+void MapEditor::setupEventHandlers()
+{
+    // Subscribe to UI events
+    UI::g_eventDispatcher.subscribe(UI::EditorEventType::TOOL_CHANGED, [this](const UI::EditorEvent& event) {
+        if (std::holds_alternative<int>(event.data)) {
+            handleToolChanged(std::get<int>(event.data));
+        }
+    });
+    
+    UI::g_eventDispatcher.subscribe(UI::EditorEventType::FILE_NEW, [this](const UI::EditorEvent& event) {
+        handleFileAction(UI::EditorEventType::FILE_NEW);
+    });
+    
+    UI::g_eventDispatcher.subscribe(UI::EditorEventType::FILE_SAVE, [this](const UI::EditorEvent& event) {
+        handleFileAction(UI::EditorEventType::FILE_SAVE);
+    });
+    
+    UI::g_eventDispatcher.subscribe(UI::EditorEventType::FILE_OPEN, [this](const UI::EditorEvent& event) {
+        handleFileAction(UI::EditorEventType::FILE_OPEN);
+    });
+    
+    UI::g_eventDispatcher.subscribe(UI::EditorEventType::OBJECT_DELETED, [this](const UI::EditorEvent& event) {
+        if (std::holds_alternative<int>(event.data)) {
+            int objectId = std::get<int>(event.data);
+            if (objectId >= 0 && objectId < _objects3D.size()) {
+                auto it = _objects3D.begin() + objectId;
+                removeCube(it);
+            }
+        }
+    });
+    
+    UI::g_eventDispatcher.subscribe(UI::EditorEventType::ASSET_SELECTED, [this](const UI::EditorEvent& event) {
+        if (std::holds_alternative<int>(event.data)) {
+            handleAssetSelected(std::get<int>(event.data));
+        }
+    });
+    
+    UI::g_eventDispatcher.subscribe(UI::EditorEventType::GRID_TOGGLED, [this](const UI::EditorEvent& event) {
+        if (std::holds_alternative<bool>(event.data)) {
+            _gridVisible = std::get<bool>(event.data);
+        }
+    });
+}
+
+void MapEditor::handleToolChanged(int toolIndex)
+{
+    _currentTool = toolIndex;
+    std::cout << "Tool changed to: " << toolIndex << std::endl;
+    
+    // Adjust behavior based on tool
+    switch (toolIndex) {
+        case 0: // SELECT
+            // Enable selection mode
+            break;
+        case 1: // HAND
+            // Enable camera movement mode
+            break;
+        case 2: // PEN
+            // Enable drawing mode (for 2D editor primarily)
+            break;
+        case 3: // ERASER
+            // Enable eraser mode
+            break;
+        case 4: // CUBE
+            // Enable cube placement mode
+            break;
+        case 5: // ZOOM
+            // Enable zoom mode
+            break;
+    }
+}
+
+void MapEditor::handleFileAction(UI::EditorEventType actionType, const std::string& filepath)
+{
+    switch (actionType) {
+        case UI::EditorEventType::FILE_NEW:
+            // Clear current scene
+            _objects3D.clear();
+            _objects2D.clear();
+            std::cout << "New scene created" << std::endl;
+            break;
+        case UI::EditorEventType::FILE_SAVE:
+            saveMapBinary("game_project/assets/maps/game_map.dat");
+            std::cout << "Map saved" << std::endl;
+            break;
+        case UI::EditorEventType::FILE_OPEN:
+            loadMapBinary("game_project/assets/maps/game_map.dat");
+            std::cout << "Map loaded" << std::endl;
+            break;
+        case UI::EditorEventType::FILE_EXPORT:
+            gameCompilation("game_project");
+            std::cout << "Game exported" << std::endl;
+            break;
+        default:
+            break;
+    }
+}
+
+void MapEditor::handleAssetSelected(int assetIndex)
+{
+    // Change current asset type based on selection
+    std::cout << "Asset selected: " << assetIndex << std::endl;
+    // This would change _currentCubeType or _currentSpireType based on the asset
+}
+
+int MapEditor::getObjectCount() const
+{
+    return _objects3D.size() + _objects2D.size();
+}
+
+int MapEditor::getSelectedObjectId() const
+{
+    return _selectedObjectId;
+}
+
+std::string MapEditor::getSelectedObjectName() const
+{
+    if (_selectedObjectId >= 0 && _selectedObjectId < _objects3D.size()) {
+        return "Cube" + std::to_string(_selectedObjectId);
+    }
+    return "";
+}
+
+Vector3 MapEditor::getCameraPosition() const
+{
+    return _camera.getPosition().convert();
+}
+
+bool MapEditor::isGridVisible() const
+{
+    return _gridVisible;
 }

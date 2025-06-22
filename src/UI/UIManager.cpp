@@ -56,6 +56,9 @@ void UIManager::initialize()
     
     // Load icons
     loadIcons();
+    
+    // Setup event handlers
+    setupEventHandlers();
 }
 
 void UIManager::update(input::IHandlerBase &inputHandler)
@@ -84,12 +87,12 @@ void UIManager::update(input::IHandlerBase &inputHandler)
     }
     
     // Handle keyboard shortcuts for tools
-    if (IsKeyPressed(KEY_S)) _currentTool = ToolType::SELECT;
-    if (IsKeyPressed(KEY_H)) _currentTool = ToolType::HAND;
-    if (IsKeyPressed(KEY_P)) _currentTool = ToolType::PEN;
-    if (IsKeyPressed(KEY_E)) _currentTool = ToolType::ERASER;
-    if (IsKeyPressed(KEY_C)) _currentTool = ToolType::CUBE;
-    if (IsKeyPressed(KEY_Z)) _currentTool = ToolType::ZOOM;
+    if (IsKeyPressed(KEY_S)) { _currentTool = ToolType::SELECT; Events::toolChanged(0); }
+    if (IsKeyPressed(KEY_H)) { _currentTool = ToolType::HAND; Events::toolChanged(1); }
+    if (IsKeyPressed(KEY_P)) { _currentTool = ToolType::PEN; Events::toolChanged(2); }
+    if (IsKeyPressed(KEY_E)) { _currentTool = ToolType::ERASER; Events::toolChanged(3); }
+    if (IsKeyPressed(KEY_C)) { _currentTool = ToolType::CUBE; Events::toolChanged(4); }
+    if (IsKeyPressed(KEY_Z)) { _currentTool = ToolType::ZOOM; Events::toolChanged(5); }
 }
 
 void UIManager::draw(MapEditor &mapEditor)
@@ -130,7 +133,7 @@ void UIManager::drawTopMenuBar()
         // Handle file menu selection
         if (fileItemSelected >= 0) {
             _fileMenuOpen = false;
-            // Process file menu selection here
+            handleFileMenuAction(fileItemSelected);
         }
     }
     
@@ -150,7 +153,7 @@ void UIManager::drawTopMenuBar()
         // Handle edit menu selection
         if (editItemSelected >= 0) {
             _editMenuOpen = false;
-            // Process edit menu selection here
+            handleEditMenuAction(editItemSelected);
         }
     }
     
@@ -170,7 +173,7 @@ void UIManager::drawTopMenuBar()
         // Handle render menu selection
         if (renderItemSelected >= 0) {
             _renderMenuOpen = false;
-            // Process render menu selection here
+            handleRenderMenuAction(renderItemSelected);
         }
     }
     
@@ -190,7 +193,7 @@ void UIManager::drawTopMenuBar()
         // Handle help menu selection
         if (helpItemSelected >= 0) {
             _helpMenuOpen = false;
-            // Process help menu selection here
+            handleHelpMenuAction(helpItemSelected);
         }
     }
     
@@ -204,7 +207,13 @@ void UIManager::drawTopMenuBar()
     // Use the custom dropdown
     Rectangle dropdownBounds = {static_cast<float>(dropdownPos), 2.0f, static_cast<float>(dropdownWidth), static_cast<float>(_topBarHeight - 4)};
     bool editMode = false;
-    _currentEditorType = CustomDropdown(dropdownBounds, editorTypes[_currentEditorType], _currentEditorType, editorTypes, 2, &editMode);
+    int newEditorType = CustomDropdown(dropdownBounds, editorTypes[_currentEditorType], _currentEditorType, editorTypes, 2, &editMode);
+    
+    // Check if editor type changed
+    if (newEditorType != _currentEditorType) {
+        _currentEditorType = newEditorType;
+        Events::editorModeChanged(_currentEditorType);
+    }
     
     // Search bar (middle)
     Rectangle searchBounds = {
@@ -246,6 +255,7 @@ void UIManager::drawLeftToolbar()
         
         if (ToolButton(toolBounds, placeholderIcon, toolTips[i], static_cast<int>(_currentTool) == i)) {
             _currentTool = static_cast<ToolType>(i);
+            Events::toolChanged(i);
         }
     }
 }
@@ -289,6 +299,7 @@ void UIManager::drawRightPanels()
             // Check for selection
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(GetMousePosition(), itemBounds)) {
                 _selectedObjectIndex = i;
+                Events::objectSelected(i);
             }
         }
     }
@@ -416,7 +427,7 @@ void UIManager::drawBottomAssetsBar()
         int x = padding + col * (assetSize + padding);
         int y = barY + 40 + row * (assetSize + padding);
         
-        Rectangle assetBounds = {static_cast<float>(x), static_cast<float>(y), assetSize, assetSize};
+        Rectangle assetBounds = {static_cast<float>(x), static_cast<float>(y), static_cast<float>(assetSize), static_cast<float>(assetSize)};
         
         // We would have real asset textures here
         Texture2D emptyTexture = { 0 };
@@ -427,6 +438,7 @@ void UIManager::drawBottomAssetsBar()
         
         if (AssetTile(assetBounds, emptyTexture, assetName, i == _selectedAssetIndex)) {
             _selectedAssetIndex = i;
+            Events::assetSelected(i);
         }
     }
 }
@@ -499,6 +511,126 @@ Rectangle UIManager::getMainViewArea() const
         static_cast<float>(_screenWidth - _leftToolbarWidth - _rightPanelsWidth),
         static_cast<float>(_screenHeight - _topBarHeight - _bottomAssetsBarHeight)
     };
+}
+
+void UIManager::setupEventHandlers()
+{
+    // Subscribe to editor events to update UI state
+    g_eventDispatcher.subscribe(EditorEventType::OBJECT_SELECTED, [this](const EditorEvent& event) {
+        // Update selected object in scene panel
+        if (std::holds_alternative<int>(event.data)) {
+            int objectId = std::get<int>(event.data);
+            if (objectId >= 0 && objectId < _sceneObjects.size()) {
+                _selectedObjectIndex = objectId;
+            }
+        }
+    });
+    
+    g_eventDispatcher.subscribe(EditorEventType::CAMERA_MOVED, [this](const EditorEvent& event) {
+        // Could update camera info in UI if needed
+    });
+    
+    g_eventDispatcher.subscribe(EditorEventType::ZOOM_CHANGED, [this](const EditorEvent& event) {
+        // Could update zoom info in UI if needed
+    });
+}
+
+void UIManager::handleFileMenuAction(int selectedItem)
+{
+    switch (selectedItem) {
+        case 0: // New
+            Events::fileAction(EditorEventType::FILE_NEW);
+            break;
+        case 1: // Open
+            Events::fileAction(EditorEventType::FILE_OPEN);
+            break;
+        case 2: // Save
+            Events::fileAction(EditorEventType::FILE_SAVE);
+            break;
+        case 3: // Export
+            Events::fileAction(EditorEventType::FILE_EXPORT);
+            break;
+        case 4: // Exit
+            // Handle exit
+            break;
+    }
+}
+
+void UIManager::handleEditMenuAction(int selectedItem)
+{
+    switch (selectedItem) {
+        case 0: // Undo
+            // Dispatch undo event
+            break;
+        case 1: // Redo
+            // Dispatch redo event
+            break;
+        case 2: // Cut
+            // Dispatch cut event
+            break;
+        case 3: // Copy
+            // Dispatch copy event
+            break;
+        case 4: // Paste
+            // Dispatch paste event
+            break;
+        case 5: // Delete
+            if (_selectedObjectIndex >= 0) {
+                Events::objectDeleted(_selectedObjectIndex);
+            }
+            break;
+    }
+}
+
+void UIManager::handleRenderMenuAction(int selectedItem)
+{
+    switch (selectedItem) {
+        case 0: // Preview
+            // Toggle preview mode
+            break;
+        case 1: // Grid On/Off
+            Events::gridToggled(true); // Would track actual state
+            break;
+        case 2: // Shadows
+            // Toggle shadows
+            break;
+        case 3: // Quality
+            // Adjust quality settings
+            break;
+    }
+}
+
+void UIManager::handleHelpMenuAction(int selectedItem)
+{
+    switch (selectedItem) {
+        case 0: // Documentation
+            // Open documentation
+            break;
+        case 1: // Shortcuts
+            // Show shortcuts dialog
+            break;
+        case 2: // About
+            // Show about dialog
+            break;
+    }
+}
+
+int UIManager::getSelectedObjectCount() const
+{
+    return _selectedObjectIndex >= 0 ? 1 : 0;
+}
+
+std::string UIManager::getSelectedObjectName() const
+{
+    if (_selectedObjectIndex >= 0 && _selectedObjectIndex < _sceneObjects.size()) {
+        return _sceneObjects[_selectedObjectIndex];
+    }
+    return "";
+}
+
+Vector3 UIManager::getSelectedObjectTransform() const
+{
+    return _position; // Return current transform values
 }
 
 } // namespace UI
