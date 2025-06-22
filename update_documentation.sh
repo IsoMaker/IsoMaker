@@ -1,4 +1,4 @@
-git pull origin dev;
+git pull origin main;
 if [ $? -ne 0 ]; then
     echo "Failed to pull the latest changes from the dev branch."
     exit 1
