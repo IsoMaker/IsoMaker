@@ -18,5 +18,14 @@ if [ $? -ne 0 ]; then
     echo "Doxygen documentation generation failed."
     exit 1
 fi
-echo "Documentation updated successfully."
-echo "You can view it in the docs directory."
+mv docs/html/* docs/;
+if [ $? -ne 0 ]; then
+    echo "Failed to move generated documentation to docs directory."
+    exit 1
+fi
+rm -rf docs/html;
+if [ $? -ne 0 ]; then
+    echo "Failed to remove the empty html directory."
+    exit 1
+fi
+echo "Documentation updated successfully in the docs directory."
