@@ -7,7 +7,7 @@
 
 #include <fstream>
 
-#include "Entities/BasicObject.hpp"
+#include "Entities/BasicEntity.hpp"
 
 #include "Render/Window.hpp"
 #include "Render/Camera.hpp"
@@ -16,6 +16,7 @@
 #include "Input/MouseKeyboard.hpp"
 
 using namespace Utilities;
+using namespace Entities;
 
 namespace asset {
 
@@ -40,11 +41,11 @@ class MapEditor {
 
         void changeCubeType(Asset3D);
         void addCube(Vector3D);
-        void removeCube(std::vector<BasicObject>::iterator);
+        void removeCube(std::vector<BasicEntity>::iterator);
 
         void changeSpriteType(Asset2D newAsset);
         void addPlayer(Vector2D);
-        void removePlayer(std::vector<BasicObject>::iterator toRemove);
+        void removePlayer(std::vector<BasicEntity>::iterator toRemove);
 
         void saveMapBinary(const std::string& filename);
         void loadMapBinary(const std::string& filename);
@@ -59,8 +60,8 @@ class MapEditor {
         void updateCursorInfo(Vector2D cursorPos, Vector3D cameraPos);
 
 
-        std::vector<BasicObject> _objects3D;
-        std::vector<BasicObject> _objects2D;
+        std::vector<BasicEntity> _objects3D;
+        std::vector<BasicEntity> _objects2D;
 
         Asset3D _currentCubeType;
         Asset2D _currentSpireType;
@@ -75,5 +76,5 @@ class MapEditor {
         float _cubeHeight;
 
         Vector3D _alignedPosition;
-        std::optional<std::vector<BasicObject>::iterator> _closestObject;
+        std::optional<std::vector<BasicEntity>::iterator> _closestObject;
 };
