@@ -15,6 +15,7 @@
 
 #include "Input/MouseKeyboard.hpp"
 #include "../../UI/EditorEvents.hpp"
+#include "../../UI/SceneObject.hpp"
 
 using namespace Utilities;
 
@@ -27,7 +28,7 @@ namespace asset {
     };
 }
 
-class MapEditor {
+class MapEditor : public UI::ISceneProvider {
     public:
         MapEditor(Render::Camera&, Render::Window&);
         ~MapEditor();
@@ -60,10 +61,20 @@ class MapEditor {
         
         // State queries for UI
         int getObjectCount() const;
-        int getSelectedObjectId() const;
+        int getSelectedObjectId() const override;
         std::string getSelectedObjectName() const;
         Vector3 getCameraPosition() const;
         bool isGridVisible() const;
+        
+        // ISceneProvider interface implementation
+        std::vector<UI::SceneObjectInfo> getSceneObjects() const override;
+        UI::SceneObjectInfo getObjectInfo(int objectId) const override;
+        bool selectObject(int objectId) override;
+        bool deleteObject(int objectId) override;
+        
+        // Scene management
+        void updateSceneObjects();
+        void notifySceneChanged();
 
     protected:
     private:
