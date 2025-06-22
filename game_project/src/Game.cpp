@@ -53,7 +53,7 @@ void Game::loadMap(const std::string& filename)
 {
     std::ifstream file(filename);
     if (!file.is_open()) {
-        std::cerr << "Failed to open map file for loading!\n";
+        std::cerr << "Failed to open map file to load!\n";
         return;
     }
     std::string header;
@@ -72,8 +72,9 @@ void Game::loadMap(const std::string& filename)
 
     file >> header;
     if (header == "PLAYER") {
-        Vector3D playerPos = {0, 0, 0};
-        file >> playerPos.x >> playerPos.y;
+        // Vector3D playerPos = {0, 0, 0};
+        Vector3D playerPos = _objects.begin()->getPosition() + Vector3D(_cubeHeight / 2, _cubeHeight, _cubeHeight / 2);
+        file >> playerPos.x >> playerPos.y >> playerPos.z;
         //addPlayer({playerPos.x, playerPos.y});
     }
     file.close();

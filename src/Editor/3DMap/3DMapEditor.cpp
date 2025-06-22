@@ -118,23 +118,24 @@ void MapEditor::changeSpriteType(Asset2D newAsset)
 
 void MapEditor::addCube(Vector3D position)
 {
-    BasicObject newObject = BasicObject(_currentCubeType, position);
+    BasicEntity newObject = BasicEntity(_currentCubeType, position);
     newObject.resizeTo(_cubeHeight);
+    std::cout << "Adding cube at position: " << position.x << ", " << position.y << ", " << position.z << std::endl;
     _objects3D.push_back(newObject);
 }
 
 void MapEditor::addPlayer(Vector2D position)
 {
-    BasicObject newObject = BasicObject(_currentSpireType, {position.x, position.y, 0.5}, Vector3D(32, 40, 1));
+    BasicEntity newObject = BasicEntity(_currentSpireType, {position.x, position.y, 0.5}, Vector3D(32, 40, 1));
     _objects2D.push_back(newObject);
 }
 
-void MapEditor::removeCube(std::vector<BasicObject>::iterator toRemove)
+void MapEditor::removeCube(std::vector<BasicEntity>::iterator toRemove)
 {
     _objects3D.erase(toRemove);
 }
 
-void MapEditor::removePlayer(std::vector<BasicObject>::iterator toRemove)
+void MapEditor::removePlayer(std::vector<BasicEntity>::iterator toRemove)
 {
     _objects2D.erase(toRemove);
 }
@@ -142,7 +143,7 @@ void MapEditor::removePlayer(std::vector<BasicObject>::iterator toRemove)
 void MapEditor::findPositionFromHit(RayCollision &hit)
 {
     Vector3D collisionPoint = hit.point;
-    ObjectBox3D &modelBox = _closestObject.value()->getBox();
+    Vector3D modelPos = _closestObject.value()->getPosition();
     Vector3D diff = collisionPoint - modelBox.position;
     Vector3D alignedPos = modelBox.position;
 

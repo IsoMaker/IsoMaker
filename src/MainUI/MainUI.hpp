@@ -9,7 +9,7 @@
 
 // #include "../Editor/2D/2DEditor.hpp"
 #include "../Editor/3DMap/3DMapEditor.hpp"
-#include "Entities/BasicObject2D.hpp"
+#include "Entities/BasicObject.hpp"
 #include "Input/MouseKeyboard.hpp"
 #include "../UI/UIManager.hpp"
 #include <iostream>

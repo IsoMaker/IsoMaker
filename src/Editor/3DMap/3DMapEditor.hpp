@@ -14,7 +14,7 @@
 
 #include <fstream>
 
-#include "Entities/BasicObject.hpp"
+#include "Entities/BasicEntity.hpp"
 
 #include "Render/Window.hpp"
 #include "Render/Camera.hpp"
@@ -25,6 +25,7 @@
 #include "../../UI/SceneObject.hpp"
 
 using namespace Utilities;
+using namespace Entities;
 
 /**
  * @brief Asset type enumeration
@@ -143,7 +144,7 @@ class MapEditor : public UI::ISceneProvider {
          * 
          * @param cubeIterator Iterator pointing to the cube to remove
          */
-        void removeCube(std::vector<BasicObject>::iterator cubeIterator);
+        void removeCube(std::vector<BasicEntity>::iterator cubeIterator);
 
         /**
          * @brief Change the current sprite type for 2D objects

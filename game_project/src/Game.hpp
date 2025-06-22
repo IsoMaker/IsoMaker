@@ -7,10 +7,13 @@
 // Library
 #include "Render/Camera.hpp"
 #include "Render/Window.hpp"
-#include "Entities/BasicObject.hpp"
+#include "Utilities/Vector.hpp"
+
+#include "Entities/MapElement.hpp"
+#include "Entities/Character.hpp"
+
 #include "Input/Gamepad.hpp"
 #include "Input/MouseKeyboard.hpp"
-#include "Utilities/Vector.hpp"
 
 #define SCREENHEIGHT 1200
 #define SCREENWIDTH 1600
@@ -35,8 +38,8 @@ class Game {
     protected:
 
     private:
-        std::vector<BasicObject> _objects;
-        // std::vector<BasicObject2D> _objects2D;
+        std::vector<objects::MapElement> _mapElements;
+        std::vector<objects::Character> _characters;
 
         Asset3D _cubeType;
         Asset2D _playerAsset;
@@ -44,11 +47,9 @@ class Game {
         Render::Window &_window;
         Render::Camera &_camera;
 
-        BasicObject _player;
+        objects::Character _player;
         Vector3D _playerPos;
         bool _playerIsMoving = false;
 
         float _cubeHeight;
-
-
 };

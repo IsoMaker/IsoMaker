@@ -5,35 +5,69 @@
 
 namespace Utilities
 {
-    class ObjectBox2D {
+    template <class T>
+    class ObjectBox
+    {
         public:
-            ObjectBox2D();
-            ObjectBox2D(Vector2D, Vector2D, float scale = 1);
-            ObjectBox2D(const ObjectBox2D&);
-            ~ObjectBox2D();
+            ObjectBox() {};
+            ObjectBox(T position, T size, float scale = 1.0f) : _position(position), _size(size), _scale(scale) {};
+            ~ObjectBox() {};
 
-            bool isInBox(Vector2D);
+            T getPosition() const { return _position; };
+            void setPosition(T newPosition ) { _position = newPosition; };
+            void movePosition(T positionModifier) { _position += positionModifier; };
 
-            Vector2D position;
-            Vector2D assetDimensions;
-            float scale;
+            T getSize() const { return _size; };
+            void setSize(T newSize) { _size = newSize; };
+            void resizeByPercent(float percent) { _size *= percent; };
+
+            float getScale() const { return _scale; };
+            void setScale(float newScale) { _scale = newScale; };
+
+        protected:
+            T _position;
+            T _size;
+            float _scale;
+
+        private:
+    };
+
+    class ObjectBox2D : public ObjectBox<Vector2D> {
+        public:
+            using ObjectBox::ObjectBox;
+
+            bool isInBox(Vector2D pos)
+            {
+                if (pos > _position && pos < (_position + (_size * _scale)))
+                    return true;
+                return false;
+            }
+
         protected:
         private:
     };
 
-    class ObjectBox3D {
+    class ObjectBox3D : public ObjectBox<Vector3D> {
         public:
-            ObjectBox3D();
-            ObjectBox3D(Vector3D, Vector3D, float scale = 1);
-            ObjectBox3D(const ObjectBox3D&);
-            ~ObjectBox3D();
+            using ObjectBox::ObjectBox;
 
-            BoundingBox convert();
-            void setAssetDimensionsFromBounding(BoundingBox);
+            void setPosition(Vector2D newPosition) { _position = Vector3D(newPosition.x, 0, newPosition.y); };
+            void movePosition(Vector2D positionModifier)
+            {
+                Vector3D newPos = _position + positionModifier;
+                _position = newPos;
+            };
 
-            Vector3D position;
-            Vector3D assetDimensions;
-            float scale;
+            void setSizeFromBounding(BoundingBox box) { _size = Vector3D(box.max) - Vector3D(box.min); };
+
+            BoundingBox convert()
+            {
+                Vector3 min = _position.convert();
+                Vector3 max = ((_position + _size) * _scale).convert();
+                BoundingBox box = { min, max };
+                return box;
+            };
+
         protected:
         private:
     };
