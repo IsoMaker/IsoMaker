@@ -33,6 +33,10 @@ UIManager::UIManager(int screenWidth, int screenHeight)
 
 UIManager::~UIManager()
 {
+    // Clean up event subscriptions for this UIManager instance
+    // Note: We don't clear the entire dispatcher as other components might still be using it
+    
+    // Unload icons and textures
     unloadIcons();
 }
 
@@ -102,8 +106,8 @@ void UIManager::draw(MapEditor &mapEditor)
     }
     
     // Draw UI components
-    drawTopMenuBar();
     drawLeftToolbar();
+    drawTopMenuBar();
     drawRightPanels();
     drawBottomAssetsBar();
     
@@ -253,10 +257,13 @@ void UIManager::drawLeftToolbar()
             60
         };
         
-        // Create a placeholder icon texture (empty)
-        Texture2D placeholderIcon = { 0 }; // Would be actual icon in production
+        // Use actual tool icon if available
+        Texture2D toolIcon = { 0 };
+        if (i < _toolIcons.size() && _toolIcons[i].id > 0) {
+            toolIcon = _toolIcons[i];
+        }
         
-        if (ToolButton(toolBounds, placeholderIcon, toolTips[i], static_cast<int>(_currentTool) == i)) {
+        if (ToolButton(toolBounds, toolIcon, toolTips[i], static_cast<int>(_currentTool) == i)) {
             _currentTool = static_cast<ToolType>(i);
             Events::toolChanged(i);
         }
@@ -490,19 +497,118 @@ void UIManager::drawSubmenu(const char** items, int count, int x, int y, int wid
 
 void UIManager::loadIcons()
 {
-    // This would load actual icons
-    // Example:
-    // _toolIcons.resize(6);
-    // _toolIcons[0] = LoadTexture("path/to/select_icon.png");
-    // ...
+    // Create tool icons programmatically
+    _toolIcons.resize(6);
+    _toolIconRenderTextures.resize(6);
+    
+    const int iconSize = 32;
+    const Color iconColor = WHITE;
+    const Color bgColor = BLANK; // Transparent background
+    
+    // Generate each tool icon
+    for (int i = 0; i < 6; i++) {
+        // Create render texture for icon
+        RenderTexture2D iconTexture = LoadRenderTexture(iconSize, iconSize);
+        _toolIconRenderTextures[i] = iconTexture;
+        
+        BeginTextureMode(iconTexture);
+        ClearBackground(bgColor);
+        
+        // Draw different icon based on tool type
+        switch (i) {
+            case 0: // SELECT tool - Arrow cursor
+                {
+                    Vector2 points[3] = {
+                        {8, 6}, {8, 22}, {14, 16}
+                    };
+                    DrawTriangle(points[0], points[1], points[2], iconColor);
+                    DrawTriangleLines(points[0], points[1], points[2], {180, 180, 180, 255});
+                    // Add small selection box
+                    DrawRectangleLines(18, 18, 8, 8, {150, 150, 255, 255});
+                }
+                break;
+                
+            case 1: // HAND tool - Hand/move icon
+                {
+                    // Draw directional arrows indicating movement
+                    DrawTriangle({16, 6}, {12, 10}, {20, 10}, iconColor); // Up
+                    DrawTriangle({16, 26}, {12, 22}, {20, 22}, iconColor); // Down
+                    DrawTriangle({6, 16}, {10, 12}, {10, 20}, iconColor); // Left
+                    DrawTriangle({26, 16}, {22, 12}, {22, 20}, iconColor); // Right
+                    DrawCircle(16, 16, 3, {255, 200, 100, 255}); // Center point
+                }
+                break;
+                
+            case 2: // PEN tool - Pencil
+                {
+                    // Draw pencil body
+                    DrawLine(8, 24, 20, 12, {255, 200, 100, 255}); // Wood body
+                    DrawLine(9, 23, 21, 11, {255, 200, 100, 255});
+                    DrawLine(20, 12, 24, 8, {100, 100, 100, 255}); // Metal ferrule
+                    DrawLine(21, 11, 25, 7, {100, 100, 100, 255});
+                    DrawCircle(6, 26, 2, {50, 50, 50, 255}); // Graphite tip
+                    DrawCircle(26, 6, 2, {255, 100, 100, 255}); // Eraser
+                }
+                break;
+                
+            case 3: // ERASER tool - Eraser block
+                {
+                    DrawRectangle(10, 10, 12, 8, {255, 200, 200, 255}); // Pink eraser
+                    DrawRectangleLines(10, 10, 12, 8, iconColor);
+                    DrawRectangle(12, 18, 8, 4, {200, 150, 100, 255}); // Metal band
+                    DrawRectangleLines(12, 18, 8, 4, iconColor);
+                }
+                break;
+                
+            case 4: // CUBE tool - 3D cube
+                {
+                    // Draw isometric cube
+                    Vector2 cube_front[4] = {{8, 12}, {16, 12}, {16, 20}, {8, 20}};
+                    Vector2 cube_top[4] = {{8, 12}, {12, 8}, {20, 8}, {16, 12}};
+                    Vector2 cube_right[4] = {{16, 12}, {20, 8}, {20, 16}, {16, 20}};
+                    
+                    // Fill faces
+                    DrawTriangleFan(cube_front, 4, {180, 180, 255, 255}); // Front face
+                    DrawTriangleFan(cube_top, 4, {220, 220, 255, 255}); // Top face
+                    DrawTriangleFan(cube_right, 4, {140, 140, 255, 255}); // Right face
+                    
+                    // Draw edges
+                    for (int j = 0; j < 4; j++) {
+                        DrawLineV(cube_front[j], cube_front[(j+1)%4], iconColor);
+                        DrawLineV(cube_top[j], cube_top[(j+1)%4], iconColor);
+                        DrawLineV(cube_right[j], cube_right[(j+1)%4], iconColor);
+                    }
+                }
+                break;
+                
+            case 5: // ZOOM tool - Magnifying glass
+                {
+                    DrawCircleLines(12, 12, 6, iconColor);
+                    DrawCircleLines(12, 12, 5, iconColor);
+                    DrawLine(17, 17, 24, 24, iconColor);
+                    DrawLine(16, 18, 23, 25, iconColor);
+                    DrawText("+", 10, 10, 8, iconColor);
+                }
+                break;
+        }
+        
+        EndTextureMode();
+        
+        // Store the texture
+        _toolIcons[i] = iconTexture.texture;
+    }
 }
 
 void UIManager::unloadIcons()
 {
-    // Unload textures when done
-    for (auto& icon : _toolIcons) {
-        UnloadTexture(icon);
+    // Properly unload render textures
+    for (auto& renderTexture : _toolIconRenderTextures) {
+        if (renderTexture.id > 0) {
+            UnloadRenderTexture(renderTexture);
+        }
     }
+    _toolIconRenderTextures.clear();
+    _toolIcons.clear();
 }
 
 void UIManager::togglePanel(PanelType panel)

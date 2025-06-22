@@ -95,6 +95,7 @@ private:
     
     // Tool icons
     std::vector<Texture2D> _toolIcons;
+    std::vector<RenderTexture2D> _toolIconRenderTextures;
     
     // Assets for the bottom bar
     std::vector<Asset2D> _assetTiles;
