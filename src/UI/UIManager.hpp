@@ -4,6 +4,7 @@
 #include "raygui.h"
 #include "UITheme.hpp"
 #include "UIComponents.hpp"
+#include "EditorEvents.hpp"
 #include "Input/MouseKeyboard.hpp"
 #include "../Editor/3DMap/3DMapEditor.hpp"
 #include "Assets/Asset2D.hpp"
@@ -53,6 +54,18 @@ public:
     
     // Get UI regions
     Rectangle getMainViewArea() const;
+    
+    // Event handling
+    void setupEventHandlers();
+    void handleFileMenuAction(int selectedItem);
+    void handleEditMenuAction(int selectedItem);
+    void handleRenderMenuAction(int selectedItem);
+    void handleHelpMenuAction(int selectedItem);
+    
+    // Editor state queries
+    int getSelectedObjectCount() const;
+    std::string getSelectedObjectName() const;
+    Vector3 getSelectedObjectTransform() const;
     
 private:
     // Window dimensions

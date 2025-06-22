@@ -14,6 +14,7 @@
 #include "Grid.hpp"
 
 #include "Input/MouseKeyboard.hpp"
+#include "../../UI/EditorEvents.hpp"
 
 using namespace Utilities;
 
@@ -50,6 +51,19 @@ class MapEditor {
         void loadMapBinary(const std::string& filename);
 
         void gameCompilation(const std::string& gameProjectName);
+        
+        // Event handling
+        void setupEventHandlers();
+        void handleToolChanged(int toolIndex);
+        void handleFileAction(UI::EditorEventType actionType, const std::string& filepath = "");
+        void handleAssetSelected(int assetIndex);
+        
+        // State queries for UI
+        int getObjectCount() const;
+        int getSelectedObjectId() const;
+        std::string getSelectedObjectName() const;
+        Vector3 getCameraPosition() const;
+        bool isGridVisible() const;
 
     protected:
     private:
@@ -78,4 +92,9 @@ class MapEditor {
         Vector3D _alignedPosition;
         BasicObject _previewObject;
         std::optional<std::vector<BasicObject>::iterator> _closestObject;
+        
+        // Current tool and selection state
+        int _currentTool = 0; // Default to SELECT tool
+        int _selectedObjectId = -1;
+        bool _gridVisible = true;
 };
