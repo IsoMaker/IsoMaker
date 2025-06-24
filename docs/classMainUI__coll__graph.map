@@ -1,5 +1,9 @@
 <map id="MainUI" name="MainUI">
-<area shape="rect" id="Node000001" title=" " alt="" coords="15,93,83,119"/>
-<area shape="rect" id="Node000002" href="$classMapEditor.html" title=" " alt="" coords="5,5,93,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="52,45,52,93,47,93,47,45"/>
+<area shape="rect" id="Node000001" title="Main application UI controller class." alt="" coords="105,168,173,193"/>
+<area shape="rect" id="Node000002" href="$classMapEditor.html" title="3D Map Editor class" alt="" coords="32,80,120,105"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="75,119,76,132,80,143,91,156,107,165,104,170,88,160,75,145,70,133,69,120"/>
+<area shape="rect" id="Node000003" href="$classUI_1_1ISceneProvider.html" title=" " alt="" coords="5,5,147,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="79,45,79,80,73,80,73,45"/>
+<area shape="rect" id="Node000004" href="$classUI_1_1UIManager.html" title="User Interface Manager class." alt="" coords="145,80,260,105"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="192,119,175,146,153,170,149,166,171,142,188,116"/>
 </map>

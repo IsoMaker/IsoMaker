@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['update_0',['update',['../classpaint_1_1Editor.html#ad42ecdc067f82f7151e51e32b770fcfc',1,'paint::Editor::update()'],['../classMapEditor.html#a3b343b0dd1e4bd2ad421a38b9b18b345',1,'MapEditor::update()'],['../classMainUI.html#a4e7739a4dea8c2cac653856264ca462b',1,'MainUI::update()']]]
+  ['objectcreated_0',['objectCreated',['../namespaceUI_1_1Events.html#ad2bc2b4decb42b387decf5cbf5c7ad06',1,'UI::Events']]],
+  ['objectdeleted_1',['objectDeleted',['../namespaceUI_1_1Events.html#aa0838b6c6af755c4549b4846205b3f8d',1,'UI::Events']]],
+  ['objectselected_2',['objectSelected',['../namespaceUI_1_1Events.html#a74a1581611b8797c626309ed5cbb176e',1,'UI::Events']]]
 ];

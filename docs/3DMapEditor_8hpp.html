@@ -80,6 +80,9 @@ $(function() {
   <div class="headertitle"><div class="title">3DMapEditor.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>3D map editor component for the IsoMaker game engine  
+<a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;vector&gt;</code><br />
 <code>#include &lt;limits&gt;</code><br />
 <code>#include &quot;raylib.h&quot;</code><br />
@@ -90,38 +93,58 @@ $(function() {
 <code>#include &quot;Render/Camera.hpp&quot;</code><br />
 <code>#include &quot;<a class="el" href="Grid_8hpp_source.html">Grid.hpp</a>&quot;</code><br />
 <code>#include &quot;Input/MouseKeyboard.hpp&quot;</code><br />
+<code>#include &quot;<a class="el" href="EditorEvents_8hpp_source.html">../../UI/EditorEvents.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="SceneObject_8hpp_source.html">../../UI/SceneObject.hpp</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for 3DMapEditor.hpp:</div>
 <div class="dyncontent">
 <div class="center"><img src="3DMapEditor_8hpp__incl.png" border="0" usemap="#asrc_2Editor_23DMap_23DMapEditor_8hpp" alt=""/></div>
 <map name="asrc_2Editor_23DMap_23DMapEditor_8hpp" id="asrc_2Editor_23DMap_23DMapEditor_8hpp">
-<area shape="rect" title=" " alt="" coords="241,5,489,31"/>
-<area shape="rect" title=" " alt="" coords="5,79,68,104"/>
-<area shape="poly" title=" " alt="" coords="307,33,82,81,81,76,306,28"/>
-<area shape="rect" title=" " alt="" coords="93,79,151,104"/>
-<area shape="poly" title=" " alt="" coords="326,33,165,80,164,75,325,28"/>
-<area shape="rect" title=" " alt="" coords="135,152,205,177"/>
-<area shape="poly" title=" " alt="" coords="338,33,297,53,253,81,218,112,190,143,186,139,214,108,250,77,294,49,336,28"/>
-<area shape="rect" title=" " alt="" coords="229,152,284,177"/>
-<area shape="poly" title=" " alt="" coords="331,33,296,52,280,65,267,80,257,109,256,139,251,138,252,108,262,77,276,61,293,47,328,28"/>
-<area shape="rect" title=" " alt="" coords="379,79,452,104"/>
-<area shape="poly" title=" " alt="" coords="375,29,401,66,397,69,371,33"/>
-<area shape="rect" title=" " alt="" coords="476,79,656,104"/>
-<area shape="poly" title=" " alt="" coords="398,28,521,71,520,77,396,33"/>
-<area shape="rect" title=" " alt="" coords="680,79,831,104"/>
-<area shape="poly" title=" " alt="" coords="428,28,679,74,678,79,427,33"/>
-<area shape="rect" title=" " alt="" coords="855,79,1005,104"/>
-<area shape="poly" title=" " alt="" coords="458,28,841,76,840,81,457,33"/>
-<area shape="rect" href="Grid_8hpp.html" title=" " alt="" coords="277,79,354,104"/>
-<area shape="poly" title=" " alt="" coords="359,33,333,69,329,66,354,29"/>
-<area shape="rect" title=" " alt="" coords="1029,79,1220,104"/>
-<area shape="poly" title=" " alt="" coords="489,27,1016,76,1015,81,489,33"/>
-<area shape="poly" title=" " alt="" coords="293,106,207,148,205,144,291,102"/>
-<area shape="poly" title=" " alt="" coords="308,106,277,143,273,140,304,103"/>
-<area shape="rect" title=" " alt="" coords="309,152,383,177"/>
-<area shape="poly" title=" " alt="" coords="323,103,338,139,333,141,318,105"/>
-<area shape="rect" title=" " alt="" coords="408,152,553,177"/>
-<area shape="poly" title=" " alt="" coords="343,102,442,144,440,149,341,106"/>
+<area shape="rect" title="3D map editor component for the IsoMaker game engine" alt="" coords="695,5,943,31"/>
+<area shape="rect" title=" " alt="" coords="633,152,696,177"/>
+<area shape="poly" title=" " alt="" coords="727,33,685,51,667,64,652,80,646,94,646,108,654,139,649,140,641,109,641,92,648,77,663,60,682,46,725,28"/>
+<area shape="rect" title=" " alt="" coords="861,79,919,104"/>
+<area shape="poly" title=" " alt="" coords="833,29,871,67,867,71,829,33"/>
+<area shape="rect" title=" " alt="" coords="353,152,424,177"/>
+<area shape="poly" title=" " alt="" coords="695,24,609,29,523,39,449,56,422,67,403,81,394,93,389,107,388,138,382,138,384,106,389,91,399,77,419,62,448,51,522,34,609,23,695,18"/>
+<area shape="rect" title=" " alt="" coords="275,152,329,177"/>
+<area shape="poly" title=" " alt="" coords="695,30,518,49,440,63,384,81,365,94,347,109,319,142,315,139,343,106,362,89,382,76,438,58,518,43,695,24"/>
+<area shape="rect" title=" " alt="" coords="944,79,1017,104"/>
+<area shape="poly" title=" " alt="" coords="846,28,943,71,941,75,844,33"/>
+<area shape="rect" title=" " alt="" coords="1041,79,1221,104"/>
+<area shape="poly" title=" " alt="" coords="870,28,1068,73,1067,78,869,33"/>
+<area shape="rect" title=" " alt="" coords="1245,79,1396,104"/>
+<area shape="poly" title=" " alt="" coords="900,28,1232,75,1231,80,900,33"/>
+<area shape="rect" title=" " alt="" coords="1420,79,1571,104"/>
+<area shape="poly" title=" " alt="" coords="943,28,1406,76,1406,81,943,33"/>
+<area shape="rect" href="Grid_8hpp.html" title=" " alt="" coords="210,79,287,104"/>
+<area shape="poly" title=" " alt="" coords="697,33,513,53,306,81,301,82,300,77,306,76,512,48,697,28"/>
+<area shape="rect" title=" " alt="" coords="1595,79,1785,104"/>
+<area shape="poly" title=" " alt="" coords="944,25,1231,46,1581,76,1581,81,1231,52,944,31"/>
+<area shape="rect" href="EditorEvents_8hpp.html" title="Event&#45;driven communication system for IsoMaker editor components." alt="" coords="661,79,836,104"/>
+<area shape="poly" title=" " alt="" coords="810,33,772,71,768,67,806,29"/>
+<area shape="rect" href="SceneObject_8hpp.html" title=" " alt="" coords="413,79,586,104"/>
+<area shape="poly" title=" " alt="" coords="768,33,565,78,564,73,767,28"/>
+<area shape="poly" title=" " alt="" coords="272,102,355,143,353,148,270,106"/>
+<area shape="poly" title=" " alt="" coords="260,103,287,140,283,143,255,106"/>
+<area shape="rect" title=" " alt="" coords="175,152,250,177"/>
+<area shape="poly" title=" " alt="" coords="245,106,227,141,222,138,240,103"/>
+<area shape="rect" title=" " alt="" coords="5,152,151,177"/>
+<area shape="poly" title=" " alt="" coords="222,106,119,149,117,144,220,102"/>
+<area shape="poly" title=" " alt="" coords="737,106,691,145,687,141,733,102"/>
+<area shape="poly" title=" " alt="" coords="685,107,438,155,437,149,684,101"/>
+<area shape="rect" title=" " alt="" coords="720,152,807,177"/>
+<area shape="poly" title=" " alt="" coords="754,104,761,138,756,139,748,105"/>
+<area shape="rect" title=" " alt="" coords="831,152,955,177"/>
+<area shape="poly" title=" " alt="" coords="773,102,858,143,856,148,771,106"/>
+<area shape="rect" title=" " alt="" coords="550,152,609,177"/>
+<area shape="poly" title=" " alt="" coords="722,106,621,149,619,144,720,102"/>
+<area shape="rect" title=" " alt="" coords="979,152,1047,177"/>
+<area shape="poly" title=" " alt="" coords="792,101,966,148,964,153,790,107"/>
+<area shape="poly" title=" " alt="" coords="483,106,420,147,417,142,480,102"/>
+<area shape="poly" title=" " alt="" coords="514,102,558,141,554,145,510,106"/>
+<area shape="rect" title=" " alt="" coords="449,152,526,177"/>
+<area shape="poly" title=" " alt="" coords="500,105,494,139,489,138,495,104"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -129,15 +152,20 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="3DMapEditor_8hpp__dep__incl.png" border="0" usemap="#asrc_2Editor_23DMap_23DMapEditor_8hppdep" alt=""/></div>
 <map name="asrc_2Editor_23DMap_23DMapEditor_8hppdep" id="asrc_2Editor_23DMap_23DMapEditor_8hppdep">
-<area shape="rect" title=" " alt="" coords="121,5,369,31"/>
+<area shape="rect" title="3D map editor component for the IsoMaker game engine" alt="" coords="165,5,413,31"/>
 <area shape="rect" href="3DMapEditor_8cpp.html" title=" " alt="" coords="5,79,252,104"/>
-<area shape="poly" title=" " alt="" coords="216,40,149,81,146,76,213,35"/>
-<area shape="rect" href="MainUI_8hpp.html" title=" " alt="" coords="276,79,445,104"/>
-<area shape="poly" title=" " alt="" coords="276,35,343,76,340,81,273,40"/>
-<area shape="rect" href="MainUI_8cpp.html" title=" " alt="" coords="195,152,363,177"/>
-<area shape="poly" title=" " alt="" coords="339,115,294,154,291,150,336,111"/>
-<area shape="rect" href="main_8cpp.html" title=" " alt="" coords="388,152,493,177"/>
-<area shape="poly" title=" " alt="" coords="385,111,429,150,426,154,382,115"/>
+<area shape="poly" title=" " alt="" coords="252,39,156,81,154,76,250,34"/>
+<area shape="rect" href="MainUI_8hpp.html" title="Main application UI controller for the IsoMaker game engine editor." alt="" coords="204,152,373,177"/>
+<area shape="poly" title=" " alt="" coords="291,45,291,152,286,152,286,45"/>
+<area shape="rect" href="UIManager_8hpp.html" title="User interface management system for the IsoMaker game engine editor." alt="" coords="327,79,488,104"/>
+<area shape="poly" title=" " alt="" coords="321,35,389,76,387,81,318,40"/>
+<area shape="rect" href="MainUI_8cpp.html" title=" " alt="" coords="125,225,293,251"/>
+<area shape="poly" title=" " alt="" coords="268,188,224,227,220,223,264,184"/>
+<area shape="rect" href="main_8cpp.html" title=" " alt="" coords="317,225,423,251"/>
+<area shape="poly" title=" " alt="" coords="314,184,358,223,355,227,310,188"/>
+<area shape="poly" title=" " alt="" coords="378,113,309,154,307,149,375,109"/>
+<area shape="rect" href="UIManager_8cpp.html" title=" " alt="" coords="398,152,558,177"/>
+<area shape="poly" title=" " alt="" coords="431,112,468,150,465,154,427,116"/>
 </map>
 </div>
 </div>
@@ -146,11 +174,13 @@ This graph shows which files directly or indirectly include this file:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMapEditor.html">MapEditor</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">3D Map Editor class  <a href="classMapEditor.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespaceasset" id="r_namespaceasset"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceasset.html">asset</a></td></tr>
+<tr class="memdesc:namespaceasset"><td class="mdescLeft">&#160;</td><td class="mdescRight">Asset type enumeration. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
@@ -158,9 +188,14 @@ Enumerations</h2></td></tr>
 <tr class="memitem:aaea42974cc41bf8a0f251c4c282b9344" id="r_aaea42974cc41bf8a0f251c4c282b9344"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceasset.html#aaea42974cc41bf8a0f251c4c282b9344">asset::Type</a> { <a class="el" href="namespaceasset.html#aaea42974cc41bf8a0f251c4c282b9344a07c80e2a355d91402a00d82b1fa13855">asset::PLAYER</a>
 , <a class="el" href="namespaceasset.html#aaea42974cc41bf8a0f251c4c282b9344afbfd6568f88d940b586c9ddf8f68236d">asset::CUBE</a>
  }</td></tr>
+<tr class="memdesc:aaea42974cc41bf8a0f251c4c282b9344"><td class="mdescLeft">&#160;</td><td class="mdescRight">Asset type enumeration.  <a href="namespaceasset.html#aaea42974cc41bf8a0f251c4c282b9344">More...</a><br /></td></tr>
 <tr class="separator:aaea42974cc41bf8a0f251c4c282b9344"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-</div><!-- contents -->
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>3D map editor component for the IsoMaker game engine </p>
+<dl class="section author"><dt>Author</dt><dd>IsoMaker Team </dd></dl>
+<dl class="section version"><dt>Version</dt><dd>0.1 </dd></dl>
+</div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8

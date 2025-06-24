@@ -1,8 +1,3 @@
-git pull origin main;
-if [ $? -ne 0 ]; then
-    echo "Failed to pull the latest changes from the dev branch."
-    exit 1
-fi
 rm -rf docs;
 if [ $? -ne 0 ]; then
     echo "Failed to remove the existing docs directory."

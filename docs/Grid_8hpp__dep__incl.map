@@ -1,15 +1,20 @@
 <map id="src/Editor/3DMap/Grid.hpp" name="src/Editor/3DMap/Grid.hpp">
-<area shape="rect" id="Node000001" title=" " alt="" coords="270,5,462,31"/>
-<area shape="rect" id="Node000002" href="$3DMapEditor_8hpp.html" title=" " alt="" coords="121,79,369,104"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="336,40,266,81,263,76,333,35"/>
-<area shape="rect" id="Node000007" href="$Grid_8cpp.html" title=" " alt="" coords="393,79,584,104"/>
-<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="399,35,470,76,467,81,396,40"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="314,5,506,31"/>
+<area shape="rect" id="Node000002" href="$3DMapEditor_8hpp.html" title="3D map editor component for the IsoMaker game engine" alt="" coords="165,79,413,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="380,40,310,81,307,76,377,35"/>
+<area shape="rect" id="Node000009" href="$Grid_8cpp.html" title=" " alt="" coords="437,79,628,104"/>
+<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="443,35,514,76,511,81,440,40"/>
 <area shape="rect" id="Node000003" href="$3DMapEditor_8cpp.html" title=" " alt="" coords="5,152,252,177"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="216,113,149,154,146,149,213,109"/>
-<area shape="rect" id="Node000004" href="$MainUI_8hpp.html" title=" " alt="" coords="276,152,445,177"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="276,109,343,149,340,154,273,113"/>
-<area shape="rect" id="Node000005" href="$MainUI_8cpp.html" title=" " alt="" coords="195,225,363,251"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="339,188,294,227,291,223,336,184"/>
-<area shape="rect" id="Node000006" href="$main_8cpp.html" title=" " alt="" coords="388,225,493,251"/>
-<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="385,184,429,223,426,227,382,188"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="252,112,156,154,154,149,250,107"/>
+<area shape="rect" id="Node000004" href="$MainUI_8hpp.html" title="Main application UI controller for the IsoMaker game engine editor." alt="" coords="204,225,373,251"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="291,118,291,225,286,225,286,118"/>
+<area shape="rect" id="Node000007" href="$UIManager_8hpp.html" title="User interface management system for the IsoMaker game engine editor." alt="" coords="327,152,488,177"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="321,109,389,149,387,154,318,113"/>
+<area shape="rect" id="Node000005" href="$MainUI_8cpp.html" title=" " alt="" coords="125,299,293,324"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="268,262,224,300,220,296,264,258"/>
+<area shape="rect" id="Node000006" href="$main_8cpp.html" title=" " alt="" coords="317,299,423,324"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="314,258,358,296,355,300,310,262"/>
+<area shape="poly" id="edge7_Node000007_Node000004" title=" " alt="" coords="378,187,309,227,307,223,375,182"/>
+<area shape="rect" id="Node000008" href="$UIManager_8cpp.html" title=" " alt="" coords="398,225,558,251"/>
+<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="431,185,468,223,465,227,427,189"/>
 </map>
