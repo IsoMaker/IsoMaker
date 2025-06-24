@@ -26,6 +26,8 @@ Game::Game(Render::Window& window, Render::Camera& camera) : _window(window), _c
     _playerAsset.setFileName(playerPath);
     _playerAsset.loadFile();
     _player.setTexture(_playerAsset, 32, 40, 4);
+
+    std::cout << "PLAYER POS DEFAULT: " << _playerPos.x << " " << _playerPos.y << " " << _playerPos.z << std::endl;
 }
 
 Game::~Game()
@@ -136,16 +138,20 @@ bool Game::handleCollision(Utilities::Vector3D newPos)
     Utilities::Vector3D posTmp = {0.0f, 0.0f, 0.0f};
     bool thereIsACube = false;
 
+    std::cout << "FUTURE POS [BEFORE] ROUND: " << newPos.x << " " << newPos.y << " " << newPos.z << std::endl;
     newPos = getEntitieBlockPos(newPos);
+    std::cout << "FUTURE POS [AFTER] ROUND: " << newPos.x << " " << newPos.y << " " << newPos.z << std::endl;
     for (auto i = _objects.begin(); i != _objects.end(); i++) {
         if (i->getAssetType() == AssetType::ASSET3D) {
             posTmp = i->getPosition();
             if ((newPos.x == posTmp.x && newPos.z == posTmp.z)) {
+                std::cout << "Meme cube" << std::endl;
                 if (newPos.y + 1 == posTmp.y || newPos.y - 1 == posTmp.y) {
+                    std::cout << "OMG COLLISION" << std::endl;
                     return false;
                 }
             }
-            if ((newPos.x == posTmp.x && newPos.z == posTmp.z && newPos.y == posTmp.y))
+            if (newPos == posTmp)
                 thereIsACube = true;
         }
     }
