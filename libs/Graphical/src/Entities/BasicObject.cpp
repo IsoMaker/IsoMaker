@@ -62,8 +62,10 @@ void BasicObject::draw() {
         const float tileHeight = 32.0f;
         float isoX = (_objectBox.position.x - _objectBox.position.z) * tileWidth / 2.0f;
         float isoY = (_objectBox.position.x + _objectBox.position.z) * tileHeight / 2.0f - _objectBox.position.y * tileHeight;
-
-        Vector2 position = {(isoX + SCREENWIDTH / 2) - 32, (isoY + SCREENHEIGHT / 2) - 16};
+        Vector2 position = {
+            (isoX + SCREENWIDTH / 2) - _frameWidth,
+            ((isoY + SCREENHEIGHT / 2) - _frameHeight) - 48
+        };
 
         DrawTextureRec(_asset2D.getTexture(), source, position, WHITE);
     }
@@ -83,7 +85,7 @@ void BasicObject::drawWireframe() {
     // Avoid z-fighting by pushing the wireframe forward
     glEnable(GL_POLYGON_OFFSET_LINE);
     glPolygonOffset(-1.0f, -1.0f);
-    
+
     rlBegin(RL_LINES);
     rlColor4ub(0, 0, 0, 255); // yellow wireframe
 
