@@ -1,0 +1,14 @@
+<map id="src/UI/UIComponents.hpp" name="src/UI/UIComponents.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="83,5,270,31"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="45,152,116,177"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="88,33,46,51,28,64,13,80,9,96,16,113,30,129,49,143,46,147,27,133,11,116,3,97,9,77,24,60,43,46,86,28"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="23,79,98,104"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="159,33,92,74,89,69,156,28"/>
+<area shape="rect" id="Node000004" href="$UITheme_8hpp.html" title=" " alt="" coords="122,79,231,104"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="179,31,179,65,174,65,174,31"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="255,79,314,104"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="195,28,257,69,254,73,192,33"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="338,79,425,104"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="210,28,336,72,335,77,208,33"/>
+<area shape="poly" id="edge4_Node000004_Node000002" title=" " alt="" coords="162,106,109,146,105,141,159,102"/>
+</map>

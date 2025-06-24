@@ -1,0 +1,17 @@
+<map id="src/Editor/2D/2DEditor.cpp" name="src/Editor/2D/2DEditor.cpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="184,5,375,31"/>
+<area shape="rect" id="Node000002" href="$2DEditor_8hpp.html" title="Declaration of the 2D Pixel Art Editor." alt="" coords="227,79,332,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="282,31,282,65,277,65,277,31"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="5,152,76,177"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="242,107,90,151,89,146,240,101"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="101,152,175,177"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="258,106,174,148,172,143,255,102"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="200,152,263,177"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="274,106,249,142,244,139,269,103"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="287,152,367,177"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="289,103,314,139,310,142,285,106"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="392,152,465,177"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="304,102,393,144,391,148,302,106"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="490,152,565,177"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="320,101,477,146,476,151,318,107"/>
+</map>

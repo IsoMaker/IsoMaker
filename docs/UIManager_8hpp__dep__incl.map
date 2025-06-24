@@ -1,0 +1,11 @@
+<map id="src/UI/UIManager.hpp" name="src/UI/UIManager.hpp">
+<area shape="rect" id="Node000001" title="User interface management system for the IsoMaker game engine editor." alt="" coords="183,5,345,31"/>
+<area shape="rect" id="Node000002" href="$MainUI_8hpp.html" title="Main application UI controller for the IsoMaker game engine editor." alt="" coords="85,79,254,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="239,41,186,81,183,76,236,37"/>
+<area shape="rect" id="Node000005" href="$UIManager_8cpp.html" title=" " alt="" coords="279,79,439,104"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="292,37,345,76,342,81,289,41"/>
+<area shape="rect" id="Node000003" href="$MainUI_8cpp.html" title=" " alt="" coords="5,152,173,177"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="148,115,104,154,101,150,145,111"/>
+<area shape="rect" id="Node000004" href="$main_8cpp.html" title=" " alt="" coords="198,152,303,177"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="194,111,239,150,236,154,191,115"/>
+</map>
