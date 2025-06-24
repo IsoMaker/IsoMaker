@@ -48,7 +48,7 @@ void MapEditor::update(input::IHandlerBase &inputHandler)
     }
     if (inputHandler.isReleased(input::Generic::RIGHT)) {
         _camera.rotateCounterclock();
-        UI::Events::cameraMove(_camera.getPosition().convert());
+
         std::cout << "Other Rotate Camera" << std::endl;
     }
     if (inputHandler.isPressed(input::Generic::DOWN)) {

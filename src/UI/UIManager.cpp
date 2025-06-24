@@ -209,7 +209,7 @@ void UIManager::drawTopMenuBar()
     int dropdownPos = _screenWidth - dropdownWidth - 10;
     
     // Dropdown to select editor type
-    const char *editorTypes[2] = { "Map Editor", "2D Editor" };
+    const char *editorTypes[2] = { "Map Editor", "Scripting" };
     
     // Use the custom dropdown
     Rectangle dropdownBounds = {static_cast<float>(dropdownPos), 2.0f, static_cast<float>(dropdownWidth), static_cast<float>(_topBarHeight - 4)};
@@ -402,34 +402,6 @@ void UIManager::drawRightPanels()
             static_cast<float>(_rightPanelsWidth - 10),
             static_cast<float>(sectionHeight)
         };
-        
-        // Use CollapsiblePanel component
-        CollapsiblePanel(lightingBounds, "Lighting", &_lightingSectionOpen, UI_PRIMARY, UI_SECONDARY);
-        
-        if (_lightingSectionOpen) {
-            // Lighting properties would go here
-            sectionY += 80;
-        } else {
-            sectionY += sectionHeight + 5;
-        }
-        
-        // Physics section
-        Rectangle physicsBounds = {
-            static_cast<float>(_screenWidth - _rightPanelsWidth + 5),
-            static_cast<float>(sectionY),
-            static_cast<float>(_rightPanelsWidth - 10),
-            static_cast<float>(sectionHeight)
-        };
-        
-        // Use CollapsiblePanel component
-        CollapsiblePanel(physicsBounds, "Physics", &_physicsSectionOpen, UI_PRIMARY, UI_SECONDARY);
-        
-        if (_physicsSectionOpen) {
-            // Physics properties would go here
-            sectionY += 80;
-        } else {
-            sectionY += sectionHeight + 5;
-        }
     }
 }
 

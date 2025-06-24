@@ -42,3 +42,5 @@ GenericGame
 .vscode
 
 .DS_Store
+
+game_map.dat
