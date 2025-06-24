@@ -45,7 +45,7 @@ namespace paint {
         Editor(unsigned int screenWidth, unsigned int screenHeight)
             : _screenWidth(screenWidth), _screenHeight(screenHeight),
               _currentColor(RED),
-              pixelColors(screenWidth / _gridSize, std::vector<Color>(screenHeight / _gridSize, BLANK)) {
+              pixelColors(screenWidth / _cellAmount, std::vector<Color>(screenHeight / _cellAmount, BLANK)) {
                 updateCanvasOffset();
               }
 
@@ -136,7 +136,7 @@ namespace paint {
          * @brief Gets the grid size.
          * @return The current grid size in pixels.
          */
-        int getGridSize() const { return _gridSize; }
+        int getGridSize() const { return _cellAmount; }
 
         /**
          * @brief Sets the current tool.
@@ -158,7 +158,7 @@ namespace paint {
         void setZoomLevel(float zoomLevel) {
             if (zoomLevel >= 0.5f && zoomLevel <= 2.0f) {
                 _zoomLevel = zoomLevel;
-                _gridSize = _originalGridSize * _zoomLevel;
+                _cellAmount = _originalGridSize * _zoomLevel;
                 updateCanvasOffset();
             }
         }
@@ -180,7 +180,7 @@ namespace paint {
          * @brief The size of the grid cells in pixels.
          * @details Default value is 20 pixels. This value is dynamically adjusted based on the zoom level.
          */
-        int _gridSize = 20;
+        int _cellAmount = 20;
 
         /**
          * @brief The current drawing color.
@@ -235,8 +235,8 @@ namespace paint {
          * @details The offset is recalculated based on the current grid size and screen dimensions to ensure proper alignment.
          */
         void updateCanvasOffset() {
-            _canvasOffsetX = (_screenWidth - (pixelColors.size() * _gridSize)) / 2;
-            _canvasOffsetY = (_screenHeight - (pixelColors[0].size() * _gridSize)) / 2;
+            _canvasOffsetX = (_screenWidth - (pixelColors.size() * _cellAmount)) / 2;
+            _canvasOffsetY = (_screenHeight - (pixelColors[0].size() * _cellAmount)) / 2;
         }
     };
 

@@ -37,6 +37,10 @@ cmake/build
 build
 bin/IsoMaker
 
+GenericGame
+
 .vscode
 
 .DS_Store
+
+game_map.dat
