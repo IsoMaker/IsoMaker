@@ -1,4 +1,5 @@
 #include "iostream"
+#include <filesystem>
 
 #include "3DMapEditor.hpp"
 #include "Input/InputTypes.hpp"
@@ -230,9 +231,12 @@ std::pair<Vector3D, std::optional<std::vector<BasicObject>::iterator>> MapEditor
 
 void MapEditor::saveMapBinary(const std::string& filename)
 {
-    std::ofstream file(filename);
+    std::filesystem::path filepath(filename);
+    std::filesystem::create_directories(filepath.parent_path());
+
+    std::ofstream file(filename, std::ios::out);
     if (!file.is_open()) {
-        std::cerr << "Failed to open map file for saving!\n";
+        std::cerr << "Failed to open or create map file for saving: " << filename << "\n";
         return;
     }
 
@@ -246,10 +250,10 @@ void MapEditor::saveMapBinary(const std::string& filename)
         file << "PLAYER\n";
         file << _objects2D[0].getPosition().x << " " << _objects2D[0].getPosition().y << "\n";
     }
-    file.close();
-    std::cout << "Map saved.\n";
-}
 
+    file.close();
+    std::cout << "Map saved to: " << filename << "\n";
+}
 
 void MapEditor::loadMapBinary(const std::string& filename)
 {
