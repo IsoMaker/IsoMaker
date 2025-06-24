@@ -100,6 +100,7 @@ void Game::draw2DElements()
 void Game::handleInput(input::IHandlerBase &inputHandler)
 {
     bool moving = false;
+    const float gridStep = 0.1f;
 
     if (inputHandler.isReleased(input::Generic::SELECT1)) {
         _camera.rotateClock();
@@ -109,20 +110,20 @@ void Game::handleInput(input::IHandlerBase &inputHandler)
         _camera.rotateCounterclock();
         std::cout << "Other Rotate Camera" << std::endl;
     }
-    if (inputHandler.isPressed(input::Generic::LEFT)) {
-        _playerPos.x -= 0.1f;
+    if (inputHandler.isPressed(input::Generic::LEFT) && handleCollision({_playerPos.x - 0.1f, _playerPos.y, _playerPos.z})) {
+        _playerPos.x -= gridStep;
         moving = true;
     }
-    if (inputHandler.isPressed(input::Generic::RIGHT)) {
-        _playerPos.x += 0.1f;
+    if (inputHandler.isPressed(input::Generic::RIGHT) && handleCollision({_playerPos.x + 0.1f, _playerPos.y, _playerPos.z})) {
+        _playerPos.x += gridStep;
         moving = true;
     }
-    if (inputHandler.isPressed(input::Generic::UP)) {
-        _playerPos.z -= 0.1f;
+    if (inputHandler.isPressed(input::Generic::UP) && handleCollision({_playerPos.x, _playerPos.y, _playerPos.z - 0.1f})) {
+        _playerPos.z -= gridStep;
         moving = true;
     }
-    if (inputHandler.isPressed(input::Generic::DOWN)) {
-        _playerPos.z += 0.1f;
+    if (inputHandler.isPressed(input::Generic::DOWN) && handleCollision({_playerPos.x, _playerPos.y, _playerPos.z + 0.1f})) {
+        _playerPos.z += gridStep;
         moving = true;
     }
 
@@ -130,6 +131,31 @@ void Game::handleInput(input::IHandlerBase &inputHandler)
     _playerIsMoving = moving;
 }
 
+bool Game::handleCollision(Utilities::Vector3D newPos)
+{
+    Utilities::Vector3D posTmp = {0.0f, 0.0f, 0.0f};
+    bool thereIsACube = false;
+
+    newPos = getEntitieBlockPos(newPos);
+    for (auto i = _objects.begin(); i != _objects.end(); i++) {
+        if (i->getAssetType() == AssetType::ASSET3D) {
+            posTmp = i->getPosition();
+            if ((newPos.x == posTmp.x && newPos.z == posTmp.z)) {
+                if (newPos.y + 1 == posTmp.y || newPos.y - 1 == posTmp.y) {
+                    return false;
+                }
+            }
+            if ((newPos.x == posTmp.x && newPos.z == posTmp.z && newPos.y == posTmp.y))
+                thereIsACube = true;
+        }
+    }
+    return thereIsACube;
+}
+
+Utilities::Vector3D Game::getEntitieBlockPos(Utilities::Vector3D pos)
+{
+    return {std::trunc(pos.x), pos.y, std::trunc(pos.z)};
+}
 
 void Game::update(input::IHandlerBase &inputHandler)
 {

@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <fstream>
+#include <cmath>
 
 // Library
 #include "Render/Camera.hpp"
@@ -28,6 +29,8 @@ class Game {
         void Render();
         void loop(input::IHandlerBase &mouseHandler);
         void handleInput(input::IHandlerBase &mouseHandler);
+        bool handleCollision(Utilities::Vector3D newPos);
+        Utilities::Vector3D getEntitieBlockPos(Utilities::Vector3D pos);
 
     protected:
 
