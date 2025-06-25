@@ -9,7 +9,7 @@ MainUI::MainUI() : _3DMapEditor(_camera, _window) {
     _gameProjectName = "game_project";
 
     Asset3D cubeAsset;
-    cubeAsset.setFileName("ressources/newBlock.glb");
+    cubeAsset.setFileName("ressources/elements/models/cube.obj");
     cubeAsset.loadFile();
     _3DMapEditor.changeCubeType(cubeAsset);
 

@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "AEntity.hpp"
+#include "../../includes/Objects/AEntity.hpp"
 
 namespace objects
 {
@@ -15,8 +15,9 @@ namespace objects
     {
         public:
             using AEntity::AEntity;
-            ~Character() = default;
+            ~Character();
 
-            void draw() override;
+            void draw() { AEntity::draw(); };
+            void draw(Camera &camera);
     };
 }

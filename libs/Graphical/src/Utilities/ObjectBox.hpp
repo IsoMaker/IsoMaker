@@ -25,9 +25,9 @@ namespace Utilities
             void setScale(float newScale) { _scale = newScale; };
 
         protected:
-            T _position;
-            T _size;
-            float _scale;
+            T _position;  // position of object
+            T _size;      // size of hitbox of object
+            float _scale; // render scale of object
 
         private:
     };

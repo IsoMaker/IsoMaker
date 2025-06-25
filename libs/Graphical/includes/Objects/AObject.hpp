@@ -16,6 +16,11 @@ namespace objects
     class AObject : public IObject
     {
         public:
+            AObject()
+            {
+                _asset2D = Asset2D();
+                _box2D = ObjectBox2D();
+            }
             AObject(Asset2D asset2D)
             {
                 _asset2D = asset2D;
@@ -31,7 +36,12 @@ namespace objects
                 Vector2D size = Vector2D((float)texture.width, (float)texture.height);
                 _box2D = ObjectBox2D(position, size);
             };
-            AObject(Asset2D asset2D, Vector2D position, Vector2D size, float scale = 1.0f)
+            AObject(Asset2D asset2D, Vector2D position, Vector2D size)
+            {
+                _asset2D = asset2D;
+                _box2D = ObjectBox2D(position, size);
+            };
+            AObject(Asset2D asset2D, Vector2D position, Vector2D size, float scale)
             {
                 _asset2D = asset2D;
                 _box2D = ObjectBox2D(position, size, scale);
