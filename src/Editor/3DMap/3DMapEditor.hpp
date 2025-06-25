@@ -14,18 +14,19 @@
 
 #include <fstream>
 
-#include "Entities/BasicEntity.hpp"
-
 #include "Render/Window.hpp"
 #include "Render/Camera.hpp"
 #include "Grid.hpp"
 
 #include "Input/MouseKeyboard.hpp"
+
+#include "Entities/MapElement.hpp"
+#include "Entities/Character.hpp"
 #include "../../UI/EditorEvents.hpp"
 #include "../../UI/SceneObject.hpp"
 
 using namespace Utilities;
-using namespace Entities;
+using namespace objects;
 
 /**
  * @brief Asset type enumeration
@@ -144,7 +145,7 @@ class MapEditor : public UI::ISceneProvider {
          * 
          * @param cubeIterator Iterator pointing to the cube to remove
          */
-        void removeCube(std::vector<BasicEntity>::iterator cubeIterator);
+        void removeCube(std::vector<std::unique_ptr<MapElement>>::iterator cubeIterator);
 
         /**
          * @brief Change the current sprite type for 2D objects
@@ -171,7 +172,7 @@ class MapEditor : public UI::ISceneProvider {
          * 
          * @param toRemove Iterator pointing to the player to remove
          */
-        void removePlayer(std::vector<BasicObject>::iterator toRemove);
+        void removePlayer(std::vector<std::unique_ptr<Character>>::iterator toRemove);
 
         /**
          * @brief Save the map to a binary file
@@ -363,30 +364,30 @@ class MapEditor : public UI::ISceneProvider {
         void updateCursorInfo(Vector2D cursorPos, Vector3D cameraPos);
 
         // Scene objects
-        std::vector<BasicObject> _objects3D;       ///< All 3D objects in the scene
-        std::vector<BasicObject> _objects2D;       ///< All 2D objects in the scene
+        std::vector<std::unique_ptr<MapElement>> _objects3D; ///< All 3D objects in the scene
+        
+        std::vector<std::unique_ptr<Character>> _objects2D;  ///< All 2D objects in the scene
 
         // Current assets
-        Asset3D _currentCubeType;                  ///< Currently selected 3D asset for placement
-        Asset2D _currentSpireType;                 ///< Currently selected 2D asset for placement
+        Asset3D _currentCubeType;                            ///< Currently selected 3D asset for placement
+        Asset2D _currentSpriteType;                          ///< Currently selected 2D asset for placement
 
         // Core references
-        Render::Window &_window;                   ///< Reference to the application window
-        Render::Camera &_camera;                   ///< Reference to the 3D camera
-        map::MapGrid _grid;                        ///< Grid system for alignment
+        Render::Window &_window;                             ///< Reference to the application window
+        Render::Camera &_camera;                             ///< Reference to the 3D camera
+        map::MapGrid _grid;                                  
 
         // Editor state
-        bool _placePlayer;                         ///< Flag for player placement mode
-        bool _drawWireframe = false;               ///< Wireframe rendering mode
-        float _cubeHeight;                         ///< Height for cube placement
+        bool _placePlayer;                                   ///< Flag for player placement mode
+        bool _drawWireframe = false;                         ///< Wireframe rendering mode
+        float _cubeHeight;                                   ///< Height for cube placement
 
         // Interactive elements
         Vector3D _alignedPosition;                 ///< Current grid-aligned cursor position
-        BasicObject _previewObject;               ///< Preview object for placement
-        std::optional<std::vector<BasicObject>::iterator> _closestObject; ///< Closest object to cursor
+        std::optional<std::vector<std::unique_ptr<MapElement>>::iterator> _closestObject; ///< Closest object to cursor
         
         // Current tool and selection state
-        int _currentTool = 0;                      ///< Current tool index (default: SELECT)
-        int _selectedObjectId = -1;                ///< ID of currently selected object
-        bool _gridVisible = true;                  ///< Grid visibility state
+        int _currentTool = 0;                                ///< Current tool index (default: SELECT)
+        int _selectedObjectId = -1;                          ///< ID of currently selected object
+        bool _gridVisible = true;                            ///< Grid visibility state
 };

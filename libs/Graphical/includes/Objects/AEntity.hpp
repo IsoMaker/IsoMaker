@@ -14,14 +14,25 @@ namespace objects
     class AEntity : public AObject
     {
         public:
-            AEntity(Asset2D asset2D) : AObject(asset2D) {};
+            AEntity() : AObject()
+            {
+                _box3D = ObjectBox3D();
+            }
+            AEntity(Asset2D asset2D) : AObject(asset2D)
+            {
+                _box3D = ObjectBox3D();
+            };
             AEntity(Asset2D asset2D, Vector3D position)  : AObject(asset2D)
             {
                 Texture2D texture = asset2D.getTexture();
                 Vector3D size = Vector3D((float)texture.width, (float)texture.height, (float)texture.width);
                 _box3D = ObjectBox3D(position, size);
             };
-            AEntity(Asset2D asset2D, Vector3D position, Vector3D size, float scale = 1.0f) : AObject(asset2D)
+            AEntity(Asset2D asset2D, Vector3D position, Vector3D size) : AObject(asset2D)
+            {
+                _box3D = ObjectBox3D(position, size);
+            };
+            AEntity(Asset2D asset2D, Vector3D position, Vector3D size, float scale) : AObject(asset2D)
             {
                 _box3D = ObjectBox3D(position, size, scale);
             };
@@ -29,11 +40,6 @@ namespace objects
             ~AEntity() = default;
 
             ObjectBox3D &getBox3D() { return _box3D; };
-
-            void draw() override
-            {
-                return;
-            };
 
             // virtual void update() = 0;
 
