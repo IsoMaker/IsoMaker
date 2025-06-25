@@ -492,7 +492,6 @@ void UIManager::drawBottomAssets3D(int barY)
     int padding = 10;
     int rowCapacity = (_screenWidth - padding) / (assetSize + padding);
 
-    BeginScissorMode(0, barY, _screenWidth, _screenHeight - barY);
 
     for (int i = 0; i < _assetTiles3D.size(); i++) {
         int row = i / rowCapacity;
@@ -504,9 +503,14 @@ void UIManager::drawBottomAssets3D(int barY)
         Rectangle assetBounds = {static_cast<float>(x), static_cast<float>(y), static_cast<float>(assetSize), static_cast<float>(assetSize)};
         Rectangle tileBounds = { (float)x, (float)y, (float)assetSize, (float)assetSize };
 
-        DrawRectangleRec(tileBounds, i == _selectedAssetIndex3D ? UI_PRIMARY : UI_SECONDARY);
+
+        if (AssetTile(assetBounds, _assetTiles3D[i].getModel(), _assetTiles3D[i].getDisplayName().c_str(), i == _selectedAssetIndex2D)) {
+            _selectedAssetIndex2D = i;
+            Events::assetSelected(i);
+        }
 
         // Begin drawing to a tiny viewport
+        BeginScissorMode(0, barY, _screenWidth, _screenHeight - barY);
         rlViewport(x, _screenHeight - (y + assetSize), assetSize, assetSize);
 
         Camera cam = { 0 };
@@ -532,6 +536,7 @@ void UIManager::drawBottomAssets3D(int barY)
         // Reset OpenGL state
         rlViewport(0, 0, _screenWidth, _screenHeight);
         rlLoadIdentity();  // Reset transformations
+        EndScissorMode();
 
         // Selection
         if (CheckCollisionPointRec(GetMousePosition(), tileBounds) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
@@ -540,7 +545,6 @@ void UIManager::drawBottomAssets3D(int barY)
         }
     }
 
-    EndScissorMode();
 }
 
 void UIManager::loadDefaultAsset(const std::string& path)

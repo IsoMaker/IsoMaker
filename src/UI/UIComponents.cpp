@@ -198,18 +198,18 @@ bool ToolButton(Rectangle bounds, Texture2D icon, const char* tooltip, bool isSe
 
 bool AssetTile(Rectangle bounds, Texture2D texture, const char* name, bool isSelected) {
     bool clicked = false;
-    
+
     // Draw tile background
     Color bgColor = isSelected ? ACCENT_TERTIARY : UI_SECONDARY;
     DrawRectangleRec(bounds, bgColor);
-    
+
     // Draw asset preview (texture)
     if (texture.id > 0) {
         // Scale texture to fit within bounds while maintaining aspect ratio
         float scale = fmin(bounds.width / texture.width, bounds.height / texture.height);
         float scaledWidth = texture.width * scale;
         float scaledHeight = texture.height * scale;
-        
+
         DrawTexturePro(
             texture,
             {0, 0, (float)texture.width, (float)texture.height},
@@ -222,16 +222,39 @@ bool AssetTile(Rectangle bounds, Texture2D texture, const char* name, bool isSel
         // Placeholder when no texture
         DrawRectangle(bounds.x + 5, bounds.y + 5, bounds.width - 10, bounds.height - 25, UI_TEXT_SECONDARY);
     }
-    
+
     // Draw asset name at bottom
     int textWidth = MeasureText(name, 9);
     DrawText(name, bounds.x + (bounds.width - textWidth) / 2, bounds.y + bounds.height - 15, 9, UI_TEXT_PRIMARY);
-    
+
     // Check for click
     if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(GetMousePosition(), bounds)) {
         clicked = true;
     }
-    
+
+    return clicked;
+}
+
+bool AssetTile(Rectangle bounds, Model model, const char* name, bool isSelected) {
+    bool clicked = false;
+
+    // Draw tile background
+    Color bgColor = isSelected ? ACCENT_TERTIARY : UI_SECONDARY;
+    DrawRectangleRec(bounds, bgColor);
+
+    // Placeholder when no texture
+    DrawRectangle(bounds.x + 5, bounds.y + 5, bounds.width - 10, bounds.height - 25, UI_TEXT_SECONDARY);
+
+
+    // Draw asset name at bottom
+    int textWidth = MeasureText(name, 9);
+    DrawText(name, bounds.x + (bounds.width - textWidth) / 2, bounds.y + bounds.height - 15, 9, UI_TEXT_PRIMARY);
+
+    // Check for click
+    if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(GetMousePosition(), bounds)) {
+        clicked = true;
+    }
+
     return clicked;
 }
 

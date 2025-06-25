@@ -31,6 +31,7 @@ int TabBar(Rectangle bounds, const char** names, int count, int* active);
 
 // Asset tile component
 bool AssetTile(Rectangle bounds, Texture2D texture, const char* name, bool isSelected);
+bool AssetTile(Rectangle bounds, Model texture, const char* name, bool isSelected);
 
 // Tool button with icon
 bool ToolButton(Rectangle bounds, Texture2D icon, const char* tooltip, bool isSelected);
