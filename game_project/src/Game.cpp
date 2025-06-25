@@ -113,19 +113,19 @@ void Game::handleInput(input::IHandlerBase &inputHandler)
         _camera.rotateCounterclock();
         std::cout << "Other Rotate Camera" << std::endl;
     }
-    if (inputHandler.isPressed(input::Generic::LEFT) && handleCollision({_playerPos.x - 0.1f, _playerPos.y, _playerPos.z})) {
+    if (!inputHandler.isNotPressed(input::Generic::LEFT) && handleCollision({_playerPos.x - 0.1f, _playerPos.y, _playerPos.z})) {
         _playerPos.x -= gridStep;
         moving = true;
     }
-    if (inputHandler.isPressed(input::Generic::RIGHT) && handleCollision({_playerPos.x + 0.1f, _playerPos.y, _playerPos.z})) {
+    if (!inputHandler.isNotPressed(input::Generic::RIGHT) && handleCollision({_playerPos.x + 0.1f, _playerPos.y, _playerPos.z})) {
         _playerPos.x += gridStep;
         moving = true;
     }
-    if (inputHandler.isPressed(input::Generic::UP) && handleCollision({_playerPos.x, _playerPos.y, _playerPos.z - 0.1f})) {
+    if (!inputHandler.isNotPressed(input::Generic::UP) && handleCollision({_playerPos.x, _playerPos.y, _playerPos.z - 0.1f})) {
         _playerPos.z -= gridStep;
         moving = true;
     }
-    if (inputHandler.isPressed(input::Generic::DOWN) && handleCollision({_playerPos.x, _playerPos.y, _playerPos.z + 0.1f})) {
+    if (!inputHandler.isNotPressed(input::Generic::DOWN) && handleCollision({_playerPos.x, _playerPos.y, _playerPos.z + 0.1f})) {
         _playerPos.z += gridStep;
         moving = true;
     }

@@ -22,6 +22,7 @@
 
 #include "Entities/MapElement.hpp"
 #include "Entities/Character.hpp"
+
 #include "../../UI/EditorEvents.hpp"
 #include "../../UI/SceneObject.hpp"
 
