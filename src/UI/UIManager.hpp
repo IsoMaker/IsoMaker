@@ -182,6 +182,22 @@ public:
      * Handles asset selection and loading.
      */
     void drawBottomAssetsBar();
+
+    /**
+     * @brief Draw the bottom assets loaded 2D
+     * 
+     * Renders the bottom assets browser showing available assets.
+     * Handles asset selection and loading.
+     */
+    void drawBottomAssets2D(int barY);
+
+    /**
+     * @brief Draw the bottom assets loaded 3D
+     * 
+     * Renders the bottom assets browser showing available assets.
+     * Handles asset selection and loading.
+     */
+    void drawBottomAssets3D(int barY);
     
     // Panel management
     /**
@@ -338,9 +354,15 @@ private:
     std::vector<Texture2D> _toolIcons;     ///< Tool icon textures
     std::vector<RenderTexture2D> _toolIconRenderTextures; ///< Tool icon render textures
     
-    // Assets for the bottom bar
-    std::vector<Asset2D> _assetTiles;      ///< Available 2D assets for the bottom bar
-    int _selectedAssetIndex;               ///< Index of currently selected asset
+    bool _show3DAssets;
+
+    // Assets for the bottom bar 2D
+    std::vector<Asset2D> _assetTiles2D;      ///< Available 2D assets for the bottom bar
+    int _selectedAssetIndex2D;               ///< Index of currently selected asset
+
+    // Assets for the bottom bar 3D
+    std::vector<Asset3D> _assetTiles3D;      ///< Available 2D assets for the bottom bar
+    int _selectedAssetIndex3D;               ///< Index of currently selected asset
 
     // Scene objects
     std::vector<SceneObjectInfo> _sceneObjects; ///< List of scene objects for hierarchy
@@ -391,6 +413,12 @@ private:
      * Unloads and frees UI icon textures.
      */
     void unloadIcons();
+
+    void loadDefaultAsset(const std::string& path);
+    
+    void loadAsset2D(const std::string& path, const std::string& name);
+    
+    void loadAsset3D(const std::string& path, const std::string& name);
 };
 
 } // namespace UI

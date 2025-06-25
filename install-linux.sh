@@ -21,7 +21,7 @@ if ! command -v g++ > /dev/null; then
 fi
 
 echo "Cleaning previous build directory..."
-rm -rf cmake/build
+rm -rf cmake/build/CMakeCache.txt
 
 echo "Building IsoMaker..."
 cmake -B cmake/build -S cmake

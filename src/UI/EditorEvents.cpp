@@ -84,6 +84,11 @@ namespace Events {
     void sceneObjectRenamed(int objectId, const std::string& newName) {
         g_eventDispatcher.dispatch(EditorEvent(EditorEventType::SCENE_OBJECT_RENAMED, newName, "Scene object renamed"));
     }
+
+    void addAssetRequested() {
+        std::cout << "trigger event\n";
+        g_eventDispatcher.dispatch(EditorEvent(EditorEventType::ASSET_LOADED, 0, "Add New Asset"));
+    }
 }
 
 } // namespace UI

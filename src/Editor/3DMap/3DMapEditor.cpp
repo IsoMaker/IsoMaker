@@ -327,6 +327,12 @@ void MapEditor::setupEventHandlers()
             handleAssetSelected(std::get<int>(event.data));
         }
     });
+
+    UI::g_eventDispatcher.subscribe(UI::EditorEventType::ASSET_LOADED, [this](const UI::EditorEvent& event) {
+        if (std::holds_alternative<int>(event.data)) {
+            handleAssetLoaded();
+        }
+    });
     
     UI::g_eventDispatcher.subscribe(UI::EditorEventType::GRID_TOGGLED, [this](const UI::EditorEvent& event) {
         if (std::holds_alternative<bool>(event.data)) {
@@ -396,6 +402,11 @@ void MapEditor::handleAssetSelected(int assetIndex)
     // Change current asset type based on selection
     std::cout << "Asset selected: " << assetIndex << std::endl;
     // This would change _currentCubeType or _currentSpireType based on the asset
+}
+
+void MapEditor::handleAssetLoaded()
+{
+    std::cout << "LOAD ASSET ATTENTION" << std::endl;
 }
 
 int MapEditor::getObjectCount() const

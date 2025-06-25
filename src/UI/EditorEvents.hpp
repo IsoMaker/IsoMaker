@@ -339,6 +339,14 @@ namespace Events {
      * @param newName New name for the object
      */
     void sceneObjectRenamed(int objectId, const std::string& newName);
+
+    /**
+     * @brief Dispatch a scene object renamed event
+     * 
+     * @param objectId ID of the renamed scene object
+     * @param newName New name for the object
+     */
+    void addAssetRequested();
 }
 
 } // namespace UI
