@@ -447,7 +447,8 @@ void UIManager::drawBottomAssetsBar()
     DrawText("+", 150, static_cast<int>(barY + 10), 10, buttonColorPlus); // Centered text
     
     if (CheckCollisionPointRec(GetMousePosition(), buttonRectPlus) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-        std::cout << "+ button clicked! Toggling asset preview window." << std::endl;
+        std::cout << "+ button clicked! Launching asset preview window." << std::endl;
+        openAssetWindow();
     }
 
     if (_show3DAssets)
@@ -550,8 +551,6 @@ void UIManager::drawBottomAssets3D(int barY)
 void UIManager::loadDefaultAsset(const std::string& path)
 {
     loadAsset3D(path + "Block1.glb", "Dirt");
-    loadAsset3D(path + "Block1.glb", "Dirt");
-    loadAsset3D(path + "NewBlock.glb", "IDK YET");
 }
 
 void UIManager::loadAsset2D(const std::string& path, const std::string& name)
@@ -568,7 +567,6 @@ void UIManager::loadAsset2D(const std::string& path, const std::string& name)
         std::cerr << "Failed to load 2D asset: " << name << " from " << path << std::endl;
     }
 }
-
 
 void UIManager::loadAsset3D(const std::string& path, const std::string& name)
 {
@@ -922,6 +920,16 @@ void UIManager::refreshSceneObjects()
                 break;
             }
         }
+    }
+}
+
+void UIManager::openAssetWindow() {
+    pid_t pid = fork();
+    if (pid == 0) {
+        execl("bin/OpenAsset", "AssetWindow", nullptr);
+        _exit(1);
+    } else if (pid < 0) {
+        std::cerr << "Failed to fork AssetWindow\n";
     }
 }
 

@@ -9,6 +9,7 @@
 
 #include "raylib.h"
 #include "raygui.h"
+#include <unistd.h>
 #include "UITheme.hpp"
 #include "UIComponents.hpp"
 #include "EditorEvents.hpp"
@@ -419,6 +420,9 @@ private:
     void loadAsset2D(const std::string& path, const std::string& name);
     
     void loadAsset3D(const std::string& path, const std::string& name);
+
+    void openAssetWindow();
+
 };
 
 } // namespace UI
