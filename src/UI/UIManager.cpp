@@ -60,8 +60,7 @@ void UIManager::initialize()
     
     // Load icons
     loadIcons();
-    loadDefaultAsset("ressources/");
-    
+    getPreloadedAsset("ressources/");
     // Setup event handlers
     setupEventHandlers();
 }
@@ -548,9 +547,13 @@ void UIManager::drawBottomAssets3D(int barY)
 
 }
 
-void UIManager::loadDefaultAsset(const std::string& path)
+void UIManager::getPreloadedAsset(const std::string& path)
 {
     loadAsset3D(path + "Block1.glb", "Dirt");
+    loadAsset3D(path + "WhiteBlock.glb", "White");
+    loadAsset3D(path + "cube_transparent_artistic_reference.glb", "IDK");
+    loadAsset3D(path + "simple_rubix_cube.glb", "IDK");
+    loadAsset3D(path + "tesseract_cube.glb", "IDK");
 }
 
 void UIManager::loadAsset2D(const std::string& path, const std::string& name)
@@ -558,7 +561,7 @@ void UIManager::loadAsset2D(const std::string& path, const std::string& name)
     Asset2D asset;
     asset.setFileName(path);
     asset.setDisplayName(name);
-    asset.loadFile();  // assumes it loads the texture and sets _textureLoaded
+    asset.loadFile();
 
     if (asset.isLoaded()) {
         _assetTiles2D.push_back(asset);
@@ -573,7 +576,7 @@ void UIManager::loadAsset3D(const std::string& path, const std::string& name)
     Asset3D asset;
     asset.setFileName(path);
     asset.setDisplayName(name);
-    asset.loadFile();  // assumes it loads the model
+    asset.loadFile();
 
     if (asset.isLoaded()) {
         _assetTiles3D.push_back(asset);

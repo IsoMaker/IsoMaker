@@ -415,8 +415,8 @@ private:
      */
     void unloadIcons();
 
-    void loadDefaultAsset(const std::string& path);
-    
+    void getPreloadedAsset(const std::string& path);
+
     void loadAsset2D(const std::string& path, const std::string& name);
     
     void loadAsset3D(const std::string& path, const std::string& name);

@@ -15,7 +15,7 @@ endif()
 
 if (NOT BUILD_TESTS)
     add_executable(OpenAsset
-        "AssetPreviewWindow.cpp"
+        "main.cpp"
     )
 
     target_link_libraries(OpenAsset PRIVATE
