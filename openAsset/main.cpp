@@ -6,27 +6,37 @@
 #include <fstream>
 #include <filesystem>
 
+enum class AssetType { None, Model3D, Image2D };
 
-void saveFile(Model& previewModel, std::string selectedFilePath, float modelScale)
+void saveAssetFile(Model& previewModel, Image& previewImage, std::string selectedFilePath, float modelScale, AssetType currentAsset)
 {
-    BoundingBox bounds = GetModelBoundingBox(previewModel);
-    Vector3 modelDimensions = {
-        bounds.max.x - bounds.min.x,
-        bounds.max.y - bounds.min.y,
-        bounds.max.z - bounds.min.z
-    };
-
     std::string fileName = std::filesystem::path(selectedFilePath).filename().string();
     std::string savePath = "ressources/loadedAssets/" + fileName + ".txt";
     std::ofstream outFile(savePath);
 
     if (outFile.is_open()) {
-        outFile << "File: " << selectedFilePath << "\n";
-        outFile << "Scale: " << modelScale << "\n";
-        outFile << "Scaled Size: "
-                << modelDimensions.x * modelScale << " x "
-                << modelDimensions.y * modelScale << " x "
-                << modelDimensions.z * modelScale << "\n";
+        if (currentAsset == AssetType::Model3D) {
+            BoundingBox bounds = GetModelBoundingBox(previewModel);
+            Vector3 modelDimensions = {
+                bounds.max.x - bounds.min.x,
+                bounds.max.y - bounds.min.y,
+                bounds.max.z - bounds.min.z
+            };
+            outFile << "Type: 3D\n";
+            outFile << "File: " << selectedFilePath << "\n";
+            outFile << "Scale: " << modelScale << "\n";
+            outFile << "Scaled Size: "
+                    << modelDimensions.x * modelScale << " x "
+                    << modelDimensions.y * modelScale << " x "
+                    << modelDimensions.z * modelScale << "\n";
+        } else if (currentAsset == AssetType::Image2D) {
+            outFile << "Type: 2D\n";
+            outFile << "File: " << selectedFilePath << "\n";
+            outFile << "Scale: " << modelScale << "\n";
+            outFile << "Scaled Size: "
+                    << previewImage.width * modelScale << " x "
+                    << previewImage.height * modelScale << "\n";
+        }
 
         outFile.close();
         std::cout << "Saved asset info to: " << savePath << std::endl;
@@ -67,11 +77,14 @@ int main()
 {
     Rectangle previewRect = { 100, 100, 300, 300 };
     Model previewModel = {0};
-    bool modelLoaded = false;
+    bool dataLoaded = false;
     std::string selectedFilePath;
     float modelScale = 0.5f;
     char scaleInput[32] = "0.5";
     bool editMode = false;
+    Image previewImage = {0};
+    Texture2D previewTexture = {0};
+    AssetType currentAsset = AssetType::None;
 
     InitWindow(800, 600, "GLB Model Preview");
     SetTargetFPS(60);
@@ -80,38 +93,75 @@ int main()
         ClearBackground(RAYWHITE);
 
         if (GuiButton((Rectangle){ 50, 50, 120, 30 }, "Open GLB File")) {
-            FILE* f = popen("zenity --file-selection --file-filter='GLB files | *.glb'", "r");
-            if (f)
-            {
+            FILE* f = popen("zenity --file-selection --file-filter='GLB files & Image files | *.glb *.png *.jpg *.jpeg'", "r");
+            if (f) {
                 char path[1024];
-                if (fgets(path, sizeof(path), f))
-                {
+                if (fgets(path, sizeof(path), f)) {
                     size_t len = strlen(path);
+
                     if (len > 0 && path[len-1] == '\n') path[len-1] = '\0';
 
-                    if (modelLoaded) UnloadModel(previewModel);
+                    std::filesystem::path filePath(path);
+                    std::string extension = filePath.extension().string();
 
-                    previewModel = LoadModel(path);
-                    modelLoaded = true;
+                    if (dataLoaded && currentAsset == AssetType::Model3D) {
+                        UnloadModel(previewModel);
+                    } else if (dataLoaded && currentAsset == AssetType::Image2D) {
+                        UnloadTexture(previewTexture);
+                        UnloadImage(previewImage);
+                    }
+                    if (extension == ".glb") {
+                        previewModel = LoadModel(path);
+
+                        BoundingBox bounds = GetModelBoundingBox(previewModel);
+                        Vector3 dims = {
+                            bounds.max.x - bounds.min.x,
+                            bounds.max.y - bounds.min.y,
+                            bounds.max.z - bounds.min.z
+                        };
+                        float maxDim = fmaxf(dims.x, fmaxf(dims.y, dims.z));
+                        modelScale = (maxDim > 0.0f) ? 1.0f / maxDim : 1.0f;
+                        snprintf(scaleInput, sizeof(scaleInput), "%.3f", modelScale);
+                        std::cout << "Auto-scaled to: " << modelScale << " to normalize model size\n";
+                        currentAsset = AssetType::Model3D;
+                    } else {
+                        previewImage = LoadImage(path);
+                        previewTexture = LoadTextureFromImage(previewImage);
+
+                        int imgWidth = previewImage.width;
+                        int imgHeight = previewImage.height;
+                        float maxDim = fmaxf(imgWidth, imgHeight);
+                        modelScale = (maxDim > 0.0f) ? 300.0f / maxDim : 1.0f;  // Fit into previewRect
+                        snprintf(scaleInput, sizeof(scaleInput), "%.3f", modelScale);
+
+                        std::cout << "Loaded 2D image: " << path << " (" << imgWidth << "x" << imgHeight << ")\n";
+                        currentAsset = AssetType::Image2D;
+                    }
+
+                    dataLoaded = true;
                     selectedFilePath = path;
-
-                    BoundingBox bounds = GetModelBoundingBox(previewModel);
-                    Vector3 dims = {
-                        bounds.max.x - bounds.min.x,
-                        bounds.max.y - bounds.min.y,
-                        bounds.max.z - bounds.min.z
-                    };
-                    float maxDim = fmaxf(dims.x, fmaxf(dims.y, dims.z));
-                    modelScale = (maxDim > 0.0f) ? 1.0f / maxDim : 1.0f;
-                    snprintf(scaleInput, sizeof(scaleInput), "%.3f", modelScale); // Optional: update string value if used in a text box
-                    std::cout << "Auto-scaled to: " << modelScale << " to normalize model size\n";
                 }
                 pclose(f);
             }
         }
 
-        if (modelLoaded) {
-            DrawModelPreview(previewModel, previewRect, GetScreenHeight(), modelScale);
+        if (dataLoaded) {
+            if (currentAsset == AssetType::Model3D) {
+                DrawModelPreview(previewModel, previewRect, GetScreenHeight(), modelScale);
+            } else if (currentAsset == AssetType::Image2D) {
+                float scaledWidth = previewImage.width * modelScale;
+                float scaledHeight = previewImage.height * modelScale;
+
+                Rectangle src = { 0, 0, (float)previewImage.width, (float)previewImage.height };
+                Rectangle dest = {
+                    previewRect.x + (previewRect.width - scaledWidth) / 2,
+                    previewRect.y + (previewRect.height - scaledHeight) / 2,
+                    scaledWidth,
+                    scaledHeight
+                };
+                Vector2 origin = { 0, 0 };
+                DrawTexturePro(previewTexture, src, dest, origin, 0.0f, WHITE);
+            }
             DrawRectangleLines((int)previewRect.x, (int)previewRect.y, (int)previewRect.width, (int)previewRect.height, DARKGRAY);
 
             if (GuiButton((Rectangle){ 450, 160, 200, 30 }, "Save Asset Info")) {
@@ -121,7 +171,7 @@ int main()
                     if (fgets(inputFileName, sizeof(inputFileName), f)) {
                         size_t len = strlen(inputFileName);
                         if (len > 0 && inputFileName[len - 1] == '\n') inputFileName[len - 1] = '\0';
-                        saveFile(previewModel, inputFileName, modelScale);
+                        saveAssetFile(previewModel, previewImage, inputFileName, modelScale, currentAsset);
                     }
                     pclose(f);
                 }
@@ -134,8 +184,12 @@ int main()
         EndDrawing();
     }
 
-    if (modelLoaded) UnloadModel(previewModel);
+    if (dataLoaded && currentAsset == AssetType::Model3D) {
+        UnloadModel(previewModel);
+    } else if (dataLoaded && currentAsset == AssetType::Image2D) {
+        UnloadTexture(previewTexture);
+        UnloadImage(previewImage);
+    }
     CloseWindow();
-
     return 0;
 }
