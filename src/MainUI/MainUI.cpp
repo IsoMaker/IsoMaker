@@ -12,9 +12,22 @@ MainUI::MainUI()
     //temporary cube asset loading for the 3D map, to change after libraries are implemented
     _gameProjectName = "game_project";
 
+    Color myColor = LIGHTGRAY;
+    Image colorImage = GenImageColor(1, 1, myColor);
+    Texture2D colorTexture = LoadTextureFromImage(colorImage);
+
+    UnloadImage(colorImage);
+
+    Asset2D textureAsset(colorTexture);
+    // textureAsset.setFileName("ressources/textures/cube_texture.png");
+    // textureAsset.loadFile();
+    _3DMapEditor.changeTextureType(textureAsset);
+
     Asset3D cubeAsset;
     cubeAsset.setFileName("ressources/elements/models/cube.obj");
     cubeAsset.loadFile();
+    if (textureAsset.isLoaded())
+        cubeAsset.setModelTexture(textureAsset.getTexture());
     _3DMapEditor.changeCubeType(cubeAsset);
 
     Asset2D playerAsset;
@@ -31,21 +44,16 @@ void MainUI::update(input::IHandlerBase &inputHandler) {
 
 void MainUI::draw() {
     _window.startRender();
-    
+
     // Get the main view area from the UI manager
     Rectangle mainViewArea = _uiManager.getMainViewArea();
-    
+
     // Draw 3D content in the main view area
     _window.clearBackground(UI::BACKGROUND);
-    
-    BeginScissorMode(mainViewArea.x, mainViewArea.y, mainViewArea.width, mainViewArea.height);
-    _camera.start3D();
-    _3DMapEditor.draw3DElements();
-    _camera.end3D();
-    EndScissorMode();
-    
-    // Draw 2D UI elements
-    _3DMapEditor.draw2DElements();
+
+    // Draw Map Editor 3D and 2D elements
+    _3DMapEditor.draw(mainViewArea);
+    // Draw Map Editor UI elements
     _uiManager.draw(_3DMapEditor);
     
     _window.endRender();

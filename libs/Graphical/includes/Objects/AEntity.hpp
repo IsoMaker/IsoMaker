@@ -39,6 +39,7 @@ namespace objects
 
             ~AEntity() = default;
 
+            Vector3D getBoxPosition() { return _box3D.getPosition(); };
             ObjectBox3D &getBox3D() { return _box3D; };
 
             // virtual void update() = 0;

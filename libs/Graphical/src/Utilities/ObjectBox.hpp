@@ -36,6 +36,11 @@ namespace Utilities
         public:
             using ObjectBox::ObjectBox;
 
+            Rectangle getRectangle()
+            {
+                return { _position.x, _position.y, _size.x, _size.y };
+            }
+
             bool isInBox(Vector2D pos)
             {
                 if (pos > _position && pos < (_position + (_size * _scale)))
@@ -50,13 +55,6 @@ namespace Utilities
     class ObjectBox3D : public ObjectBox<Vector3D> {
         public:
             using ObjectBox::ObjectBox;
-
-            void setPosition(Vector2D newPosition) { _position = Vector3D(newPosition.x, 0, newPosition.y); };
-            void movePosition(Vector2D positionModifier)
-            {
-                Vector3D newPos = _position + positionModifier;
-                _position = newPos;
-            };
 
             void setSizeFromBounding(BoundingBox box) { _size = Vector3D(box.max) - Vector3D(box.min); };
 

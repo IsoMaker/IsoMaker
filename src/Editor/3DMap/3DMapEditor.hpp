@@ -82,7 +82,7 @@ class MapEditor : public UI::ISceneProvider {
          * @param window Reference to the application window
          */
         MapEditor(Render::Camera& camera, Render::Window& window);
-        
+
         /**
          * @brief Destroy the MapEditor object
          * 
@@ -113,13 +113,22 @@ class MapEditor : public UI::ISceneProvider {
          * Renders 2D overlay elements like cursor information and HUD elements.
          */
         void draw2DElements();
-        
+
         /**
          * @brief Draw 3D scene elements
          * 
          * Renders all 3D objects, the grid, and preview objects in the scene.
          */
         void draw3DElements();
+
+                /**
+         * @brief Draw all map editor elements
+         * 
+         * Calls other draw methods of map editor to render all 3D and 2D elements
+         * 
+         * @param mainViewArea Rectangle representing view area of map editor
+         */
+        void draw(Rectangle mainViewArea);
 
         /**
          * @brief Change the current cube type for placement
@@ -146,7 +155,16 @@ class MapEditor : public UI::ISceneProvider {
          * 
          * @param cubeIterator Iterator pointing to the cube to remove
          */
-        void removeCube(std::vector<std::unique_ptr<MapElement>>::iterator cubeIterator);
+        void removeCube(std::vector<std::shared_ptr<MapElement>>::iterator cubeIterator);
+
+        /**
+         * @brief Change the current sprite type for 2D objects
+         * 
+         * Sets the 2D asset to be used for new sprite placements.
+         * 
+         * @param newAsset The 2D asset to use for new sprites
+         */
+        void changeTextureType(Asset2D newAsset);
 
         /**
          * @brief Change the current sprite type for 2D objects
@@ -173,7 +191,7 @@ class MapEditor : public UI::ISceneProvider {
          * 
          * @param toRemove Iterator pointing to the player to remove
          */
-        void removePlayer(std::vector<std::unique_ptr<Character>>::iterator toRemove);
+        void removePlayer(std::vector<std::shared_ptr<Character>>::iterator toRemove);
 
         /**
          * @brief Save the map to a binary file
@@ -351,14 +369,14 @@ class MapEditor : public UI::ISceneProvider {
          * @param cursorPos 2D cursor position
          * @param cameraPos 3D camera position
          */
-        void updateCursorInfo(Vector2D cursorPos, Vector3D cameraPos);
+        void updateCursor();
 
         // Scene objects
-        std::vector<std::unique_ptr<MapElement>> _objects3D; ///< All 3D objects in the scene
-        
-        std::vector<std::unique_ptr<Character>> _objects2D;  ///< All 2D objects in the scene
+        std::vector<std::shared_ptr<MapElement>> _objects3D; ///< All 3D objects in the scene
+        std::vector<std::shared_ptr<Character>> _objects2D;  ///< All 2D objects in the scene
 
         // Current assets
+        Asset2D _currentTextureType;                         ///< Currently selected texture for 3D asset placement;
         Asset3D _currentCubeType;                            ///< Currently selected 3D asset for placement
         Asset2D _currentSpriteType;                          ///< Currently selected 2D asset for placement
 
@@ -373,8 +391,9 @@ class MapEditor : public UI::ISceneProvider {
         float _cubeHeight;                                   ///< Height for cube placement
 
         // Interactive elements
-        Vector3D _alignedPosition;                 ///< Current grid-aligned cursor position
-        std::optional<std::vector<std::unique_ptr<MapElement>>::iterator> _closestObject; ///< Closest object to cursor
+        Vector2D _cursorPosition;
+        Vector3D _alignedPosition;                           ///< Current grid-aligned cursor position
+        std::optional<std::vector<std::shared_ptr<MapElement>>::iterator> _closestObject; ///< Closest object to cursor
         
         // Current tool and selection state
         int _currentTool = 0;                                ///< Current tool index (default: SELECT)

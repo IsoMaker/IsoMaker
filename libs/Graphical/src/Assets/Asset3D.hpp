@@ -10,6 +10,7 @@ class Asset3D : public AAsset
         Asset3D();
         ~Asset3D();
         Model getModel();
+        void setModelTexture(Texture2D texture);
         void loadFile();
 
     protected:

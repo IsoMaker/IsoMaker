@@ -38,8 +38,8 @@ class Game {
     protected:
 
     private:
-        std::vector<objects::MapElement> _mapElements;
-        std::vector<objects::Character> _characters;
+        std::vector<std::shared_ptr<objects::MapElement>> _mapElements;
+        std::vector<std::shared_ptr<objects::Character>> _characters;
 
         Asset3D _cubeType;
         Asset2D _playerAsset;
@@ -47,9 +47,7 @@ class Game {
         Render::Window &_window;
         Render::Camera &_camera;
 
-        objects::Character _player;
-        Vector3D _playerPos;
-        bool _playerIsMoving = false;
+        std::shared_ptr<objects::Character> _player;
 
         float _cubeHeight;
 };

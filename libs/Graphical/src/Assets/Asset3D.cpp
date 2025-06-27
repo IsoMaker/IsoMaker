@@ -22,6 +22,11 @@ Model Asset3D::getModel()
     return Model();
 }
 
+void Asset3D::setModelTexture(Texture2D texture)
+{
+    _model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture;
+}
+
 // void Asset3D::rotateModel(float angle)
 // {
 //     if (_modelLoaded) {
