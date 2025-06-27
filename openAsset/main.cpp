@@ -6,16 +6,16 @@
 #include <fstream>
 #include <filesystem>
 
-enum class AssetType { None, Model3D, Image2D };
+#include "AnimateImage2D.hpp"
 
-void saveAssetFile(Model& previewModel, Image& previewImage, std::string selectedFilePath, float modelScale, AssetType currentAsset)
+void saveAssetFile(Model& previewModel, AnimatedSprite sprite, std::string selectedFilePath, float modelScale, AssetType currentAsset)
 {
     std::string fileName = std::filesystem::path(selectedFilePath).filename().string();
     std::string savePath = "ressources/loadedAssets/" + fileName + ".txt";
     std::ofstream outFile(savePath);
 
     if (outFile.is_open()) {
-        if (currentAsset == AssetType::Model3D) {
+        if (currentAsset == AssetType::ASSET3D) {
             BoundingBox bounds = GetModelBoundingBox(previewModel);
             Vector3 modelDimensions = {
                 bounds.max.x - bounds.min.x,
@@ -29,13 +29,14 @@ void saveAssetFile(Model& previewModel, Image& previewImage, std::string selecte
                     << modelDimensions.x * modelScale << " x "
                     << modelDimensions.y * modelScale << " x "
                     << modelDimensions.z * modelScale << "\n";
-        } else if (currentAsset == AssetType::Image2D) {
+        } else if (currentAsset == AssetType::ASSET2D) {
             outFile << "Type: 2D\n";
             outFile << "File: " << selectedFilePath << "\n";
             outFile << "Scale: " << modelScale << "\n";
-            outFile << "Scaled Size: "
-                    << previewImage.width * modelScale << " x "
-                    << previewImage.height * modelScale << "\n";
+            outFile << "Size: "
+                    << sprite.getFrameWidth() << " x "
+                    << sprite.getFrameHeight()<< "\n";
+            outFile << "Frames: " << sprite.getTotalFrames() << "\n";
         }
 
         outFile.close();
@@ -46,7 +47,7 @@ void saveAssetFile(Model& previewModel, Image& previewImage, std::string selecte
     }
 }
 
-void DrawModelPreview(Model& model, Rectangle viewport, int screenHeight, float scale)
+void drawModelPreview(Model& model, Rectangle viewport, int screenHeight, float scale)
 {
     BeginScissorMode((int)viewport.x, (int)viewport.y, (int)viewport.width, (int)viewport.height);
     rlViewport(viewport.x, screenHeight - (viewport.y + viewport.height), viewport.width, viewport.height);
@@ -73,6 +74,20 @@ void DrawModelPreview(Model& model, Rectangle viewport, int screenHeight, float 
     EndScissorMode();
 }
 
+void drawImagePreview(AnimatedSprite& sprite, Rectangle viewport, float modelScale)
+{
+    int spriteWidth = sprite.getFrameWidth() * modelScale;
+    int spriteHeight = sprite.getFrameHeight() * modelScale;
+
+    Vector2 position = {
+        viewport.x + (viewport.width - spriteWidth) / 2.0f,
+        viewport.y + (viewport.height - spriteHeight) / 2.0f
+    };
+    sprite.updateAnimation();
+    sprite.draw(position, modelScale);
+}
+
+
 int main()
 {
     Rectangle previewRect = { 100, 100, 300, 300 };
@@ -82,9 +97,15 @@ int main()
     float modelScale = 0.5f;
     char scaleInput[32] = "0.5";
     bool editMode = false;
-    Image previewImage = {0};
-    Texture2D previewTexture = {0};
-    AssetType currentAsset = AssetType::None;
+    AssetType currentAsset;
+    AnimatedSprite sprite;
+    int frameWidth = 32;
+    int frameHeight = 40;
+    int totalFrames = 4;
+    bool spinnerEditMode = false;
+    int prevFrameWidth = frameWidth;
+    int prevFrameHeight = frameHeight;
+    int prevTotalFrames = totalFrames;
 
     InitWindow(800, 600, "GLB Model Preview");
     SetTargetFPS(60);
@@ -92,7 +113,7 @@ int main()
         BeginDrawing();
         ClearBackground(RAYWHITE);
 
-        if (GuiButton((Rectangle){ 50, 50, 120, 30 }, "Open GLB File")) {
+        if (GuiButton((Rectangle){ 50, 50, 120, 30 }, "Open Asset File")) {
             FILE* f = popen("zenity --file-selection --file-filter='GLB files & Image files | *.glb *.png *.jpg *.jpeg'", "r");
             if (f) {
                 char path[1024];
@@ -104,11 +125,10 @@ int main()
                     std::filesystem::path filePath(path);
                     std::string extension = filePath.extension().string();
 
-                    if (dataLoaded && currentAsset == AssetType::Model3D) {
+                    if (dataLoaded && currentAsset == AssetType::ASSET3D) {
                         UnloadModel(previewModel);
-                    } else if (dataLoaded && currentAsset == AssetType::Image2D) {
-                        UnloadTexture(previewTexture);
-                        UnloadImage(previewImage);
+                    } else if (dataLoaded && currentAsset == AssetType::ASSET2D) {
+                        sprite.unload();
                     }
                     if (extension == ".glb") {
                         previewModel = LoadModel(path);
@@ -123,19 +143,16 @@ int main()
                         modelScale = (maxDim > 0.0f) ? 1.0f / maxDim : 1.0f;
                         snprintf(scaleInput, sizeof(scaleInput), "%.3f", modelScale);
                         std::cout << "Auto-scaled to: " << modelScale << " to normalize model size\n";
-                        currentAsset = AssetType::Model3D;
+                        currentAsset = AssetType::ASSET3D;
                     } else {
-                        previewImage = LoadImage(path);
-                        previewTexture = LoadTextureFromImage(previewImage);
+                        sprite.load(path, frameWidth, frameHeight, totalFrames);
 
-                        int imgWidth = previewImage.width;
-                        int imgHeight = previewImage.height;
-                        float maxDim = fmaxf(imgWidth, imgHeight);
-                        modelScale = (maxDim > 0.0f) ? 300.0f / maxDim : 1.0f;  // Fit into previewRect
+                        float maxDim = fmaxf(frameWidth, frameHeight);
+                        modelScale = (maxDim > 0.0f) ? 300.0f / maxDim : 1.0f;
                         snprintf(scaleInput, sizeof(scaleInput), "%.3f", modelScale);
 
-                        std::cout << "Loaded 2D image: " << path << " (" << imgWidth << "x" << imgHeight << ")\n";
-                        currentAsset = AssetType::Image2D;
+                        std::cout << "Loaded 2D image: " << path << " (" << frameWidth << "x" << frameHeight << ")\n";
+                        currentAsset = AssetType::ASSET2D;
                     }
 
                     dataLoaded = true;
@@ -146,32 +163,26 @@ int main()
         }
 
         if (dataLoaded) {
-            if (currentAsset == AssetType::Model3D) {
-                DrawModelPreview(previewModel, previewRect, GetScreenHeight(), modelScale);
-            } else if (currentAsset == AssetType::Image2D) {
-                float scaledWidth = previewImage.width * modelScale;
-                float scaledHeight = previewImage.height * modelScale;
-
-                Rectangle src = { 0, 0, (float)previewImage.width, (float)previewImage.height };
-                Rectangle dest = {
-                    previewRect.x + (previewRect.width - scaledWidth) / 2,
-                    previewRect.y + (previewRect.height - scaledHeight) / 2,
-                    scaledWidth,
-                    scaledHeight
-                };
-                Vector2 origin = { 0, 0 };
-                DrawTexturePro(previewTexture, src, dest, origin, 0.0f, WHITE);
+            if (currentAsset == AssetType::ASSET3D) {
+                drawModelPreview(previewModel, previewRect, GetScreenHeight(), modelScale);
+            } else if (currentAsset == AssetType::ASSET2D) {
+                GuiSpinner((Rectangle){ 450, 130, 120, 30 }, "", &frameWidth, 1, 120, spinnerEditMode);
+                GuiSpinner((Rectangle){ 450, 160, 120, 30 }, "", &frameHeight, 1, 120, spinnerEditMode);
+                GuiSpinner((Rectangle){ 450, 190, 120, 30 }, "", &totalFrames, 1, 16, spinnerEditMode);
+                if (frameWidth != sprite.getFrameWidth() || frameHeight != sprite.getFrameHeight() || totalFrames != sprite.getTotalFrames())
+                    sprite.load(selectedFilePath, frameWidth, frameHeight, totalFrames);
+                drawImagePreview(sprite, previewRect, modelScale);
             }
             DrawRectangleLines((int)previewRect.x, (int)previewRect.y, (int)previewRect.width, (int)previewRect.height, DARKGRAY);
 
-            if (GuiButton((Rectangle){ 450, 160, 200, 30 }, "Save Asset Info")) {
+            if (GuiButton((Rectangle){ 450, 100, 200, 30 }, "Save Asset Info")) {
                 FILE* f = popen("zenity --entry --title='Save Asset' --text='Enter filename to save asset info:'", "r");
                 if (f) {
                     char inputFileName[256] = { 0 };
                     if (fgets(inputFileName, sizeof(inputFileName), f)) {
                         size_t len = strlen(inputFileName);
                         if (len > 0 && inputFileName[len - 1] == '\n') inputFileName[len - 1] = '\0';
-                        saveAssetFile(previewModel, previewImage, inputFileName, modelScale, currentAsset);
+                        saveAssetFile(previewModel, sprite, inputFileName, modelScale, currentAsset);
                     }
                     pclose(f);
                 }
@@ -184,11 +195,10 @@ int main()
         EndDrawing();
     }
 
-    if (dataLoaded && currentAsset == AssetType::Model3D) {
+    if (dataLoaded && currentAsset == AssetType::ASSET3D) {
         UnloadModel(previewModel);
-    } else if (dataLoaded && currentAsset == AssetType::Image2D) {
-        UnloadTexture(previewTexture);
-        UnloadImage(previewImage);
+    } else if (dataLoaded && currentAsset == AssetType::ASSET2D) {
+        sprite.unload();
     }
     CloseWindow();
     return 0;

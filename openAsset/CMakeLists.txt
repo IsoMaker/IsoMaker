@@ -16,6 +16,7 @@ endif()
 if (NOT BUILD_TESTS)
     add_executable(OpenAsset
         "main.cpp"
+        "AnimateImage2D.cpp"
     )
 
     target_link_libraries(OpenAsset PRIVATE
