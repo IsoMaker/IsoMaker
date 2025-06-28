@@ -1,3 +1,4 @@
+#pragma once
 /**
  * @file EditorEvents.hpp
  * @brief Event-driven communication system for IsoMaker editor components

@@ -1,3 +1,4 @@
+#pragma once
 /**
  * @file MainUI.hpp
  * @brief Main application UI controller for the IsoMaker game engine editor

@@ -1,3 +1,4 @@
+#pragma once
 /**
  * @file 3DMapEditor.hpp
  * @brief 3D map editor component for the IsoMaker game engine
