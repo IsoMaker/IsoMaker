@@ -8,9 +8,9 @@
 
 #include "AnimateImage2D.hpp"
 
-void saveAssetFile(Model& previewModel, AnimatedSprite sprite, std::string selectedFilePath, float modelScale, AssetType currentAsset)
+bool saveAssetFile(Model& previewModel, AnimatedSprite sprite, std::string inputFileName, float modelScale, AssetType currentAsset, std::string filePath)
 {
-    std::string fileName = std::filesystem::path(selectedFilePath).filename().string();
+    std::string fileName = std::filesystem::path(inputFileName).filename().string();
     std::string savePath = "ressources/loadedAssets/" + fileName + ".txt";
     std::ofstream outFile(savePath);
 
@@ -23,27 +23,26 @@ void saveAssetFile(Model& previewModel, AnimatedSprite sprite, std::string selec
                 bounds.max.z - bounds.min.z
             };
             outFile << "Type: 3D\n";
-            outFile << "File: " << selectedFilePath << "\n";
+            outFile << "Name: " << inputFileName << "\n";
+            outFile << "File: " << filePath << "\n";
             outFile << "Scale: " << modelScale << "\n";
-            outFile << "Scaled Size: "
-                    << modelDimensions.x * modelScale << " x "
-                    << modelDimensions.y * modelScale << " x "
-                    << modelDimensions.z * modelScale << "\n";
         } else if (currentAsset == AssetType::ASSET2D) {
             outFile << "Type: 2D\n";
-            outFile << "File: " << selectedFilePath << "\n";
+            outFile << "Name: " << inputFileName << "\n";
+            outFile << "File: " << filePath << "\n";
             outFile << "Scale: " << modelScale << "\n";
             outFile << "Size: "
                     << sprite.getFrameWidth() << " x "
                     << sprite.getFrameHeight()<< "\n";
             outFile << "Frames: " << sprite.getTotalFrames() << "\n";
         }
-
         outFile.close();
         std::cout << "Saved asset info to: " << savePath << std::endl;
+        return true;
     }
     else {
         std::cerr << "Failed to write file: " << savePath << std::endl;
+        return false;
     }
 }
 
@@ -87,7 +86,6 @@ void drawImagePreview(AnimatedSprite& sprite, Rectangle viewport, float modelSca
     sprite.draw(position, modelScale);
 }
 
-
 int main()
 {
     Rectangle previewRect = { 100, 100, 300, 300 };
@@ -102,10 +100,6 @@ int main()
     int frameWidth = 32;
     int frameHeight = 40;
     int totalFrames = 4;
-    bool spinnerEditMode = false;
-    int prevFrameWidth = frameWidth;
-    int prevFrameHeight = frameHeight;
-    int prevTotalFrames = totalFrames;
 
     InitWindow(800, 600, "GLB Model Preview");
     SetTargetFPS(60);
@@ -161,19 +155,18 @@ int main()
                 pclose(f);
             }
         }
-
+        DrawRectangleLines((int)previewRect.x, (int)previewRect.y, (int)previewRect.width, (int)previewRect.height, DARKGRAY);
         if (dataLoaded) {
             if (currentAsset == AssetType::ASSET3D) {
                 drawModelPreview(previewModel, previewRect, GetScreenHeight(), modelScale);
             } else if (currentAsset == AssetType::ASSET2D) {
-                GuiSpinner((Rectangle){ 450, 130, 120, 30 }, "", &frameWidth, 1, 120, spinnerEditMode);
-                GuiSpinner((Rectangle){ 450, 160, 120, 30 }, "", &frameHeight, 1, 120, spinnerEditMode);
-                GuiSpinner((Rectangle){ 450, 190, 120, 30 }, "", &totalFrames, 1, 16, spinnerEditMode);
+                GuiSpinner((Rectangle){ 450, 130, 120, 30 }, "", &frameWidth, 1, 120, 0);
+                GuiSpinner((Rectangle){ 450, 160, 120, 30 }, "", &frameHeight, 1, 120, 0);
+                GuiSpinner((Rectangle){ 450, 190, 120, 30 }, "", &totalFrames, 1, 16, 0);
                 if (frameWidth != sprite.getFrameWidth() || frameHeight != sprite.getFrameHeight() || totalFrames != sprite.getTotalFrames())
                     sprite.load(selectedFilePath, frameWidth, frameHeight, totalFrames);
                 drawImagePreview(sprite, previewRect, modelScale);
             }
-            DrawRectangleLines((int)previewRect.x, (int)previewRect.y, (int)previewRect.width, (int)previewRect.height, DARKGRAY);
 
             if (GuiButton((Rectangle){ 450, 100, 200, 30 }, "Save Asset Info")) {
                 FILE* f = popen("zenity --entry --title='Save Asset' --text='Enter filename to save asset info:'", "r");
@@ -182,16 +175,16 @@ int main()
                     if (fgets(inputFileName, sizeof(inputFileName), f)) {
                         size_t len = strlen(inputFileName);
                         if (len > 0 && inputFileName[len - 1] == '\n') inputFileName[len - 1] = '\0';
-                        saveAssetFile(previewModel, sprite, inputFileName, modelScale, currentAsset);
+                        if (saveAssetFile(previewModel, sprite, inputFileName, modelScale, currentAsset, selectedFilePath)) {
+                        }
                     }
                     pclose(f);
                 }
             }
         }
         else {
-            DrawText("No model loaded", 120, 220, 20, GRAY);
+            DrawText("No model loaded", 160, 150, 20, GRAY);
         }
-
         EndDrawing();
     }
 

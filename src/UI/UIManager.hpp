@@ -21,6 +21,8 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <filesystem>
+#include <fstream>
 
 namespace UI {
 
@@ -417,8 +419,10 @@ private:
 
     void getPreloadedAsset(const std::string& path);
 
+    bool loadAssetFile(const std::string& filePath);
+
     void loadAsset2D(const std::string& path, const std::string& name);
-    
+
     void loadAsset3D(const std::string& path, const std::string& name);
 
     void openAssetWindow();

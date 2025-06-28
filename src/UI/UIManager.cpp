@@ -60,7 +60,7 @@ void UIManager::initialize()
     
     // Load icons
     loadIcons();
-    getPreloadedAsset("ressources/");
+    getPreloadedAsset("ressources/loadedAssets");
     // Setup event handlers
     setupEventHandlers();
 }
@@ -443,7 +443,7 @@ void UIManager::drawBottomAssetsBar()
     Color buttonColorPlus = CheckCollisionPointRec(GetMousePosition(), buttonRectPlus) ? UI_TEXT_SECONDARY : UI_TEXT_PRIMARY;
     
     DrawRectangleRec(buttonRectPlus, UI_SECONDARY);
-    DrawText("+", 150, static_cast<int>(barY + 10), 10, buttonColorPlus); // Centered text
+    DrawText("+", 150, static_cast<int>(barY + 10), 10, buttonColorPlus);
     
     if (CheckCollisionPointRec(GetMousePosition(), buttonRectPlus) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         std::cout << "+ button clicked! Launching asset preview window." << std::endl;
@@ -547,13 +547,73 @@ void UIManager::drawBottomAssets3D(int barY)
 
 }
 
-void UIManager::getPreloadedAsset(const std::string& path)
+void UIManager::getPreloadedAsset(const std::string& directoryPath)
 {
-    loadAsset3D(path + "Block1.glb", "Dirt");
-    loadAsset3D(path + "WhiteBlock.glb", "White");
-    loadAsset3D(path + "cube_transparent_artistic_reference.glb", "IDK");
-    loadAsset3D(path + "simple_rubix_cube.glb", "IDK");
-    loadAsset3D(path + "tesseract_cube.glb", "IDK");
+    if (!std::filesystem::exists(directoryPath) || !std::filesystem::is_directory(directoryPath)) {
+        std::cerr << "Invalid directory: " << directoryPath << std::endl;
+        return;
+    }
+
+    for (const auto& entry : std::filesystem::directory_iterator(directoryPath)) {
+        if (entry.path().extension() == ".txt") {
+            loadAssetFile(entry.path().string());
+        }
+    }
+}
+
+bool UIManager::loadAssetFile(const std::string& filePath)
+{
+    std::ifstream inFile(filePath);
+    if (!inFile.is_open()) {
+        std::cerr << "Failed to open file: " << filePath << std::endl;
+        return false;
+    }
+
+    std::string line;
+    std::string type;
+    std::string name;
+    std::string file;
+    float scale = 1.0f;
+    std::string sizeOrScaledSize;
+    int frames = 0;
+
+    while (std::getline(inFile, line)) {
+        if (line.find("Type:") == 0) {
+            type = line.substr(6);
+        } else if (line.find("Name:") == 0) {
+            name = line.substr(6);
+        } else if (line.find("File:") == 0) {
+            file = line.substr(6);
+        } else if (line.find("Scale:") == 0) {
+            scale = std::stof(line.substr(7));
+        } else if (line.find("Scaled Size:") == 0 || line.find("Size:") == 0) {
+            sizeOrScaledSize = line.substr(line.find(":") + 2);
+        } else if (line.find("Frames:") == 0) {
+            frames = std::stoi(line.substr(8));
+        }
+    }
+    inFile.close();
+
+    std::cout << "Asset Type: " << type << "\n";
+    std::cout << "Name: " << name << "\n";
+    std::cout << "File Path: " << file << "\n";
+    std::cout << "Scale: " << scale << "\n";
+    std::cout << (type == "3D" ? "Scaled Size: " : "Size: ") << sizeOrScaledSize << "\n";
+    if (type == "2D") {
+        Asset2D asset;
+        asset.setFileName(file);
+        asset.setDisplayName(name);
+        asset.loadFile();
+        _assetTiles2D.push_back(asset);
+    } else {
+        Asset3D asset;
+        asset.setFileName(file);
+        asset.setDisplayName(name);
+        asset.loadFile();
+        _assetTiles3D.push_back(asset);
+    }
+
+    return true;
 }
 
 void UIManager::loadAsset2D(const std::string& path, const std::string& name)
