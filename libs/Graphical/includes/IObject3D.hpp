@@ -1,3 +1,4 @@
+#pragma once
 /**
  * @file IObject3D.hpp
  * @brief Interface for 3D objects in the IsoMaker graphical library

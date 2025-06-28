@@ -1,3 +1,4 @@
+#pragma once
 /**
  * @file 2DEditor.hpp
  * @brief Declaration of the 2D Pixel Art Editor.
