@@ -1,3 +1,4 @@
+#pragma once
 /*
 ** EPITECH PROJECT, 2024
 ** IsoMaker

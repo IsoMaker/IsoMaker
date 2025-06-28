@@ -1,3 +1,4 @@
+#pragma once
 /**
  * @file IAsset.hpp
  * @brief Base interface for all assets in the IsoMaker graphical library
