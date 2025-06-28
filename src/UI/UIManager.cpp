@@ -23,7 +23,8 @@ UIManager::UIManager(int screenWidth, int screenHeight)
       _helpMenuOpen(false),
       _searchActive(false),
       _currentEditorType(0),
-      _currentSceneProvider(nullptr)
+      _currentSceneProvider(nullptr),
+      _loader()
 {
     // Initialize search text
     _searchText[0] = '\0';
@@ -60,7 +61,6 @@ void UIManager::initialize()
     
     // Load icons
     loadIcons();
-    getPreloadedAsset("ressources/loadedAssets");
     // Setup event handlers
     setupEventHandlers();
 }
@@ -97,6 +97,8 @@ void UIManager::update(input::IHandlerBase &inputHandler)
     if (IsKeyPressed(KEY_E)) { _currentTool = ToolType::ERASER; Events::toolChanged(3); }
     if (IsKeyPressed(KEY_C)) { _currentTool = ToolType::CUBE; Events::toolChanged(4); }
     if (IsKeyPressed(KEY_Z)) { _currentTool = ToolType::ZOOM; Events::toolChanged(5); }
+
+    _loader.updateAssets("ressources/loadedAssets");
 }
 
 void UIManager::draw(MapEditor &mapEditor)
@@ -462,11 +464,12 @@ void UIManager::drawBottomAssets2D(int barY)
     int assetSize = 80;
     int padding = 10;
     int rowCapacity = (_screenWidth - padding) / (assetSize + padding);
-    
-    for (int i = 0; i < 10; i++) { // Displaying 10 placeholder assets
+    std::vector<Asset2D> assetTiles2D = _loader.getLoaded2DAssets();
+
+    for (int i = 0; i < assetTiles2D.size(); i++) {
         int row = i / rowCapacity;
         int col = i % rowCapacity;
-        
+
         int x = padding + col * (assetSize + padding);
         int y = barY + 40 + row * (assetSize + padding);
         
@@ -491,9 +494,9 @@ void UIManager::drawBottomAssets3D(int barY)
     int assetSize = 80;
     int padding = 10;
     int rowCapacity = (_screenWidth - padding) / (assetSize + padding);
+    std::vector<Asset3D> assetTiles3D = _loader.getLoaded3DAssets();
 
-
-    for (int i = 0; i < _assetTiles3D.size(); i++) {
+    for (int i = 0; i < assetTiles3D.size(); i++) {
         int row = i / rowCapacity;
         int col = i % rowCapacity;
 
@@ -504,7 +507,7 @@ void UIManager::drawBottomAssets3D(int barY)
         Rectangle tileBounds = { (float)x, (float)y, (float)assetSize, (float)assetSize };
 
 
-        if (AssetTile(assetBounds, _assetTiles3D[i].getModel(), _assetTiles3D[i].getDisplayName().c_str(), i == _selectedAssetIndex2D)) {
+        if (AssetTile(assetBounds, assetTiles3D[i].getModel(), assetTiles3D[i].getDisplayName().c_str(), i == _selectedAssetIndex2D)) {
             _selectedAssetIndex2D = i;
             Events::assetSelected(i);
         }
@@ -522,13 +525,13 @@ void UIManager::drawBottomAssets3D(int barY)
 
         BeginMode3D(cam);
 
-        if (_assetTiles3D[i].isLoaded()) {
+        if (assetTiles3D[i].isLoaded()) {
             Vector3 pos = { 0.0f, 0.0f, 0.0f };
             Vector3 rotAxis = { 0.0f, 1.0f, 0.0f };
             float angle = GetTime() * 45.0f;
             Vector3 scale = { 0.5f, 0.5f, 0.5f };
 
-            DrawModelEx(_assetTiles3D[i].getModel(), pos, rotAxis, angle, scale, WHITE);
+            DrawModelEx(assetTiles3D[i].getModel(), pos, rotAxis, angle, scale, WHITE);
         }
 
         EndMode3D();
@@ -545,105 +548,6 @@ void UIManager::drawBottomAssets3D(int barY)
         }
     }
 
-}
-
-void UIManager::getPreloadedAsset(const std::string& directoryPath)
-{
-    if (!std::filesystem::exists(directoryPath) || !std::filesystem::is_directory(directoryPath)) {
-        std::cerr << "Invalid directory: " << directoryPath << std::endl;
-        return;
-    }
-
-    for (const auto& entry : std::filesystem::directory_iterator(directoryPath)) {
-        if (entry.path().extension() == ".txt") {
-            loadAssetFile(entry.path().string());
-        }
-    }
-}
-
-bool UIManager::loadAssetFile(const std::string& filePath)
-{
-    std::ifstream inFile(filePath);
-    if (!inFile.is_open()) {
-        std::cerr << "Failed to open file: " << filePath << std::endl;
-        return false;
-    }
-
-    std::string line;
-    std::string type;
-    std::string name;
-    std::string file;
-    float scale = 1.0f;
-    std::string sizeOrScaledSize;
-    int frames = 0;
-
-    while (std::getline(inFile, line)) {
-        if (line.find("Type:") == 0) {
-            type = line.substr(6);
-        } else if (line.find("Name:") == 0) {
-            name = line.substr(6);
-        } else if (line.find("File:") == 0) {
-            file = line.substr(6);
-        } else if (line.find("Scale:") == 0) {
-            scale = std::stof(line.substr(7));
-        } else if (line.find("Scaled Size:") == 0 || line.find("Size:") == 0) {
-            sizeOrScaledSize = line.substr(line.find(":") + 2);
-        } else if (line.find("Frames:") == 0) {
-            frames = std::stoi(line.substr(8));
-        }
-    }
-    inFile.close();
-
-    std::cout << "Asset Type: " << type << "\n";
-    std::cout << "Name: " << name << "\n";
-    std::cout << "File Path: " << file << "\n";
-    std::cout << "Scale: " << scale << "\n";
-    std::cout << (type == "3D" ? "Scaled Size: " : "Size: ") << sizeOrScaledSize << "\n";
-    if (type == "2D") {
-        Asset2D asset;
-        asset.setFileName(file);
-        asset.setDisplayName(name);
-        asset.loadFile();
-        _assetTiles2D.push_back(asset);
-    } else {
-        Asset3D asset;
-        asset.setFileName(file);
-        asset.setDisplayName(name);
-        asset.loadFile();
-        _assetTiles3D.push_back(asset);
-    }
-
-    return true;
-}
-
-void UIManager::loadAsset2D(const std::string& path, const std::string& name)
-{
-    Asset2D asset;
-    asset.setFileName(path);
-    asset.setDisplayName(name);
-    asset.loadFile();
-
-    if (asset.isLoaded()) {
-        _assetTiles2D.push_back(asset);
-        std::cout << "Loaded 2D asset: " << name << " from " << path << std::endl;
-    } else {
-        std::cerr << "Failed to load 2D asset: " << name << " from " << path << std::endl;
-    }
-}
-
-void UIManager::loadAsset3D(const std::string& path, const std::string& name)
-{
-    Asset3D asset;
-    asset.setFileName(path);
-    asset.setDisplayName(name);
-    asset.loadFile();
-
-    if (asset.isLoaded()) {
-        _assetTiles3D.push_back(asset);
-        std::cout << "Loaded 3D asset: " << name << " from " << path << std::endl;
-    } else {
-        std::cerr << "Failed to load 3D asset: " << name << " from " << path << std::endl;
-    }
 }
 
 void UIManager::drawSubmenu(const char** items, int count, int x, int y, int width)

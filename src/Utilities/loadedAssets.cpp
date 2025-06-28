@@ -1,0 +1,113 @@
+#include "loadedAssets.hpp"
+
+void AssetLoader::updateAssets(const std::string& directoryPath)
+{
+    if (!std::filesystem::exists(directoryPath) || !std::filesystem::is_directory(directoryPath)) {
+        std::cerr << "Invalid directory: " << directoryPath << std::endl;
+        return;
+    }
+
+    for (const auto& entry : std::filesystem::directory_iterator(directoryPath)) {
+        if (entry.path().extension() == ".txt") {
+            std::string filePath = entry.path().string();
+
+            if (std::find(_loadedFiles.begin(), _loadedFiles.end(), filePath) != _loadedFiles.end()) {
+                continue;
+            }
+
+            auto result = loadAssetFile(filePath);
+
+            for (const auto& entry : std::filesystem::directory_iterator(directoryPath)) {
+                if (entry.path().extension() == ".txt") {
+                    std::string filePath = entry.path().string();
+        
+                    if (std::find(_loadedFiles.begin(), _loadedFiles.end(), filePath) != _loadedFiles.end()) {
+                        continue;
+                    }
+        
+                    auto result = loadAssetFile(filePath);
+        
+                    if (result.has_value()) {
+                        BasicObject obj = *result;
+
+                        if (obj.getAssetType() == ASSET2D) {
+                            _loadedAssets2D.push_back(obj.getAsset2D());
+                            std::cout << "Loaded 2D asset: " << obj.getAsset2D().getDisplayName() << std::endl;
+                        } else if (obj.getAssetType() == ASSET3D) {
+                            _loadedAssets3D.push_back(obj.getAsset3D());
+                            std::cout << "Loaded 3D asset: " << obj.getAsset3D().getDisplayName() << std::endl;
+                        }
+                        _loadedFiles.push_back(filePath);
+                    } else {
+                        std::cerr << "Failed to load asset from: " << filePath << std::endl;
+                    }
+                }
+            }
+        }
+    }
+}
+
+std::optional<BasicObject> AssetLoader::loadAssetFile(const std::string& filePath)
+{
+    std::ifstream inFile(filePath);
+
+    if (!inFile.is_open()) {
+        std::cerr << "Failed to open file: " << filePath << std::endl;
+        return std::nullopt;
+    }
+
+    std::string line;
+    std::string type;
+    std::string name;
+    std::string file;
+    float scale = 1.0f;
+    std::string sizeOrScaledSize;
+    int frames = 0;
+
+    while (std::getline(inFile, line)) {
+        if (line.find("Type:") == 0) {
+            type = line.substr(6);
+        } else if (line.find("Name:") == 0) {
+            name = line.substr(6);
+        } else if (line.find("File:") == 0) {
+            file = line.substr(6);
+        } else if (line.find("Scale:") == 0) {
+            scale = std::stof(line.substr(7));
+        } else if (line.find("Scaled Size:") == 0 || line.find("Size:") == 0) {
+            sizeOrScaledSize = line.substr(line.find(":") + 2);
+        } else if (line.find("Frames:") == 0) {
+            frames = std::stoi(line.substr(8));
+        }
+    }
+    inFile.close();
+
+    if (type == "2D") {
+        Asset2D asset;
+        asset.setFileName(file);
+        asset.setDisplayName(name);
+        // asset.setScale(scale);
+        asset.loadFile();
+        BasicObject assetObject(asset, {0,0,0}, {0,0,0});
+        return assetObject;
+    } else if (type == "3D") {
+        Asset3D asset;
+        asset.setFileName(file);
+        asset.setDisplayName(name);
+        // asset.setScale(scale);
+        asset.loadFile();
+        BasicObject assetObject(asset, {0,0,0});
+        return assetObject;
+    } else {
+        std::cerr << "Unknown asset type in file: " << filePath << std::endl;
+        return std::nullopt;
+    }
+    return std::nullopt;
+}
+
+const std::vector<Asset2D>& AssetLoader::getLoaded2DAssets() const {
+    return _loadedAssets2D;
+}
+
+const std::vector<Asset3D>& AssetLoader::getLoaded3DAssets() const {
+    return _loadedAssets3D;
+}

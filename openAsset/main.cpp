@@ -176,6 +176,8 @@ int main()
                         size_t len = strlen(inputFileName);
                         if (len > 0 && inputFileName[len - 1] == '\n') inputFileName[len - 1] = '\0';
                         if (saveAssetFile(previewModel, sprite, inputFileName, modelScale, currentAsset, selectedFilePath)) {
+                            pclose(f);
+                            break;
                         }
                     }
                     pclose(f);

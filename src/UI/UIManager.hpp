@@ -10,6 +10,10 @@
 #include "raylib.h"
 #include "raygui.h"
 #include <unistd.h>
+#include <string>
+#include <vector>
+#include <unordered_map>
+
 #include "UITheme.hpp"
 #include "UIComponents.hpp"
 #include "EditorEvents.hpp"
@@ -18,11 +22,7 @@
 #include "../Editor/3DMap/3DMapEditor.hpp"
 #include "Assets/Asset2D.hpp"
 #include "Assets/Asset3D.hpp"
-#include <string>
-#include <vector>
-#include <unordered_map>
-#include <filesystem>
-#include <fstream>
+#include "../Utilities/loadedAssets.hpp"
 
 namespace UI {
 
@@ -359,12 +359,10 @@ private:
     
     bool _show3DAssets;
 
-    // Assets for the bottom bar 2D
-    std::vector<Asset2D> _assetTiles2D;      ///< Available 2D assets for the bottom bar
-    int _selectedAssetIndex2D;               ///< Index of currently selected asset
+    AssetLoader _loader;
 
-    // Assets for the bottom bar 3D
-    std::vector<Asset3D> _assetTiles3D;      ///< Available 2D assets for the bottom bar
+    // Assets index
+    int _selectedAssetIndex2D;               ///< Index of currently selected asset
     int _selectedAssetIndex3D;               ///< Index of currently selected asset
 
     // Scene objects
@@ -417,14 +415,11 @@ private:
      */
     void unloadIcons();
 
-    void getPreloadedAsset(const std::string& path);
-
-    bool loadAssetFile(const std::string& filePath);
-
-    void loadAsset2D(const std::string& path, const std::string& name);
-
-    void loadAsset3D(const std::string& path, const std::string& name);
-
+    /**
+     * @brief Open asset window
+     * 
+     * Open Asset window to preload them.
+     */
     void openAssetWindow();
 
 };
