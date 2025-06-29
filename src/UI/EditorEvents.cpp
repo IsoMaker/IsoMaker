@@ -65,7 +65,7 @@ namespace Events {
         g_eventDispatcher.dispatch(EditorEvent(EditorEventType::EDITOR_MODE_CHANGED, modeIndex, "Editor mode changed"));
     }
     
-    void assetSelected(BasicObject asset) {
+    void assetSelected(objects::MapElement asset) {
         g_eventDispatcher.dispatch(EditorEvent(EditorEventType::ASSET_SELECTED, asset, "Asset selected"));
     }
     

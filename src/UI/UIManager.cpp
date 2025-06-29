@@ -481,7 +481,7 @@ void UIManager::drawBottomAssets2D(int barY)
 
         if (AssetTile(assetBounds, asset, i == _selectedAssetIndex2D, {x, y})) {
             _selectedAssetIndex2D = i;
-            Events::assetSelected(BasicObject(assetTiles2D[i], Vector3D(0, 0, 0), Vector3D(0, 0, 0)));
+            // Events::assetSelected(Character(assetTiles2D[i], Vector3D(0, 0, 0), Vector3D(0, 0, 0)));
         }
 
         if (asset.isLoaded()) {
@@ -491,7 +491,7 @@ void UIManager::drawBottomAssets2D(int barY)
         // Selection
         if (CheckCollisionPointRec(GetMousePosition(), tileBounds) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             _selectedAssetIndex2D = i;
-            Events::assetSelected(BasicObject(assetTiles2D[i], Vector3D(0, 0, 0), Vector3D(0, 0, 0)));
+            // Events::assetSelected(Character(assetTiles2D[i], Vector3D(0, 0, 0), Vector3D(0, 0, 0)));
         }
     }
 }
@@ -517,7 +517,7 @@ void UIManager::drawBottomAssets3D(int barY)
 
         if (AssetTile(assetBounds, assetTiles3D[i].getModel(), assetTiles3D[i].getDisplayName().c_str(), i == _selectedAssetIndex2D)) {
             _selectedAssetIndex2D = i;
-            Events::assetSelected(BasicObject(assetTiles3D[i], Vector3D(0, 0, 0)));
+            // Events::assetSelected(Character(assetTiles3D[i], Vector3D(0, 0, 0)));
         }
 
         // Begin drawing to a tiny viewport
@@ -552,7 +552,7 @@ void UIManager::drawBottomAssets3D(int barY)
         // Selection
         if (CheckCollisionPointRec(GetMousePosition(), tileBounds) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             _selectedAssetIndex3D = i;
-            BasicObject assetBasic(BasicObject(assetTiles3D[i], Vector3D(0, 0, 0)));
+            MapElement assetBasic(objects::MapElement(assetTiles3D[i], Vector3D(0, 0, 0)));
             Events::assetSelected(assetBasic);
         }
     }

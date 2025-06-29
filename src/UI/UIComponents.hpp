@@ -5,7 +5,7 @@
 #include "UITheme.hpp"
 #include <string>
 #include <functional>
-#include "Entities/BasicObject.hpp"
+#include "Entities/MapElement.hpp"
 
 namespace UI {
 

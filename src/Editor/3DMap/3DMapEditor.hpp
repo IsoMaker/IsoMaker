@@ -262,7 +262,7 @@ class MapEditor : public UI::ISceneProvider {
          * @param assetIndex Index of the selected asset
          * @param loadedAssets2D Vector of asset2D
          */
-        void handleAssetSelected(BasicObject asset);
+        void handleAssetSelected(objects::MapElement asset);
 
         /**
          * @brief Handle asset selection events
@@ -397,8 +397,8 @@ class MapEditor : public UI::ISceneProvider {
         Asset2D _currentSpriteType;                          ///< Currently selected 2D asset for placement
 
         // Assets Loaded
-        std::vector<BasicObject> _objects3DLoaded; ///< All 3D objects loaded
-        std::vector<BasicObject> _objects2DLoaded; ///< All 2D objects loaded
+        std::vector<MapElement> _objects3DLoaded; ///< All 3D objects loaded
+        std::vector<Character> _objects2DLoaded; ///< All 2D objects loaded
 
 
         // Core references

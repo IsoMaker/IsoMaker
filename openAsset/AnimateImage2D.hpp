@@ -1,7 +1,7 @@
 #pragma once
 #include "raylib.h"
 #include <string>
-#include "Entities/BasicObject.hpp"
+#include "Entities/Character.hpp"
 
 class AnimatedSprite {
 public:

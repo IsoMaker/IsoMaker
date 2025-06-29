@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Entities/BasicObject.hpp"
+#include "Entities/Character.hpp"
+#include "Entities/MapElement.hpp"
 
 #include <filesystem>
 #include <iostream>
@@ -14,7 +15,8 @@
 class AssetLoader {
     public:
         void updateAssets(const std::string& directoryPath);
-        std::optional<BasicObject> loadAssetFile(const std::string& filePath);
+        Asset2D loadAssetFile2D(std::ifstream& inFile);
+        Asset3D loadAssetFile3D(std::ifstream& inFile);
 
         const std::vector<Asset2D>& getLoaded2DAssets() const;
         const std::vector<Asset3D>& getLoaded3DAssets() const;

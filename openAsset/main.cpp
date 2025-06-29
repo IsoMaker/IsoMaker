@@ -6,7 +6,13 @@
 #include <fstream>
 #include <filesystem>
 
+#include "Entities/MapElement.hpp"
 #include "AnimateImage2D.hpp"
+
+enum class AssetType {
+    ASSET2D,       // For 2D sprites or textures
+    ASSET3D       // For 3D models
+};
 
 bool saveAssetFile(Model& previewModel, AnimatedSprite sprite, std::string inputFileName, float modelScale, AssetType currentAsset, std::string filePath)
 {
