@@ -9,6 +9,11 @@
 
 #include "raylib.h"
 #include "raygui.h"
+#include <unistd.h>
+#include <string>
+#include <vector>
+#include <unordered_map>
+
 #include "UITheme.hpp"
 #include "UIComponents.hpp"
 #include "EditorEvents.hpp"
@@ -17,9 +22,7 @@
 #include "../Editor/3DMap/3DMapEditor.hpp"
 #include "Assets/Asset2D.hpp"
 #include "Assets/Asset3D.hpp"
-#include <string>
-#include <vector>
-#include <unordered_map>
+#include "../Utilities/LoadedAssets.hpp"
 
 namespace UI {
 
@@ -182,7 +185,30 @@ public:
      * Handles asset selection and loading.
      */
     void drawBottomAssetsBar();
+
+    /**
+     * @brief Draw the bottom assets loaded 2D
+     * 
+     * Renders the bottom assets browser showing available assets.
+     * Handles asset selection and loading.
+     */
+    void drawBottomAssets2D(int barY);
+
+    /**
+     * @brief Draw the bottom assets loaded 3D
+     * 
+     * Renders the bottom assets browser showing available assets.
+     * Handles asset selection and loading.
+     */
+    void drawBottomAssets3D(int barY);
     
+    /**
+     * @brief Draw the asset 3D preview
+     * 
+     * Renders a spinning animation of the 3D model.
+     */
+    void drawModelPreview(Asset3D asset, Rectangle assetBounds, int barY);
+
     // Panel management
     /**
      * @brief Toggle visibility of a panel
@@ -338,9 +364,13 @@ private:
     std::vector<Texture2D> _toolIcons;     ///< Tool icon textures
     std::vector<RenderTexture2D> _toolIconRenderTextures; ///< Tool icon render textures
     
-    // Assets for the bottom bar
-    std::vector<Asset2D> _assetTiles;      ///< Available 2D assets for the bottom bar
-    int _selectedAssetIndex;               ///< Index of currently selected asset
+    bool _show3DAssets;
+
+    AssetLoader _loader;
+
+    // Assets index
+    int _selectedAssetIndex2D;               ///< Index of currently selected asset
+    int _selectedAssetIndex3D;               ///< Index of currently selected asset
 
     // Scene objects
     std::vector<SceneObjectInfo> _sceneObjects; ///< List of scene objects for hierarchy
@@ -391,6 +421,14 @@ private:
      * Unloads and frees UI icon textures.
      */
     void unloadIcons();
+
+    /**
+     * @brief Open asset window
+     * 
+     * Open Asset window to preload them.
+     */
+    void openAssetWindow();
+
 };
 
 } // namespace UI

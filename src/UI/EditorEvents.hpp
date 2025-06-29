@@ -14,6 +14,8 @@
 #include <variant>
 #include "raylib.h"
 
+#include "Entities/MapElement.hpp"
+
 namespace UI {
 
 /**
@@ -89,7 +91,8 @@ using EventData = std::variant<
     std::string,            ///< For file paths, object names, etc.
     Vector3,                ///< For positions, rotations, scale
     Vector2,                ///< For 2D positions, cursor coords
-    bool                    ///< For toggles, states
+    bool,                    ///< For toggles, states
+    objects::MapElement
 >;
 
 /**
@@ -308,8 +311,8 @@ namespace Events {
      * 
      * @param assetIndex Index of the selected asset in the browser
      */
-    void assetSelected(int assetIndex);
-    
+    void assetSelected(objects::MapElement asset);
+
     // Scene synchronization events
     /**
      * @brief Dispatch a scene updated event
@@ -339,6 +342,14 @@ namespace Events {
      * @param newName New name for the object
      */
     void sceneObjectRenamed(int objectId, const std::string& newName);
+
+    /**
+     * @brief Dispatch a scene object renamed event
+     * 
+     * @param objectId ID of the renamed scene object
+     * @param newName New name for the object
+     */
+    void addAssetRequested();
 }
 
 } // namespace UI

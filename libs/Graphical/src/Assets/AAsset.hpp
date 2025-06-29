@@ -30,8 +30,13 @@ class AAsset : public IAsset
         bool findAnyTags(std::vector<std::string>);
         bool findTag(std::string);
 
+        float getScale() { return _scale; };
+        void setScale(float scale) { _scale = scale; };
+
     protected:
         std::string _fileName;
         std::string _displayName;
         std::vector<std::string> _tags;
+
+        float _scale;
 };

@@ -15,7 +15,7 @@
 #include "Input/Gamepad.hpp"
 #include "Input/MouseKeyboard.hpp"
 
-#define SCREENHEIGHT 1200
+#define SCREENHEIGHT 1080
 #define SCREENWIDTH 1600
 
 class Game {
