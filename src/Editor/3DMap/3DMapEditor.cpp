@@ -321,12 +321,17 @@ void MapEditor::setupEventHandlers()
             }
         }
     });
+
+    UI::g_eventDispatcher.subscribe(UI::EditorEventType::ASSET_SELECTED,
+        [this](const UI::EditorEvent& event) {
+            if (std::holds_alternative<BasicObject>(event.data)) {
+                BasicObject asset = std::get<BasicObject>(event.data);
+                std::cout << "Asset selected: " << std::endl;
     
-    UI::g_eventDispatcher.subscribe(UI::EditorEventType::ASSET_SELECTED, [this](const UI::EditorEvent& event) {
-        if (std::holds_alternative<int>(event.data)) {
-            handleAssetSelected(std::get<int>(event.data));
-        }
-    });
+                if (asset.getAssetType() == AssetType::ASSET3D)
+                    changeCubeType(asset.getAsset3D());
+            }
+        });
 
     UI::g_eventDispatcher.subscribe(UI::EditorEventType::ASSET_LOADED, [this](const UI::EditorEvent& event) {
         if (std::holds_alternative<int>(event.data)) {
@@ -397,11 +402,11 @@ void MapEditor::handleFileAction(UI::EditorEventType actionType, const std::stri
     }
 }
 
-void MapEditor::handleAssetSelected(int assetIndex)
+void MapEditor::handleAssetSelected(BasicObject asset)
 {
-    // Change current asset type based on selection
-    std::cout << "Asset selected: " << assetIndex << std::endl;
-    // This would change _currentCubeType or _currentSpireType based on the asset
+    std::cout << "Asset selected: " << std::endl;
+
+
 }
 
 void MapEditor::handleAssetLoaded()

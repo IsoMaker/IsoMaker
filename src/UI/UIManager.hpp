@@ -22,7 +22,7 @@
 #include "../Editor/3DMap/3DMapEditor.hpp"
 #include "Assets/Asset2D.hpp"
 #include "Assets/Asset3D.hpp"
-#include "../Utilities/loadedAssets.hpp"
+#include "../Utilities/LoadedAssets.hpp"
 
 namespace UI {
 

@@ -196,38 +196,36 @@ bool ToolButton(Rectangle bounds, Texture2D icon, const char* tooltip, bool isSe
     return pressed;
 }
 
-bool AssetTile(Rectangle bounds, Texture2D texture, const char* name, bool isSelected) {
+bool AssetTile(Rectangle bounds, Asset2D asset, bool isSelected, Vector2 position) {
     bool clicked = false;
-
-    // Draw tile background
     Color bgColor = isSelected ? ACCENT_TERTIARY : UI_SECONDARY;
+    Texture2D texture = asset.getTexture();
+    
     DrawRectangleRec(bounds, bgColor);
-
-    // Draw asset preview (texture)
-    if (texture.id > 0) {
-        // Scale texture to fit within bounds while maintaining aspect ratio
-        float scale = fmin(bounds.width / texture.width, bounds.height / texture.height);
-        float scaledWidth = texture.width * scale;
-        float scaledHeight = texture.height * scale;
-
-        DrawTexturePro(
-            texture,
-            {0, 0, (float)texture.width, (float)texture.height},
-            {bounds.x + (bounds.width - scaledWidth) / 2, bounds.y + (bounds.height - scaledHeight) / 2 - 10, scaledWidth, scaledHeight},
-            {0, 0},
-            0,
-            WHITE
-        );
+    if (asset.isLoaded()) {
+        int texW = asset.getWidth();
+        int texH = asset.getHeight();
+        float scale = 1.8;
+    
+        Rectangle source = {
+            0.0f, 0.0f,
+            (float)texW, (float)texH
+        };
+    
+        Rectangle dest = {
+            bounds.x, bounds.y,
+            texW * scale, texH * scale
+        };
+    
+        Vector2 origin = { 0.0f, 0.0f };
+        DrawTexturePro(texture, source, dest, origin, 0.0f, WHITE);
     } else {
-        // Placeholder when no texture
         DrawRectangle(bounds.x + 5, bounds.y + 5, bounds.width - 10, bounds.height - 25, UI_TEXT_SECONDARY);
     }
 
-    // Draw asset name at bottom
-    int textWidth = MeasureText(name, 9);
-    DrawText(name, bounds.x + (bounds.width - textWidth) / 2, bounds.y + bounds.height - 15, 9, UI_TEXT_PRIMARY);
+    int textWidth = MeasureText(asset.getDisplayName().c_str(), 9);
+    DrawText(asset.getDisplayName().c_str(), bounds.x + (bounds.width - textWidth) / 2, bounds.y + bounds.height - 15, 9, UI_TEXT_PRIMARY);
 
-    // Check for click
     if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(GetMousePosition(), bounds)) {
         clicked = true;
     }

@@ -472,22 +472,30 @@ void UIManager::drawBottomAssets2D(int barY)
 
         int x = padding + col * (assetSize + padding);
         int y = barY + 40 + row * (assetSize + padding);
-        
+
         Rectangle assetBounds = {static_cast<float>(x), static_cast<float>(y), static_cast<float>(assetSize), static_cast<float>(assetSize)};
-        
-        // We would have real asset textures here
-        Texture2D emptyTexture = { 0 };
-        
-        // Use AssetTile component
-        char assetName[20];
-        sprintf(assetName, "Asset %d", i + 1);
-        
-        if (AssetTile(assetBounds, emptyTexture, assetName, i == _selectedAssetIndex2D)) {
+        Rectangle tileBounds = { (float)x, (float)y, (float)assetSize, (float)assetSize };
+
+        Asset2D asset = assetTiles2D[i];
+        Texture2D texture = asset.getTexture();
+
+        if (AssetTile(assetBounds, asset, i == _selectedAssetIndex2D, {x, y})) {
             _selectedAssetIndex2D = i;
-            Events::assetSelected(i);
+            Events::assetSelected(BasicObject(assetTiles2D[i], Vector3D(0, 0, 0), Vector3D(0, 0, 0)));
+        }
+
+        if (asset.isLoaded()) {
+
+        }
+
+        // Selection
+        if (CheckCollisionPointRec(GetMousePosition(), tileBounds) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            _selectedAssetIndex2D = i;
+            Events::assetSelected(BasicObject(assetTiles2D[i], Vector3D(0, 0, 0), Vector3D(0, 0, 0)));
         }
     }
 }
+
 
 void UIManager::drawBottomAssets3D(int barY)
 {
@@ -509,7 +517,7 @@ void UIManager::drawBottomAssets3D(int barY)
 
         if (AssetTile(assetBounds, assetTiles3D[i].getModel(), assetTiles3D[i].getDisplayName().c_str(), i == _selectedAssetIndex2D)) {
             _selectedAssetIndex2D = i;
-            Events::assetSelected(i);
+            Events::assetSelected(BasicObject(assetTiles3D[i], Vector3D(0, 0, 0)));
         }
 
         // Begin drawing to a tiny viewport
@@ -544,7 +552,8 @@ void UIManager::drawBottomAssets3D(int barY)
         // Selection
         if (CheckCollisionPointRec(GetMousePosition(), tileBounds) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             _selectedAssetIndex3D = i;
-            Events::assetSelected(i);
+            BasicObject assetBasic(BasicObject(assetTiles3D[i], Vector3D(0, 0, 0)));
+            Events::assetSelected(assetBasic);
         }
     }
 

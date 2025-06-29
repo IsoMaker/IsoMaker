@@ -23,7 +23,7 @@ if (NOT BUILD_TESTS)
         "../src/UI/UIComponents.cpp"
         "../src/UI/RayguiImpl.cpp"
         "../src/UI/EditorEvents.cpp"
-        "../src/Utilities/loadedAssets.cpp"
+        "../src/Utilities/LoadedAssets.cpp"
     )
 
     target_link_libraries(IsoMaker PRIVATE

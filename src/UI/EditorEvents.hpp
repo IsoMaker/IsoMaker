@@ -14,6 +14,8 @@
 #include <variant>
 #include "raylib.h"
 
+#include "Entities/BasicObject.hpp"
+
 namespace UI {
 
 /**
@@ -89,7 +91,8 @@ using EventData = std::variant<
     std::string,            ///< For file paths, object names, etc.
     Vector3,                ///< For positions, rotations, scale
     Vector2,                ///< For 2D positions, cursor coords
-    bool                    ///< For toggles, states
+    bool,                    ///< For toggles, states
+    BasicObject
 >;
 
 /**
@@ -308,8 +311,8 @@ namespace Events {
      * 
      * @param assetIndex Index of the selected asset in the browser
      */
-    void assetSelected(int assetIndex);
-    
+    void assetSelected(BasicObject asset);
+
     // Scene synchronization events
     /**
      * @brief Dispatch a scene updated event

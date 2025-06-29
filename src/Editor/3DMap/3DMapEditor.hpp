@@ -260,8 +260,9 @@ class MapEditor : public UI::ISceneProvider {
          * Responds to asset selection from the assets browser.
          * 
          * @param assetIndex Index of the selected asset
+         * @param loadedAssets2D Vector of asset2D
          */
-        void handleAssetSelected(int assetIndex);
+        void handleAssetSelected(BasicObject asset);
 
         /**
          * @brief Handle asset selection events

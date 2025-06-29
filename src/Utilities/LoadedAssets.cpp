@@ -1,4 +1,4 @@
-#include "loadedAssets.hpp"
+#include "LoadedAssets.hpp"
 
 void AssetLoader::updateAssets(const std::string& directoryPath)
 {
@@ -60,9 +60,11 @@ std::optional<BasicObject> AssetLoader::loadAssetFile(const std::string& filePat
     std::string type;
     std::string name;
     std::string file;
-    float scale = 1.0f;
     std::string sizeOrScaledSize;
+    float scale = 1.0f;
     int frames = 0;
+    int width = 0;
+    int height = 0;
 
     while (std::getline(inFile, line)) {
         if (line.find("Type:") == 0) {
@@ -85,15 +87,21 @@ std::optional<BasicObject> AssetLoader::loadAssetFile(const std::string& filePat
         Asset2D asset;
         asset.setFileName(file);
         asset.setDisplayName(name);
-        // asset.setScale(scale);
+        asset.setScale(scale);
+        std::stringstream ss(sizeOrScaledSize);
+        char ignoreChar;
+        ss >> width >> ignoreChar >> height;
+        asset.setWidth(width);
+        asset.setHeight(height);
         asset.loadFile();
+        std::cout << sizeOrScaledSize << std::endl;
         BasicObject assetObject(asset, {0,0,0}, {0,0,0});
         return assetObject;
     } else if (type == "3D") {
         Asset3D asset;
         asset.setFileName(file);
         asset.setDisplayName(name);
-        // asset.setScale(scale);
+        asset.setScale(scale);
         asset.loadFile();
         BasicObject assetObject(asset, {0,0,0});
         return assetObject;

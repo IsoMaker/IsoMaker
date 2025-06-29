@@ -41,8 +41,6 @@ void AnimatedSprite::draw(Vector2 position, float scale)
         _frameWidth * scale, _frameHeight * scale
     };
 
-    Vector2 origin = { 0, 0 };
-
     DrawTextureRec(_texture, source, position, WHITE);
 }
 
