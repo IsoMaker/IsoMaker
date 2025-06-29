@@ -46,10 +46,11 @@ void Character::updateAnimation() {
         if (_frameCounter >= _frameSpeed) {
             _frameCounter = 0;
         }
+        _box2D.setPosX(_frameCounter * _box2D.getSize().x);
     } else {
         _frameCounter = 0;
+        _box2D.setPosX(0);
     }
-    _box2D.setPosX(_frameCounter * _box2D.getSize().x);
 }
 
 void Character::draw(Vector2D tileSize)
