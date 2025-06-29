@@ -202,6 +202,13 @@ public:
      */
     void drawBottomAssets3D(int barY);
     
+    /**
+     * @brief Draw the asset 3D preview
+     * 
+     * Renders a spinning animation of the 3D model.
+     */
+    void drawModelPreview(Asset3D asset, Rectangle assetBounds, int barY);
+
     // Panel management
     /**
      * @brief Toggle visibility of a panel

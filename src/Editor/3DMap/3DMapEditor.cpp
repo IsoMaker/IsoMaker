@@ -326,9 +326,7 @@ void MapEditor::setupEventHandlers()
         [this](const UI::EditorEvent& event) {
             if (std::holds_alternative<MapElement>(event.data)) {
                 MapElement asset = std::get<MapElement>(event.data);
-                std::cout << "Asset selected: " << std::endl;
-
-                    changeCubeType(asset.getAsset3D());
+                handleAssetSelected(asset);
             }
         });
 
@@ -403,9 +401,9 @@ void MapEditor::handleFileAction(UI::EditorEventType actionType, const std::stri
 
 void MapEditor::handleAssetSelected(objects::MapElement asset)
 {
-    std::cout << "Asset selected: " << std::endl;
-
-
+    Asset3D asset3D = asset.getAsset3D();
+    changeCubeType(asset3D);
+    std::cout << "Asset selected" << std::endl;
 }
 
 void MapEditor::handleAssetLoaded()

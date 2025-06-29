@@ -496,6 +496,32 @@ void UIManager::drawBottomAssets2D(int barY)
     }
 }
 
+void UIManager::drawModelPreview(Asset3D asset, Rectangle assetBounds, int barY)
+{
+    BeginScissorMode((int)assetBounds.x, (int)assetBounds.y, (int)assetBounds.width, (int)assetBounds.height);
+    rlViewport(assetBounds.x, GetScreenHeight() - (assetBounds.y + assetBounds.height), assetBounds.width, assetBounds.height);
+
+    Camera cam = { 0 };
+    cam.position = { 2.0f, 2.0f, 2.0f };
+    cam.target = { 0.0f, 0.5f, 0.0f };
+    cam.up = { 0.0f, 1.0f, 0.0f };
+    cam.fovy = 45.0f;
+    cam.projection = CAMERA_PERSPECTIVE;
+
+    BeginMode3D(cam);
+
+    Vector3 pos = { 0.0f, 0.0f, 0.0f };
+    Vector3 rotAxis = { 0.0f, 1.0f, 0.0f };
+    float angle = GetTime() * 45.0f;
+
+    DrawModelEx(asset.getModel(), pos, rotAxis, angle, {asset.getScale(), asset.getScale(), asset.getScale()}, WHITE);
+
+    EndMode3D();
+
+    rlViewport(0, 0, GetScreenWidth(), GetScreenHeight());
+    rlLoadIdentity();
+    EndScissorMode();
+}
 
 void UIManager::drawBottomAssets3D(int barY)
 {
@@ -517,39 +543,12 @@ void UIManager::drawBottomAssets3D(int barY)
 
         if (AssetTile(assetBounds, assetTiles3D[i].getModel(), assetTiles3D[i].getDisplayName().c_str(), i == _selectedAssetIndex2D)) {
             _selectedAssetIndex2D = i;
-            // Events::assetSelected(Character(assetTiles3D[i], Vector3D(0, 0, 0)));
+            MapElement assetBasic(objects::MapElement(assetTiles3D[i], Vector3D(0, 0, 0)));
+            Events::assetSelected(assetBasic);
         }
 
-        // Begin drawing to a tiny viewport
-        BeginScissorMode(0, barY, _screenWidth, _screenHeight - barY);
-        rlViewport(x, _screenHeight - (y + assetSize), assetSize, assetSize);
+        drawModelPreview(assetTiles3D[i], assetBounds, barY);
 
-        Camera cam = { 0 };
-        cam.position = { 2.0f, 2.0f, 2.0f };
-        cam.target = { 0.0f, 0.5f, 0.0f };
-        cam.up = { 0.0f, 1.0f, 0.0f };
-        cam.fovy = 45.0f;
-        cam.projection = CAMERA_PERSPECTIVE;
-
-        BeginMode3D(cam);
-
-        if (assetTiles3D[i].isLoaded()) {
-            Vector3 pos = { 0.0f, 0.0f, 0.0f };
-            Vector3 rotAxis = { 0.0f, 1.0f, 0.0f };
-            float angle = GetTime() * 45.0f;
-            Vector3 scale = { 0.5f, 0.5f, 0.5f };
-
-            DrawModelEx(assetTiles3D[i].getModel(), pos, rotAxis, angle, scale, WHITE);
-        }
-
-        EndMode3D();
-
-        // Reset OpenGL state
-        rlViewport(0, 0, _screenWidth, _screenHeight);
-        rlLoadIdentity();  // Reset transformations
-        EndScissorMode();
-
-        // Selection
         if (CheckCollisionPointRec(GetMousePosition(), tileBounds) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             _selectedAssetIndex3D = i;
             MapElement assetBasic(objects::MapElement(assetTiles3D[i], Vector3D(0, 0, 0)));

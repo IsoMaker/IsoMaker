@@ -83,5 +83,5 @@ void MapElement::setAsset3D(Asset3D asset3D)
 
 void MapElement::draw()
 {
-    DrawModel(_asset3D.getModel(), _box3D.getPosition().convert(), _box3D.getScale(), WHITE);
+    DrawModel(_asset3D.getModel(), _box3D.getPosition().convert(), _asset3D.getScale(), WHITE);
 }

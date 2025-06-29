@@ -89,7 +89,7 @@ void drawImagePreview(AnimatedSprite& sprite, Rectangle viewport, float modelSca
         viewport.y + (viewport.height - spriteHeight) / 2.0f
     };
     sprite.updateAnimation();
-    sprite.draw(position, modelScale);
+    sprite.draw(position, 1);
 }
 
 int main()
