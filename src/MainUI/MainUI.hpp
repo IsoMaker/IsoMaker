@@ -9,7 +9,6 @@
 
 // #include "../Editor/2D/2DEditor.hpp"
 #include "../Editor/3DMap/3DMapEditor.hpp"
-#include "Entities/BasicObject2D.hpp"
 #include "Input/MouseKeyboard.hpp"
 #include "../UI/UIManager.hpp"
 #include <iostream>
@@ -57,14 +56,14 @@ class MainUI {
          * Initializes the main UI controller, setting up the window, camera,
          * editors, and UI manager components.
          */
-        MainUI();
+        MainUI(std::shared_ptr<Render::Camera> camera, std::shared_ptr<Render::Window> window);
         
         /**
          * @brief Destroy the MainUI object
          * 
          * Cleanup is handled automatically by member destructors.
          */
-        ~MainUI() {};
+        ~MainUI();
 
         /**
          * @brief Update the main application state
@@ -96,9 +95,11 @@ class MainUI {
         void loop(input::IHandlerBase &inputHandler);
 
     protected:
-        Render::Camera _camera;              ///< Main 3D camera for scene rendering
-        Render::Window _window;              ///< Application window manager
+        std::shared_ptr<Render::Camera> _camera;              ///< Main 3D camera for scene rendering
+        std::shared_ptr<Render::Window> _window;              ///< Application window manager
         MapEditor _3DMapEditor;              ///< 3D map editor instance
         std::string _gameProjectName;        ///< Name of the current game project
         UI::UIManager _uiManager;            ///< UI manager for all interface elements
+    private:
+        void initMapEditorAssets();
 };

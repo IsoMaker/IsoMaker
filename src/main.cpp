@@ -14,7 +14,9 @@ void mouseLoop(input::MouseKeyboardHandler &inputHandler, bool &running)
 int main()
 {
     bool running = true;
-    MainUI mainUI;
+    std::shared_ptr<Render::Camera> camera = std::make_shared<Render::Camera>();
+    std::shared_ptr<Render::Window> window = std::make_shared<Render::Window>();
+    MainUI mainUI(camera, window);
     input::MouseKeyboardHandler inputHandler;
 
     std::thread mouseKeyboardThread(mouseLoop, std::ref(inputHandler), std::ref(running));

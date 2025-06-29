@@ -5,8 +5,9 @@ Asset3D::Asset3D()
     _modelLoaded = false;
 }
 
-Asset3D::~Asset3D()
+Asset3D::Asset3D(std::string fileName) : AAsset(fileName)
 {
+    loadFile();
 }
 
 void Asset3D::loadFile()
@@ -20,6 +21,16 @@ Model Asset3D::getModel()
     if (_modelLoaded)
         return _model;
     return Model();
+}
+
+void Asset3D::setModel(Model model)
+{
+    _model = model;
+}
+
+void Asset3D::setModelTexture(Texture2D texture)
+{
+    _model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture;
 }
 
 // void Asset3D::rotateModel(float angle)

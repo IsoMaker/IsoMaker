@@ -38,6 +38,33 @@ enum class ToolType {
     ZOOM    ///< Zoom tool for view scaling
 };
 
+// std::ostream& operator<<(std::ostream &os, const ToolType &color) {
+//     switch (color) {
+//         case ToolType::SELECT:
+//             os << "Select";
+//             break;
+//         case ToolType::HAND:
+//             os << "Hand";
+//             break;
+//         case ToolType::PEN:
+//             os << "Pen";
+//             break;
+//             case ToolType::ERASER:
+//             os << "Eraser";
+//             break;
+//         case ToolType::CUBE:
+//             os << "Cube";
+//             break;
+//         case ToolType::ZOOM:
+//             os << "Zoom";
+//             break;
+//         default:
+//             os << "Tool";
+//             break;
+//     }
+//     return os;
+// }
+
 /**
  * @brief Panel types in the right sidebar
  * 

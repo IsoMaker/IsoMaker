@@ -7,17 +7,20 @@
 // Library
 #include "Render/Camera.hpp"
 #include "Render/Window.hpp"
-#include "Entities/BasicObject.hpp"
+#include "Utilities/Vector.hpp"
+
+#include "Entities/MapElement.hpp"
+#include "Entities/Character.hpp"
+
 #include "Input/Gamepad.hpp"
 #include "Input/MouseKeyboard.hpp"
-#include "Utilities/Vector.hpp"
 
 #define SCREENHEIGHT 1200
 #define SCREENWIDTH 1600
 
 class Game {
     public:
-        Game(Render::Window& window, Render::Camera& camera);
+        Game(std::shared_ptr<Render::Window> window, std::shared_ptr<Render::Camera> camera);
         ~Game();
 
         void addCube(Vector3D position);
@@ -35,20 +38,16 @@ class Game {
     protected:
 
     private:
-        std::vector<BasicObject> _objects;
-        // std::vector<BasicObject2D> _objects2D;
+        std::vector<std::shared_ptr<objects::MapElement>> _mapElements;
+        std::vector<std::shared_ptr<objects::Character>> _characters;
 
         Asset3D _cubeType;
         Asset2D _playerAsset;
 
-        Render::Window &_window;
-        Render::Camera &_camera;
+        std::shared_ptr<Render::Window> _window;             ///< Reference to the application window
+        std::shared_ptr<Render::Camera> _camera;             ///< Reference to the 3D camera
 
-        BasicObject _player;
-        Vector3D _playerPos;
-        bool _playerIsMoving = false;
+        std::shared_ptr<objects::Character> _player;
 
         float _cubeHeight;
-
-
 };

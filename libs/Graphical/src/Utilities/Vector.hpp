@@ -67,5 +67,7 @@ namespace Utilities
         protected:
         private:
     };
-
 }
+
+std::ostream &operator<<(std::ostream &stream, const Utilities::Vector2D vector);
+std::ostream &operator<<(std::ostream &stream, const Utilities::Vector3D vector);

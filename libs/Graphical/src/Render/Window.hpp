@@ -10,7 +10,7 @@ namespace Render
     class Window {
         public:
             Window() {};
-            ~Window() {};
+            ~Window() { std::cout << "Window destroyed" << std::endl; };
             void startWindow(Vector2D);
             void closeWindow();
             bool isWindowClosing();

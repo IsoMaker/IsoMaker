@@ -12,19 +12,20 @@ namespace Render {
     class Camera {
         public:
             Camera();
-            ~Camera() {};
+            ~Camera() { std::cout << "Camera destroyed" << std::endl; };
 
-            void start3D() {BeginMode3D(_camera);};
-            void end3D() {EndMode3D();};
+            void start3D() { BeginMode3D(_camera); };
+            void end3D() { EndMode3D(); };
 
-            int getAngle() {return _angle;};
-            Vector3D getPosition() {return _position;};
+            Vector3D getPosition() { return _position; };
+            Vector3D getTarget() { return _target; };
+            int getAngle() { return _angle; };
 
             void setTarget(Vector3D target) {_target = target;};
             void setDistance(float distance) {_distance = distance;};
             void setHeight(float height) {_height = height;};
 
-            Camera3D getRaylibCam() {return _camera;};
+            Camera3D &getRaylibCam() { return _camera; };
 
             void rotateClock();
             void rotateCounterclock();

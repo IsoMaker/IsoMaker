@@ -2,19 +2,38 @@
 #include <thread>
 #include <chrono>
 
-MainUI::MainUI() 
-    : _3DMapEditor(_camera, _window),
-      _uiManager(SCREENWIDTH, SCREENHEIGHT) 
+MainUI::MainUI(std::shared_ptr<Render::Camera> camera, std::shared_ptr<Render::Window> window) : _uiManager(SCREENWIDTH, SCREENHEIGHT) 
 {
-    _window.startWindow(Vector2D(SCREENWIDTH, SCREENHEIGHT));
+    _camera = camera;
+    _window = window;
+    _window.get()->startWindow(Vector2D(SCREENWIDTH, SCREENHEIGHT));
+    
+    _3DMapEditor.init(window, camera);
     _uiManager.initialize();
 
-    //temporary cube asset loading for the 3D map, to change after libraries are implemented
     _gameProjectName = "game_project";
+    
+    //temporary cube asset loading for the 3D map, to change after libraries are implemented
+    initMapEditorAssets();
+}
 
-    Asset3D cubeAsset;
-    cubeAsset.setFileName("ressources/newBlock.glb");
-    cubeAsset.loadFile();
+MainUI::~MainUI()
+{
+}
+
+void MainUI::initMapEditorAssets()
+{
+    Color myColor = LIGHTGRAY;
+    Image colorImage = GenImageColor(1, 1, myColor);
+    Texture2D colorTexture = LoadTextureFromImage(colorImage);
+    UnloadImage(colorImage);
+    Asset2D textureAsset(colorTexture);
+    // Asset2D textureAsset("ressources/textures/cube_texture.png")
+    _3DMapEditor.changeTextureType(textureAsset);
+
+    Asset3D cubeAsset("ressources/elements/models/cube.obj");
+    if (textureAsset.isLoaded())
+        cubeAsset.setModelTexture(textureAsset.getTexture());
     _3DMapEditor.changeCubeType(cubeAsset);
 
     Asset2D playerAsset;
@@ -30,33 +49,27 @@ void MainUI::update(input::IHandlerBase &inputHandler) {
 }
 
 void MainUI::draw() {
-    _window.startRender();
-    
+    _window.get()->startRender();
+
     // Get the main view area from the UI manager
     Rectangle mainViewArea = _uiManager.getMainViewArea();
-    
+
     // Draw 3D content in the main view area
-    _window.clearBackground(UI::BACKGROUND);
-    
-    BeginScissorMode(mainViewArea.x, mainViewArea.y, mainViewArea.width, mainViewArea.height);
-    _camera.start3D();
-    _3DMapEditor.draw3DElements();
-    _camera.end3D();
-    EndScissorMode();
-    
-    // Draw 2D UI elements
-    _3DMapEditor.draw2DElements();
+    _window.get()->clearBackground(UI::BACKGROUND);
+
+    // Draw Map Editor 3D and 2D elements
+    _3DMapEditor.draw(mainViewArea);
+    // Draw Map Editor UI elements
     _uiManager.draw(_3DMapEditor);
     
-    _window.endRender();
+    _window.get()->endRender();
 }
 
 void MainUI::loop(input::IHandlerBase &inputHandler) {
-    _3DMapEditor.initGrid();
-    while (!_window.isWindowClosing()) {
+    while (!_window.get()->isWindowClosing()) {
         update(inputHandler);
         draw();
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
     }
-    _window.closeWindow();
+    _window.get()->closeWindow();
 }

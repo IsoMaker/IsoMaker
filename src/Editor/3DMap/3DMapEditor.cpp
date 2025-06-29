@@ -4,19 +4,24 @@
 #include "3DMapEditor.hpp"
 #include "Input/InputTypes.hpp"
 
-MapEditor::MapEditor(Render::Camera &camera, Render::Window &window) : _window(window), _camera(camera), _grid(), _cubeHeight(1), _placePlayer(false)
+MapEditor::MapEditor() : _grid(), _cubeHeight(1.0f), _closestObject(std::nullopt),
+                        _cursorPosition(0, 0), _alignedPosition(0, 0.5f, 0),
+                        _placePlayer(false), _drawWireframe(false) 
 {
-    _alignedPosition = Vector3D(0, 0.5f, 0);
-    _previewObject = BasicObject(_currentCubeType, _alignedPosition);
-    _previewObject.resizeTo(_cubeHeight);
-    _closestObject = std::nullopt;
-    _drawWireframe = false;
-    
-    setupEventHandlers();
 }
 
 MapEditor::~MapEditor()
 {
+}
+
+void MapEditor::init(std::shared_ptr<Render::Window> window, std::shared_ptr<Render::Camera> camera)
+{
+    _window = window;
+    _camera = camera;
+
+    initGrid();
+
+    setupEventHandlers();
 }
 
 void MapEditor::initGrid()
@@ -26,8 +31,12 @@ void MapEditor::initGrid()
 
 void MapEditor::update(input::IHandlerBase &inputHandler)
 {
-    Vector2D cursorPos = inputHandler.getCursorCoords();
-    updateCursorInfo(cursorPos, _camera.getPosition());
+    if (!_camera) {
+        std::cerr << "[ERROR] MapEditor::_camera is null in update()\n";
+        return;
+    }
+    _cursorPosition = inputHandler.getCursorCoords();
+    updateCursor();;
 
     if (inputHandler.isReleased(input::Generic::SELECT1)) {
         if (_currentTool == 4 && _alignedPosition != Vector3D(0, 0, 0)) { // CUBE tool
@@ -43,12 +52,12 @@ void MapEditor::update(input::IHandlerBase &inputHandler)
         }
     }
     if (inputHandler.isReleased(input::Generic::LEFT)) {
-        _camera.rotateClock();
-        UI::Events::cameraMove(_camera.getPosition().convert());
+        _camera->rotateClock();
+        UI::Events::cameraMove(_camera->getPosition().convert());
         std::cout << "Rotate Camera" << std::endl;
     }
     if (inputHandler.isReleased(input::Generic::RIGHT)) {
-        _camera.rotateCounterclock();
+        _camera->rotateCounterclock();
 
         std::cout << "Other Rotate Camera" << std::endl;
     }
@@ -87,25 +96,35 @@ void MapEditor::update(input::IHandlerBase &inputHandler)
 void MapEditor::draw2DElements()
 {
     for (auto i = _objects2D.begin(); i != _objects2D.end(); i++) {
-        i->draw();
+        i->get()->draw();
     }
 }
 
 void MapEditor::draw3DElements()
 {
     _grid.draw();
-    if (_drawWireframe) {
-        for (auto i = _objects3D.begin(); i != _objects3D.end(); i++) {
-            i->drawWireframe();
-        }
-    } else {
-        for (auto i = _objects3D.begin(); i != _objects3D.end(); i++)
-            i->draw();
+    for (auto i = _objects3D.begin(); i != _objects3D.end(); i++) {
+        i->get()->draw();
     }
 
-    Vector3 size = (Vector3){ _cubeHeight, _cubeHeight, _cubeHeight };
-    Color color = (Color){ 255, 255, 0, 128 }; // Yellow with 50% opacity
-    DrawCubeV(_alignedPosition.convert(), size, color); // Draw solid cube
+    if (_currentTool == 4) {
+        Vector3 size = (Vector3){ _cubeHeight, _cubeHeight, _cubeHeight };
+        Color color = (Color){ 255, 255, 0, 128 }; // Yellow with 50% opacity
+        DrawCubeV(_alignedPosition.convert(), size, color); // Draw preview cube
+    }
+}
+
+void MapEditor::draw(Rectangle mainViewArea)
+{
+    // Draw 3D elements
+    BeginScissorMode(mainViewArea.x, mainViewArea.y, mainViewArea.width, mainViewArea.height);
+    _camera->start3D();
+    draw3DElements();
+    _camera->end3D();
+    EndScissorMode();
+    
+    // Draw 2D elements
+    draw2DElements();
 }
 
 void MapEditor::changeCubeType(Asset3D newAsset)
@@ -113,30 +132,40 @@ void MapEditor::changeCubeType(Asset3D newAsset)
     _currentCubeType = newAsset;
 }
 
+void MapEditor::changeTextureType(Asset2D newAsset)
+{
+    _currentTextureType = newAsset;
+}
+
 void MapEditor::changeSpriteType(Asset2D newAsset)
 {
-    _currentSpireType = newAsset;
+    _currentSpriteType = newAsset;
 }
 
 void MapEditor::addCube(Vector3D position)
 {
-    BasicObject newObject = BasicObject(_currentCubeType, position);
-    newObject.resizeTo(_cubeHeight);
-    _objects3D.push_back(newObject);
+    for (auto i = _objects3D.begin(); i != _objects3D.end(); i++) {
+        if (i->get()->getBoxPosition() == position) {
+            return;
+        }
+    }
+    std::shared_ptr<MapElement> newCube = std::make_shared<MapElement>(_currentCubeType, position, Vector3D(_cubeHeight, _cubeHeight, _cubeHeight));
+    _objects3D.push_back(newCube);
+    updateCursor();
 }
 
 void MapEditor::addPlayer(Vector2D position)
 {
-    BasicObject newObject = BasicObject(_currentSpireType, {position.x, position.y, 0.5}, Vector3D(32, 40, 1));
-    _objects2D.push_back(newObject);
+    std::shared_ptr<Character> newCharacter = std::make_shared<Character>(_currentSpriteType, Vector3D(position.x, 0.5f, position.y), Vector2D(0, 0), Vector2D(32, 40));
+    _objects2D.push_back(newCharacter);
 }
 
-void MapEditor::removeCube(std::vector<BasicObject>::iterator toRemove)
+void MapEditor::removeCube(std::vector<std::shared_ptr<MapElement>>::iterator toRemove)
 {
     _objects3D.erase(toRemove);
 }
 
-void MapEditor::removePlayer(std::vector<BasicObject>::iterator toRemove)
+void MapEditor::removePlayer(std::vector<std::shared_ptr<Character>>::iterator toRemove)
 {
     _objects2D.erase(toRemove);
 }
@@ -144,15 +173,16 @@ void MapEditor::removePlayer(std::vector<BasicObject>::iterator toRemove)
 void MapEditor::findPositionFromHit(RayCollision &hit)
 {
     Vector3D collisionPoint = hit.point;
-    ObjectBox3D &modelBox = _closestObject.value()->getBox();
-    Vector3D diff = collisionPoint - modelBox.position;
-    Vector3D alignedPos = modelBox.position;
+    Vector3D modelPos = _closestObject.value()->get()->getBox3D().getPosition();
+    Vector3D diff = collisionPoint - modelPos;
+    Vector3D alignedPos = modelPos;
 
-    if (diff.x == _cubeHeight)       alignedPos.x += _cubeHeight;
+    if (diff.x == _cubeHeight) alignedPos.x += _cubeHeight;
     else if (diff.x == 0) alignedPos.x -= _cubeHeight;
     else if (diff.z == _cubeHeight)  alignedPos.z += _cubeHeight;
     else if (diff.z == 0) alignedPos.z -= _cubeHeight;
-    if (diff.y == _cubeHeight) alignedPos.y += _cubeHeight; // Y remains unchanged
+    else if (diff.y == _cubeHeight) alignedPos.y += _cubeHeight;
+    else return; // No valid alignment found
 
     _alignedPosition = alignedPos;
 }
@@ -163,20 +193,20 @@ void MapEditor::findPositionFromGrid(Ray &ray)
     if (gridCell.has_value()) {
         _alignedPosition = gridCell.value();
     } else {
-        _alignedPosition = Vector3D(0, 0, 0);
+        _alignedPosition = Vector3D(0, 0.5f, 0);
     }
 }
 
-void MapEditor::updateCursorInfo(Vector2D cursorPos, Vector3D cameraPos)
+void MapEditor::updateCursor()
 {
-    Ray ray = GetMouseRay(cursorPos.convert(), _camera.getRaylibCam());
+    Ray ray = GetMouseRay(_cursorPosition.convert(), _camera->getRaylibCam());
     RayCollision closestHit = { false, std::numeric_limits<float>::max(), { 0, 0, 0 }, { 0, 0, 0 } };
 
     _closestObject = std::nullopt;
 
     // check if we are over an object
     for (auto i = _objects3D.begin(); i != _objects3D.end(); i++) {
-        RayCollision collision = GetRayCollisionBox(ray, i->getBox().convert());
+        RayCollision collision = GetRayCollisionBox(ray, i->get()->getBox3D().convert());
         if (collision.hit && collision.distance < closestHit.distance) {
             closestHit = collision;
             _closestObject = i;
@@ -191,44 +221,6 @@ void MapEditor::updateCursorInfo(Vector2D cursorPos, Vector3D cameraPos)
     }
 }
 
-std::pair<Vector3D, std::optional<std::vector<BasicObject>::iterator>> MapEditor::alignPosition(Vector2D cursorPos)
-{
-    Vector3D cameraPos = _camera.getPosition();
-    Ray ray = GetMouseRay(cursorPos.convert(), _camera.getRaylibCam());
-
-    RayCollision closestHit = { false, std::numeric_limits<float>::max(), { 0, 0, 0 }, { 0, 0, 0 } };
-    std::optional<std::vector<BasicObject>::iterator> closestObj = std::nullopt;
-
-    for (auto i = _objects3D.begin(); i != _objects3D.end(); i++) {
-        RayCollision collision = GetRayCollisionBox(ray, i->getBox().convert());
-        if (collision.hit && collision.distance < closestHit.distance) {
-            closestHit = collision;
-            closestObj = i;
-        }
-    }
-
-    if (closestHit.hit) {
-        Vector3D collisionPoint = closestHit.point;
-        ObjectBox3D &modelBox = closestObj.value()->getBox();
-        Vector3D diff = collisionPoint - modelBox.position;
-        Vector3D alignedPos = modelBox.position;
-    
-        if (diff.x == _cubeHeight)       alignedPos.x += _cubeHeight;
-        else if (diff.x == 0) alignedPos.x -= _cubeHeight;
-        else if (diff.z == _cubeHeight)  alignedPos.z += _cubeHeight;
-        else if (diff.z == 0) alignedPos.z -= _cubeHeight;
-        if (diff.y == _cubeHeight) alignedPos.y += _cubeHeight; // Y remains unchanged
-    
-        return {alignedPos, closestObj};
-    }
-    auto gridCell = _grid.getCellFromRay(ray);
-    if (gridCell.has_value()) {
-        return { gridCell.value(), std::nullopt };
-    } else {
-        return { Vector3D(0, 0.5, 0), std::nullopt };
-    }
-}
-
 void MapEditor::saveMapBinary(const std::string& filename)
 {
     std::filesystem::path filepath(filename);
@@ -240,15 +232,20 @@ void MapEditor::saveMapBinary(const std::string& filename)
         return;
     }
 
+    Vector3D pos3D = Vector3D();
+    Vector2D pos2D = Vector2D();
+
     file << "MAP\n";
     file << _objects3D.size() << "\n";
     for (auto& obj : _objects3D) {
-        file << obj.getPosition().x << " " << obj.getPosition().y << " " << obj.getPosition().z << "\n";
+        pos3D = obj->getBox3D().getPosition();
+        file << pos3D.x << " " << pos3D.y << " " << pos3D.z << "\n";
     }
 
     if (!_objects2D.empty()) {
+        pos2D = _objects2D[0]->getBox2D().getPosition();
         file << "PLAYER\n";
-        file << _objects2D[0].getPosition().x << " " << _objects2D[0].getPosition().y << "\n";
+        file << pos2D.x << " " << pos2D.y << "\n";
     }
 
     file.close();
@@ -421,7 +418,7 @@ std::string MapEditor::getSelectedObjectName() const
 
 Vector3 MapEditor::getCameraPosition() const
 {
-    return _camera.getPosition().convert();
+    return _camera->getPosition().convert();
 }
 
 bool MapEditor::isGridVisible() const
@@ -436,8 +433,8 @@ std::vector<UI::SceneObjectInfo> MapEditor::getSceneObjects() const
     
     // Add 3D objects (cubes)
     for (size_t i = 0; i < _objects3D.size(); ++i) {
-        const BasicObject& obj = _objects3D[i];
-        Vector3D pos = const_cast<BasicObject&>(obj).getBox().position;
+        const MapElement *obj = _objects3D[i].get();
+        Vector3D pos = const_cast<MapElement*>(obj)->getBoxPosition();
         
         UI::SceneObjectInfo objInfo(
             static_cast<int>(i),
@@ -454,8 +451,8 @@ std::vector<UI::SceneObjectInfo> MapEditor::getSceneObjects() const
     
     // Add 2D objects (sprites)
     for (size_t i = 0; i < _objects2D.size(); ++i) {
-        const BasicObject& obj = _objects2D[i];
-        Vector3D pos = const_cast<BasicObject&>(obj).getBox().position;
+        const Character *obj = _objects2D[i].get();
+        Vector3D pos = const_cast<Character*>(obj)->getBoxPosition();
         
         UI::SceneObjectInfo objInfo(
             static_cast<int>(_objects3D.size() + i),
@@ -488,8 +485,8 @@ UI::SceneObjectInfo MapEditor::getObjectInfo(int objectId) const
 {
     // Check if it's a 3D object
     if (objectId >= 0 && objectId < static_cast<int>(_objects3D.size())) {
-        const BasicObject& obj = _objects3D[objectId];
-        Vector3D pos = const_cast<BasicObject&>(obj).getBox().position;
+        const MapElement *obj = _objects3D[objectId].get();
+        Vector3D pos = const_cast<MapElement*>(obj)->getBoxPosition();
         
         return UI::SceneObjectInfo(
             objectId,
@@ -504,8 +501,8 @@ UI::SceneObjectInfo MapEditor::getObjectInfo(int objectId) const
     // Check if it's a 2D object
     int sprite2DIndex = objectId - static_cast<int>(_objects3D.size());
     if (sprite2DIndex >= 0 && sprite2DIndex < static_cast<int>(_objects2D.size())) {
-        const BasicObject& obj = _objects2D[sprite2DIndex];
-        Vector3D pos = const_cast<BasicObject&>(obj).getBox().position;
+        const Character *obj = _objects2D[objectId].get();
+        Vector3D pos = const_cast<Character*>(obj)->getBoxPosition();
         
         return UI::SceneObjectInfo(
             objectId,
