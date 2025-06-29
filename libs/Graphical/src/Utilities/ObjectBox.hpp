@@ -11,10 +11,12 @@ namespace Utilities
         public:
             ObjectBox() {};
             ObjectBox(T position, T size, float scale = 1.0f) : _position(position), _size(size), _scale(scale) {};
-            ~ObjectBox() {};
+            ~ObjectBox() = default;
 
             T getPosition() const { return _position; };
             void setPosition(T newPosition ) { _position = newPosition; };
+            virtual void setPosX(float x) = 0;
+            virtual void setPosY(float y) = 0;
             void movePosition(T positionModifier) { _position += positionModifier; };
 
             T getSize() const { return _size; };
@@ -36,6 +38,9 @@ namespace Utilities
         public:
             using ObjectBox::ObjectBox;
 
+            void setPosX(float x) { _position.x = x; };
+            void setPosY(float y) { _position.y = y; };
+
             Rectangle getRectangle()
             {
                 return { _position.x, _position.y, _size.x, _size.y };
@@ -56,6 +61,10 @@ namespace Utilities
         public:
             using ObjectBox::ObjectBox;
 
+            void setPosX(float x) { _position.x = x; };
+            void setPosY(float y) { _position.y = y; };
+            void setPosZ(float z) { _position.z = z; };
+
             void setSizeFromBounding(BoundingBox box) { _size = Vector3D(box.max) - Vector3D(box.min); };
 
             BoundingBox convert()
@@ -70,4 +79,3 @@ namespace Utilities
         private:
     };
 }
-

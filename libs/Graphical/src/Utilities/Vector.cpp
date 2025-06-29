@@ -43,6 +43,11 @@ bool Vector2D::operator!= (const Vector2D& v) const {
     return false;
 }
 
+std::ostream &operator<<(std::ostream &stream, const Vector2D vector)
+{
+    return stream << "(" << vector.x << ", " << vector.y << ")";
+}
+
 Vector2 Vector2D::convert() {
     return Vector2{x, y};
 }
@@ -91,6 +96,11 @@ bool Vector3D::operator!= (const Vector3D& v) const {
     if (x != v.x || y != v.y || z != v.z)
         return true;
     return false;
+}
+
+std::ostream &operator<<(std::ostream &stream, const Vector3D vector)
+{
+    return stream << "(" << vector.x << ", " << vector.y << ", " << vector.z << ")";
 }
 
 Vector3 Vector3D::convert() {

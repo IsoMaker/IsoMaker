@@ -41,6 +41,9 @@ namespace objects
 
             Vector3D getBoxPosition() { return _box3D.getPosition(); };
             ObjectBox3D &getBox3D() { return _box3D; };
+            void setBox3DPosition(Vector3D position) { _box3D.setPosition(position); };
+            void setBox3DSize(Vector3D size) { _box3D.setSize(size); };
+            void setBox3DScale(float scale) { _box3D.setScale(scale); };
 
             // virtual void update() = 0;
 

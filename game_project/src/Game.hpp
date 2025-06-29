@@ -20,7 +20,7 @@
 
 class Game {
     public:
-        Game(Render::Window& window, Render::Camera& camera);
+        Game(std::shared_ptr<Render::Window> window, std::shared_ptr<Render::Camera> camera);
         ~Game();
 
         void addCube(Vector3D position);
@@ -44,8 +44,8 @@ class Game {
         Asset3D _cubeType;
         Asset2D _playerAsset;
 
-        Render::Window &_window;
-        Render::Camera &_camera;
+        std::shared_ptr<Render::Window> _window;             ///< Reference to the application window
+        std::shared_ptr<Render::Camera> _camera;             ///< Reference to the 3D camera
 
         std::shared_ptr<objects::Character> _player;
 

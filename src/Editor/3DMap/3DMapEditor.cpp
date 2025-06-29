@@ -4,18 +4,24 @@
 #include "3DMapEditor.hpp"
 #include "Input/InputTypes.hpp"
 
-MapEditor::MapEditor(Render::Camera &camera, Render::Window &window) : _window(window), _camera(camera), _grid(), _cubeHeight(1.0f), _placePlayer(false)
+MapEditor::MapEditor() : _grid(), _cubeHeight(1.0f), _closestObject(std::nullopt),
+                        _cursorPosition(0, 0), _alignedPosition(0, 0.5f, 0),
+                        _placePlayer(false), _drawWireframe(false) 
 {
-    _cursorPosition = Vector2D(0, 0);
-    _alignedPosition = Vector3D(0, 0.5f, 0);
-    _closestObject = std::nullopt;
-    _drawWireframe = false;
-
-    setupEventHandlers();
 }
 
 MapEditor::~MapEditor()
 {
+}
+
+void MapEditor::init(std::shared_ptr<Render::Window> window, std::shared_ptr<Render::Camera> camera)
+{
+    _window = window;
+    _camera = camera;
+
+    initGrid();
+
+    setupEventHandlers();
 }
 
 void MapEditor::initGrid()
@@ -25,6 +31,10 @@ void MapEditor::initGrid()
 
 void MapEditor::update(input::IHandlerBase &inputHandler)
 {
+    if (!_camera) {
+        std::cerr << "[ERROR] MapEditor::_camera is null in update()\n";
+        return;
+    }
     _cursorPosition = inputHandler.getCursorCoords();
     updateCursor();;
 
@@ -42,12 +52,12 @@ void MapEditor::update(input::IHandlerBase &inputHandler)
         }
     }
     if (inputHandler.isReleased(input::Generic::LEFT)) {
-        _camera.rotateClock();
-        UI::Events::cameraMove(_camera.getPosition().convert());
+        _camera->rotateClock();
+        UI::Events::cameraMove(_camera->getPosition().convert());
         std::cout << "Rotate Camera" << std::endl;
     }
     if (inputHandler.isReleased(input::Generic::RIGHT)) {
-        _camera.rotateCounterclock();
+        _camera->rotateCounterclock();
 
         std::cout << "Other Rotate Camera" << std::endl;
     }
@@ -108,9 +118,9 @@ void MapEditor::draw(Rectangle mainViewArea)
 {
     // Draw 3D elements
     BeginScissorMode(mainViewArea.x, mainViewArea.y, mainViewArea.width, mainViewArea.height);
-    _camera.start3D();
+    _camera->start3D();
     draw3DElements();
-    _camera.end3D();
+    _camera->end3D();
     EndScissorMode();
     
     // Draw 2D elements
@@ -189,7 +199,7 @@ void MapEditor::findPositionFromGrid(Ray &ray)
 
 void MapEditor::updateCursor()
 {
-    Ray ray = GetMouseRay(_cursorPosition.convert(), _camera.getRaylibCam());
+    Ray ray = GetMouseRay(_cursorPosition.convert(), _camera->getRaylibCam());
     RayCollision closestHit = { false, std::numeric_limits<float>::max(), { 0, 0, 0 }, { 0, 0, 0 } };
 
     _closestObject = std::nullopt;
@@ -228,12 +238,12 @@ void MapEditor::saveMapBinary(const std::string& filename)
     file << "MAP\n";
     file << _objects3D.size() << "\n";
     for (auto& obj : _objects3D) {
-        pos3D = obj.get()->getBox3D().getPosition();
+        pos3D = obj->getBox3D().getPosition();
         file << pos3D.x << " " << pos3D.y << " " << pos3D.z << "\n";
     }
 
     if (!_objects2D.empty()) {
-        pos2D = _objects2D[0].get()->getBox2D().getPosition();
+        pos2D = _objects2D[0]->getBox2D().getPosition();
         file << "PLAYER\n";
         file << pos2D.x << " " << pos2D.y << "\n";
     }
@@ -408,7 +418,7 @@ std::string MapEditor::getSelectedObjectName() const
 
 Vector3 MapEditor::getCameraPosition() const
 {
-    return _camera.getPosition().convert();
+    return _camera->getPosition().convert();
 }
 
 bool MapEditor::isGridVisible() const

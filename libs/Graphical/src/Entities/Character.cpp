@@ -7,6 +7,7 @@
 
 #include "Character.hpp"
 
+#include <raymath.h>
 #include <algorithm>
 
 using namespace objects;
@@ -40,15 +41,40 @@ void Character::setMoving(bool moving)
 }
 
 void Character::updateAnimation() {
-    _frameCounter++;
-    if (_frameCounter >= _frameSpeed) {
+    if (_moving) {
+        _frameCounter += 1;
+        if (_frameCounter >= _frameSpeed) {
+            _frameCounter = 0;
+        }
+    } else {
         _frameCounter = 0;
-        std::clamp(_frameCounter + 1, 0, _totalFrames);
     }
+    _box2D.setPosX(_frameCounter * _box2D.getSize().x);
 }
 
-void Character::draw(Render::Camera &camera)
+void Character::draw(Vector2D tileSize)
 {
-    // DrawTextureRec(_asset2D.getTexture(), source, position, WHITE);
-    DrawBillboardRec(camera.getRaylibCam(), _asset2D.getTexture(), _box2D.getRectangle(), _box3D.getPosition().convert(), _box2D.getSize().convert(), WHITE);
+    Rectangle source = _box2D.getRectangle();
+    Vector3D pos = _box3D.getPosition();
+    const float tileWidth = 64.0f;
+    const float tileHeight = 32.0f;
+    float isoX = (pos.x - pos.z) * tileWidth / 2.0f;
+    float isoY = (pos.x + pos.z) * tileHeight / 2.0f - pos.y * tileHeight;
+    Vector2 position = {
+        (isoX + SCREENWIDTH / 2) - source.width,
+        ((isoY + SCREENHEIGHT / 2) - source.height) - 48
+    };
+
+    DrawTextureRec(_asset2D.getTexture(), source, position, WHITE);
+    // Vector3D forward = Vector3D(camera->getTarget() - camera->getPosition());
+    // Vector3D up = Vector3D(0.0f, 1.0f, 0.0f);
+    // up = forward * (up * forward);
+    // up = Vector3D(Vector3Normalize(up.convert()));
+    // Texture2D texture = _asset2D.getTexture();
+    // Rectangle source = _box2D.getRectangle();
+    // Vector3D position = {0, 3, 0};
+    // Vector2D size = _box2D.getSize();
+    // Vector2D origin = size * _box2D.getScale();
+
+    // DrawBillboardPro(camera->getRaylibCam(), texture, source, position.convert(), up.convert(), size.convert(), origin.convert(), 0.0f, WHITE);
 }

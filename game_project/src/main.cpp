@@ -12,10 +12,10 @@ void mouseLoop(input::MouseKeyboardHandler &inputHandler, bool &running)
 int main()
 {
     input::MouseKeyboardHandler inputHandler;
-    Render::Camera camera;
-    Render::Window window;
-    bool running = true;
+    std::shared_ptr<Render::Window> window = std::make_shared<Render::Window>();
+    std::shared_ptr<Render::Camera> camera = std::make_shared<Render::Camera>();
     Game game(window, camera);
+    bool running = true;
 
     std::thread mouseKeyboardThread(mouseLoop, std::ref(inputHandler), std::ref(running));
 

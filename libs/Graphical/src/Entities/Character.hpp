@@ -27,7 +27,7 @@ namespace objects
             void updateAnimation();
 
             void draw() { AEntity::draw(); };
-            void draw(Render::Camera &camera);
+            void draw(Vector2D tileSize);
         protected:
             int _totalFrames = 1;
             int _currentFrame = 0;

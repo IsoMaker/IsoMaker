@@ -8,8 +8,9 @@
 class AAsset : public IAsset
 {
     public:
-        AAsset() {};
-        ~AAsset() {};
+        AAsset() = default;
+        AAsset(std::string fileName);
+        ~AAsset()  = default;
 
         std::string getFileName() { return _fileName; };
         std::string getDisplayName() { return _displayName; };

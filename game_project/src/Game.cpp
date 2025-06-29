@@ -2,10 +2,11 @@
 #include <filesystem>
 #include "Utilities/PathHelper.hpp"
 
-Game::Game(Render::Window& window, Render::Camera& camera) : _window(window), _camera(camera)
+Game::Game(std::shared_ptr<Render::Window> window, std::shared_ptr<Render::Camera> camera) : _cubeHeight(1)
 {
-    _cubeHeight = 1;
-    _window.startWindow(Vector2D(SCREENWIDTH, SCREENHEIGHT));
+    _window = window;
+    _window->startWindow(Vector2D(SCREENWIDTH, SCREENHEIGHT));
+    _camera = camera;
 
     std::filesystem::path exePath = Utilities::getExecutablePath();
     std::filesystem::path basePath = exePath.parent_path();
@@ -14,16 +15,14 @@ Game::Game(Render::Window& window, Render::Camera& camera) : _window(window), _c
     std::string mapPath = (exePath / "assets" / "maps" / "game_map.dat").string();
     std::string playerPath = (exePath / "assets" / "entities" / "shy_guy_red.png").string();
 
-    _cubeType.setFileName(modelPath);
-    _cubeType.loadFile();
+    _cubeType = Asset3D(modelPath);
     loadMap(mapPath);
     Vector3D playerPos(0, 0, 0);
     if (!_mapElements.empty()) {
-        playerPos = _mapElements[0].get()->getBoxPosition();
+        playerPos = _mapElements[0]->getBoxPosition();
     }
-    playerPos.y -= 0.5f;
-    _playerAsset.setFileName(playerPath);
-    _playerAsset.loadFile();
+    playerPos.z -= 0.5f;
+    _playerAsset = Asset2D(playerPath);
     _player = std::make_shared<objects::Character>(_playerAsset, playerPos, Vector2D(0, 0), Vector2D(32, 40));
     std::cout << "PLAYER POS DEFAULT: " << playerPos.x << " " << playerPos.y << " " << playerPos.z << std::endl;
 }
@@ -43,7 +42,7 @@ void Game::addCube(Vector3D position)
 
     std::shared_ptr<objects::MapElement> newCube = std::make_shared<objects::MapElement>(_cubeType, position);
     std::cout << position.x << " " << position.y << " " << position.z << std::endl;
-    newCube.get()->getBox3D().setScale(_cubeHeight);
+    newCube->getBox3D().setScale(_cubeHeight);
     _mapElements.push_back(newCube);
 }
 
@@ -87,47 +86,44 @@ void Game::draw3DElements()
 
 void Game::draw2DElements()
 {
-    _player.get()->draw(_camera);
+    _player->draw({64, 32});
     for (auto i = _characters.begin(); i != _characters.end(); i++) {
-        i->get()->draw(_camera);
+        i->get()->draw();
     }
 }
 
 void Game::handleInput(input::IHandlerBase &inputHandler)
 {
-    bool moving = false;
     const float gridStep = 0.1f;
-    Vector3D playerPos = _player.get()->getBox3D().getPosition();
+    Vector3D playerPos = _player->getBoxPosition();
 
     if (inputHandler.isReleased(input::Generic::SELECT1)) {
-        _camera.rotateClock();
+        _camera->rotateClock();
         std::cout << "Rotate Camera" << std::endl;
     }
     if (inputHandler.isReleased(input::Generic::SELECT2)) {
-        _camera.rotateCounterclock();
+        _camera->rotateCounterclock();
         std::cout << "Other Rotate Camera" << std::endl;
     }
-    if (!inputHandler.isNotPressed(input::Generic::LEFT) && handleCollision({playerPos.x - 0.1f, playerPos.y, playerPos.z})) {
-        playerPos.x -= gridStep;
-        moving = true;
-    }
-    if (!inputHandler.isNotPressed(input::Generic::RIGHT) && handleCollision({playerPos.x + 0.1f, playerPos.y, playerPos.z})) {
-        playerPos.x += gridStep;
-        moving = true;
-    }
-    if (!inputHandler.isNotPressed(input::Generic::UP) && handleCollision({playerPos.x, playerPos.y, playerPos.z - 0.1f})) {
-        playerPos.z -= gridStep;
-        moving = true;
-    }
-    if (!inputHandler.isNotPressed(input::Generic::DOWN) && handleCollision({playerPos.x, playerPos.y, playerPos.z + 0.1f})) {
-        playerPos.z += gridStep;
-        moving = true;
-    }
-    if (moving = true) {
-        _player.get()->getBox3D().setPosition(playerPos);
+    if (!inputHandler.isNotPressed(input::Generic::LEFT) || !inputHandler.isNotPressed(input::Generic::RIGHT) || !inputHandler.isNotPressed(input::Generic::UP) || !inputHandler.isNotPressed(input::Generic::DOWN)) {
+        if (!inputHandler.isNotPressed(input::Generic::LEFT) && handleCollision({playerPos.x - gridStep, playerPos.y, playerPos.z})) {
+            playerPos.x -= gridStep;
+        }
+        if (!inputHandler.isNotPressed(input::Generic::RIGHT) && handleCollision({playerPos.x + gridStep, playerPos.y, playerPos.z})) {
+            playerPos.x += gridStep;
+        }
+        if (!inputHandler.isNotPressed(input::Generic::UP) && handleCollision({playerPos.x, playerPos.y, playerPos.z - gridStep})) {
+            playerPos.z -= gridStep;
+        }
+        if (!inputHandler.isNotPressed(input::Generic::DOWN) && handleCollision({playerPos.x, playerPos.y, playerPos.z + gridStep})) {
+            playerPos.z += gridStep;
+        }
+        _player->setBox3DPosition(playerPos);
+        _player->setMoving(true);
+    } else {
+        _player->setMoving(false);
     }
 
-    _player.get()->setMoving(moving);
 }
 
 bool Game::handleCollision(Utilities::Vector3D newPos)
@@ -150,6 +146,8 @@ bool Game::handleCollision(Utilities::Vector3D newPos)
         if (newPos == posTmp)
             thereIsACube = true;
     }
+    if (!thereIsACube)
+        std::cout << "False" << std::endl;
     return thereIsACube;
 }
 
@@ -162,9 +160,7 @@ void Game::update(input::IHandlerBase &inputHandler)
 {
     handleInput(inputHandler);
 
-    if (_player.get()->isMoving()) {
-        _player.get()->updateAnimation();
-    }
+    _player->updateAnimation();
 }
 
 void drawVerticalGradient(Rectangle rect, Color top, Color bottom) {
@@ -182,22 +178,22 @@ void drawVerticalGradient(Rectangle rect, Color top, Color bottom) {
 
 void Game::Render()
 {
-    _window.startRender();
-    _window.clearBackground(GRAY);
+    _window->startRender();
+    _window->clearBackground(GRAY);
     drawVerticalGradient({ 0, 0, SCREENWIDTH, SCREENHEIGHT }, SKYBLUE, WHITE);
-    _camera.start3D();
+    _camera->start3D();
     draw3DElements();
-    _camera.end3D();
+    _camera->end3D();
     draw2DElements();
-    _window.endRender();
+    _window->endRender();
 }
 
 void Game::loop(input::IHandlerBase &inputHandler)
 {
-    while (!_window.isWindowClosing()) {
+    while (!_window->isWindowClosing()) {
         update(inputHandler);
         Render();
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
     }
-    _window.closeWindow();
+    _window->closeWindow();
 }

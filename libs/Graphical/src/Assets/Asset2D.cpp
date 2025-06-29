@@ -5,6 +5,11 @@ Asset2D::Asset2D()
     _textureLoaded = false;
 }
 
+Asset2D::Asset2D(std::string fileName) : AAsset(fileName)
+{
+    loadFile();
+}
+
 Asset2D::Asset2D(Texture2D texture)
 {
     setTexture(texture);

@@ -72,16 +72,11 @@ namespace asset {
  */
 class MapEditor : public UI::ISceneProvider {
     public:
+
         /**
          * @brief Construct a new MapEditor object
-         * 
-         * Initializes the 3D map editor with camera and window references.
-         * Sets up the grid system and default editor state.
-         * 
-         * @param camera Reference to the rendering camera
-         * @param window Reference to the application window
          */
-        MapEditor(Render::Camera& camera, Render::Window& window);
+        MapEditor();
 
         /**
          * @brief Destroy the MapEditor object
@@ -89,6 +84,17 @@ class MapEditor : public UI::ISceneProvider {
          * Cleanup is handled automatically by member destructors.
          */
         ~MapEditor();
+
+                /**
+         * @brief Initialize te map editor's main parameters
+         * 
+         * Initializes the 3D map editor with camera and window references.
+         * Sets up the grid system and default editor state.
+         * 
+         * @param camera Reference to the rendering camera
+         * @param window Reference to the application window
+         */
+        void init(std::shared_ptr<Render::Window> window, std::shared_ptr<Render::Camera> camera);
 
         /**
          * @brief Initialize the grid system
@@ -138,7 +144,7 @@ class MapEditor : public UI::ISceneProvider {
          * @param asset The 3D asset to use for new cubes
          */
         void changeCubeType(Asset3D asset);
-        
+
         /**
          * @brief Add a cube at the specified position
          * 
@@ -147,7 +153,7 @@ class MapEditor : public UI::ISceneProvider {
          * @param position The 3D position where to place the cube
          */
         void addCube(Vector3D position);
-        
+
         /**
          * @brief Remove a cube object
          * 
@@ -381,8 +387,8 @@ class MapEditor : public UI::ISceneProvider {
         Asset2D _currentSpriteType;                          ///< Currently selected 2D asset for placement
 
         // Core references
-        Render::Window &_window;                             ///< Reference to the application window
-        Render::Camera &_camera;                             ///< Reference to the 3D camera
+        std::shared_ptr<Render::Window> _window;             ///< Reference to the application window
+        std::shared_ptr<Render::Camera> _camera;             ///< Reference to the 3D camera
         map::MapGrid _grid;                                  
 
         // Editor state
