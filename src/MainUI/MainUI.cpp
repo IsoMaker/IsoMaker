@@ -8,16 +8,22 @@ MainUI::MainUI(std::shared_ptr<Render::Camera> camera, std::shared_ptr<Render::W
     _window = window;
     _window.get()->startWindow(Vector2D(SCREENWIDTH, SCREENHEIGHT));
     
+    // Initialize editors
     _3DMapEditor.init(window, camera);
+    _scriptingEditor.init(window, camera);
     _uiManager.initialize();
 
     _gameProjectName = "game_project";
+    _currentEditor = SCRIPTING; // Default to Map Editor
     
     _loader = std::make_shared<AssetLoader>();
     _3DMapEditor.setLoader(_loader);
     _uiManager.setLoader(_loader);
     //temporary cube asset loading for the 3D map, to change after libraries are implemented
     initMapEditorAssets();
+    
+    // Setup event handlers for UI-MainUI communication
+    setupEventHandlers();
 }
 
 MainUI::~MainUI()
@@ -51,7 +57,20 @@ void MainUI::update(input::IHandlerBase &inputHandler) {
     _loader->updateAssets("ressources/loadedAssets");
     _3DMapEditor.setLoader(_loader);
     _uiManager.setLoader(_loader);
-    _3DMapEditor.update(inputHandler);
+    
+    // Update current editor
+    switch (_currentEditor) {
+        case MAP:
+            _3DMapEditor.update(inputHandler);
+            break;
+        case SCRIPTING:
+            _scriptingEditor.update(inputHandler);
+            break;
+        case PAINT:
+            // 2D Editor update would go here
+            break;
+    }
+    
     _uiManager.update(inputHandler);
 }
 
@@ -61,13 +80,26 @@ void MainUI::draw() {
     // Get the main view area from the UI manager
     Rectangle mainViewArea = _uiManager.getMainViewArea();
 
-    // Draw 3D content in the main view area
+    // Draw content in the main view area
     _window.get()->clearBackground(UI::BACKGROUND);
 
-    // Draw Map Editor 3D and 2D elements
-    _3DMapEditor.draw(mainViewArea, _camera);
-    // Draw Map Editor UI elements
-    _uiManager.draw(_3DMapEditor);
+    // Draw current editor content
+    switch (_currentEditor) {
+        case MAP:
+            _3DMapEditor.draw(mainViewArea, _camera);
+            _uiManager.draw(_3DMapEditor);
+            break;
+        case SCRIPTING:
+            _scriptingEditor.setSceneProvider(&_3DMapEditor); // Use map editor as scene provider
+            _scriptingEditor.draw(mainViewArea);
+            _uiManager.draw(_scriptingEditor);
+            break;
+        case PAINT:
+            // 2D Editor draw would go here
+            // For now, just draw UI with map editor as fallback
+            _uiManager.draw(_3DMapEditor); // Fallback
+            break;
+    }
     
     _window.get()->endRender();
 }
@@ -79,4 +111,38 @@ void MainUI::loop(input::IHandlerBase &inputHandler) {
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
     }
     _window.get()->closeWindow();
+}
+
+void MainUI::setCurrentEditor(EditorType editorType) {
+    _currentEditor = editorType;
+    std::cout << "[MainUI] Switched to editor type: " << editorType << std::endl;
+}
+
+EditorType MainUI::getCurrentEditor() const {
+    return _currentEditor;
+}
+
+void MainUI::setupEventHandlers() {
+    // Subscribe to editor mode change events from the UI
+    UI::g_eventDispatcher.subscribe(UI::EditorEventType::EDITOR_MODE_CHANGED, 
+        [this](const UI::EditorEvent& event) {
+            if (std::holds_alternative<int>(event.data)) {
+                int editorIndex = std::get<int>(event.data);
+                EditorType newEditor;
+                
+                // Map UI editor indices to EditorType enum
+                switch (editorIndex) {
+                    case 0: newEditor = PAINT; break;
+                    case 1: newEditor = MAP; break;
+                    case 2: newEditor = SCRIPTING; break;
+                    default: 
+                        std::cout << "[MainUI] Unknown editor index: " << editorIndex << std::endl;
+                        return;
+                }
+                
+                setCurrentEditor(newEditor);
+            }
+        });
+    
+    std::cout << "[MainUI] Event handlers set up" << std::endl;
 }
