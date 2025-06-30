@@ -16,4 +16,8 @@ namespace UI {
     const Color SUCCESS = {86, 194, 136, 255};     // #56C288
     const Color ERROR = {235, 107, 107, 255};      // #EB6B6B
     const Color WARNING = {249, 178, 110, 255};    // #F9B26E
+
+    // Panel and selection colors for editors
+    const Color PANEL_BACKGROUND = {245, 245, 250, 255};   // Light panel background
+    const Color SELECTED_BACKGROUND = {200, 220, 255, 255}; // Selection highlight
 } // namespace UI

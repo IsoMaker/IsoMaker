@@ -10,14 +10,15 @@
 
 // #include "../Editor/2D/2DEditor.hpp"
 #include "../Editor/3DMap/3DMapEditor.hpp"
+#include "../Editor/ScriptingEditor/ScriptingEditor.hpp"
 #include "Input/MouseKeyboard.hpp"
 #include "../UI/UIManager.hpp"
 #include <iostream>
 
 /** @brief Default screen height for the application window */
-#define SCREENHEIGHT 1200
+#define SCREENHEIGHT 980
 /** @brief Default screen width for the application window */
-#define SCREENWIDTH 1600
+#define SCREENWIDTH 1800
 
 // using namespace paint;
 
@@ -27,8 +28,9 @@
  * Defines the different types of editors available in the application.
  */
 enum EditorType {
-    PAINT, ///< 2D pixel art editor mode
-    MAP,   ///< 3D map editor mode
+    PAINT,     ///< 2D pixel art editor mode
+    MAP,       ///< 3D map editor mode
+    SCRIPTING, ///< Scripting editor mode
 };
 
 /**
@@ -95,14 +97,32 @@ class MainUI {
          */
         void loop(input::IHandlerBase &inputHandler);
 
+        /**
+         * @brief Set the current active editor
+         * 
+         * Switches between different editor types (Map, Scripting, etc.)
+         * 
+         * @param editorType The editor type to activate
+         */
+        void setCurrentEditor(EditorType editorType);
+
+        /**
+         * @brief Get the current active editor type
+         * 
+         * @return EditorType The currently active editor
+         */
+        EditorType getCurrentEditor() const;
+
     protected:
         std::shared_ptr<Render::Camera> _camera;              ///< Main 3D camera for scene rendering
         std::shared_ptr<Render::Window> _window;              ///< Application window manager
         MapEditor _3DMapEditor;              ///< 3D map editor instance
+        ScriptingEditor _scriptingEditor;    ///< Scripting editor instance
         std::string _gameProjectName;        ///< Name of the current game project
         UI::UIManager _uiManager;            ///< UI manager for all interface elements
-        std::shared_ptr<AssetLoader> _loader;
-
+        std::shared_ptr<AssetLoader> _loader; ///< Asset loader for managing game assets
+        EditorType _currentEditor;           ///< Current active editor type
     private:
         void initMapEditorAssets();
+        void setupEventHandlers();
 };

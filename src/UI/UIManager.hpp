@@ -153,6 +153,16 @@ public:
      * @param mapEditor Reference to the map editor for querying editor state
      */
     void draw(MapEditor &mapEditor);
+    
+    /**
+     * @brief Render all UI components with generic scene provider
+     * 
+     * Draws all UI elements including menus, toolbars, panels, and the assets browser.
+     * Should be called every frame after the main viewport rendering.
+     * 
+     * @param sceneProvider Reference to the scene provider for querying editor state
+     */
+    void draw(ISceneProvider &sceneProvider);
 
     // UI Component functions
     /**

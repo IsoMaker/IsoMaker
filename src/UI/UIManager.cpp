@@ -22,7 +22,7 @@ UIManager::UIManager(int screenWidth, int screenHeight)
       _renderMenuOpen(false),
       _helpMenuOpen(false),
       _searchActive(false),
-      _currentEditorType(0),
+      _currentEditorType(1), // Start with Map Editor
       _currentSceneProvider(nullptr)
 {
     // Initialize search text
@@ -140,6 +140,25 @@ void UIManager::draw(MapEditor &mapEditor)
     DrawRectangleLinesEx(mainViewArea, 1, UI_SECONDARY);
 }
 
+void UIManager::draw(ISceneProvider &sceneProvider)
+{
+    // Update scene provider reference
+    if (_currentSceneProvider != &sceneProvider) {
+        _currentSceneProvider = &sceneProvider;
+        refreshSceneObjects();
+    }
+    
+    // Draw UI components
+    drawLeftToolbar();
+    drawTopMenuBar();
+    drawRightPanels();
+    drawBottomAssetsBar();
+    
+    // Draw main view area border
+    Rectangle mainViewArea = getMainViewArea();
+    DrawRectangleLinesEx(mainViewArea, 1, UI_SECONDARY);
+}
+
 void UIManager::drawTopMenuBar()
 {
     // Draw top bar background
@@ -233,12 +252,12 @@ void UIManager::drawTopMenuBar()
     int dropdownPos = _screenWidth - dropdownWidth - 10;
     
     // Dropdown to select editor type
-    const char *editorTypes[2] = { "Map Editor", "Scripting" };
+    const char *editorTypes[3] = { "Paint Editor", "Map Editor", "Scripting Editor" };
     
     // Use the custom dropdown
     Rectangle dropdownBounds = {static_cast<float>(dropdownPos), 2.0f, static_cast<float>(dropdownWidth), static_cast<float>(_topBarHeight - 4)};
     bool editMode = false;
-    int newEditorType = CustomDropdown(dropdownBounds, editorTypes[_currentEditorType], _currentEditorType, editorTypes, 2, &editMode);
+    int newEditorType = CustomDropdown(dropdownBounds, editorTypes[_currentEditorType], _currentEditorType, editorTypes, 3, &editMode);
     
     // Check if editor type changed
     if (newEditorType != _currentEditorType) {
