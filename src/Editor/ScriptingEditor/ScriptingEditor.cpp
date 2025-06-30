@@ -48,6 +48,9 @@ void ScriptingEditor::update(input::IHandlerBase &inputHandler) {
     _leftMousePressed = mousePressed;
     _leftMouseReleased = mouseReleased;
     
+    // Update block hover states
+    updateBlockHover(mousePos);
+    
     // Handle mouse input for drag and drop
     handleMouseInput(mousePos, mousePressed, mouseReleased, rightClick);
 }
@@ -92,6 +95,11 @@ void ScriptingEditor::draw(Rectangle mainViewArea) {
     // Draw configuration dialog on top if open
     if (_showConfigDialog) {
         drawConfigDialog();
+    }
+    
+    // Draw context menu on top if open
+    if (_showContextMenu) {
+        drawContextMenu();
     }
     
     // Draw border around the main area
@@ -341,6 +349,235 @@ void ScriptBlock::setBlockProperties() {
     }
 }
 
+void ScriptBlock::setProfessionalBlockProperties() {
+    // Set legacy properties for compatibility
+    setBlockProperties();
+    
+    // Modern professional styling based on block category
+    switch (type) {
+        // Special blocks
+        case BlockType::INVALID:
+            title = "Invalid Block";
+            subtitle = "Error";
+            primaryColor = {220, 53, 69, 255};     // Bootstrap danger red
+            secondaryColor = {248, 215, 218, 255}; // Light red
+            headerColor = {176, 42, 55, 255};      // Darker red
+            hasExecutionFlow = false;
+            canHaveBranches = false;
+            break;
+            
+        // Event blocks - Blue theme
+        case BlockType::ON_START:
+            title = "On Start";
+            subtitle = "When object starts";
+            primaryColor = {13, 110, 253, 255};    // Bootstrap primary blue
+            secondaryColor = {184, 218, 255, 255}; // Light blue
+            headerColor = {10, 88, 202, 255};      // Darker blue
+            hasExecutionFlow = true;
+            canHaveBranches = false;
+            size = {180, 70};
+            break;
+            
+        case BlockType::ON_CLICK:
+            title = "On Click";
+            subtitle = "When object is clicked";
+            primaryColor = {13, 110, 253, 255};
+            secondaryColor = {184, 218, 255, 255};
+            headerColor = {10, 88, 202, 255};
+            hasExecutionFlow = true;
+            canHaveBranches = false;
+            size = {180, 70};
+            break;
+            
+        case BlockType::ON_UPDATE:
+            title = "On Update";
+            subtitle = "Every frame";
+            primaryColor = {13, 110, 253, 255};
+            secondaryColor = {184, 218, 255, 255};
+            headerColor = {10, 88, 202, 255};
+            hasExecutionFlow = true;
+            canHaveBranches = false;
+            size = {180, 70};
+            break;
+            
+        case BlockType::ON_KEY_PRESS:
+            title = "On Key Press";
+            subtitle = "When key is pressed";
+            primaryColor = {13, 110, 253, 255};
+            secondaryColor = {184, 218, 255, 255};
+            headerColor = {10, 88, 202, 255};
+            hasExecutionFlow = true;
+            canHaveBranches = false;
+            size = {200, 80};
+            break;
+            
+        // Action blocks - Green theme
+        case BlockType::MOVE:
+            title = "Move";
+            subtitle = "Change position";
+            primaryColor = {25, 135, 84, 255};     // Bootstrap success green
+            secondaryColor = {209, 231, 221, 255}; // Light green
+            headerColor = {20, 108, 67, 255};      // Darker green
+            hasExecutionFlow = true;
+            canHaveBranches = false;
+            size = {180, 80};
+            break;
+            
+        case BlockType::ROTATE:
+            title = "Rotate";
+            subtitle = "Change rotation";
+            primaryColor = {25, 135, 84, 255};
+            secondaryColor = {209, 231, 221, 255};
+            headerColor = {20, 108, 67, 255};
+            hasExecutionFlow = true;
+            canHaveBranches = false;
+            size = {180, 80};
+            break;
+            
+        case BlockType::CHANGE_COLOR:
+            title = "Change Color";
+            subtitle = "Modify appearance";
+            primaryColor = {25, 135, 84, 255};
+            secondaryColor = {209, 231, 221, 255};
+            headerColor = {20, 108, 67, 255};
+            hasExecutionFlow = true;
+            canHaveBranches = false;
+            size = {190, 80};
+            break;
+            
+        case BlockType::HIDE:
+            title = "Hide";
+            subtitle = "Make invisible";
+            primaryColor = {25, 135, 84, 255};
+            secondaryColor = {209, 231, 221, 255};
+            headerColor = {20, 108, 67, 255};
+            hasExecutionFlow = true;
+            canHaveBranches = false;
+            size = {160, 70};
+            break;
+            
+        case BlockType::SHOW:
+            title = "Show";
+            subtitle = "Make visible";
+            primaryColor = {25, 135, 84, 255};
+            secondaryColor = {209, 231, 221, 255};
+            headerColor = {20, 108, 67, 255};
+            hasExecutionFlow = true;
+            canHaveBranches = false;
+            size = {160, 70};
+            break;
+            
+        // Condition blocks - Orange/Yellow theme
+        case BlockType::IF:
+            title = "If";
+            subtitle = "Conditional execution";
+            primaryColor = {255, 193, 7, 255};     // Bootstrap warning yellow
+            secondaryColor = {255, 243, 205, 255}; // Light yellow
+            headerColor = {255, 173, 0, 255};      // Darker yellow
+            hasExecutionFlow = true;
+            canHaveBranches = true; // Has true/false outputs
+            size = {180, 90};
+            break;
+            
+        case BlockType::IF_ELSE:
+            title = "If Else";
+            subtitle = "Branch execution";
+            primaryColor = {255, 193, 7, 255};
+            secondaryColor = {255, 243, 205, 255};
+            headerColor = {255, 173, 0, 255};
+            hasExecutionFlow = true;
+            canHaveBranches = true;
+            size = {180, 100};
+            break;
+            
+        case BlockType::WHILE:
+            title = "While";
+            subtitle = "Loop while true";
+            primaryColor = {255, 193, 7, 255};
+            secondaryColor = {255, 243, 205, 255};
+            headerColor = {255, 173, 0, 255};
+            hasExecutionFlow = true;
+            canHaveBranches = true;
+            size = {180, 90};
+            break;
+            
+        // Value blocks - Purple theme
+        case BlockType::TRUE:
+            title = "True";
+            subtitle = "Boolean value";
+            primaryColor = {111, 66, 193, 255};    // Bootstrap secondary purple
+            secondaryColor = {221, 210, 243, 255}; // Light purple
+            headerColor = {89, 53, 154, 255};      // Darker purple
+            hasExecutionFlow = false;
+            canHaveBranches = false;
+            size = {140, 60};
+            break;
+            
+        case BlockType::FALSE:
+            title = "False";
+            subtitle = "Boolean value";
+            primaryColor = {111, 66, 193, 255};
+            secondaryColor = {221, 210, 243, 255};
+            headerColor = {89, 53, 154, 255};
+            hasExecutionFlow = false;
+            canHaveBranches = false;
+            size = {140, 60};
+            break;
+            
+        case BlockType::VALUE:
+            title = "Value";
+            subtitle = "Number value";
+            primaryColor = {111, 66, 193, 255};
+            secondaryColor = {221, 210, 243, 255};
+            headerColor = {89, 53, 154, 255};
+            hasExecutionFlow = false;
+            canHaveBranches = false;
+            size = {160, 70};
+            break;
+            
+        case BlockType::ENTITY:
+            title = "Entity";
+            subtitle = "Object reference";
+            primaryColor = {111, 66, 193, 255};
+            secondaryColor = {221, 210, 243, 255};
+            headerColor = {89, 53, 154, 255};
+            hasExecutionFlow = false;
+            canHaveBranches = false;
+            size = {160, 70};
+            break;
+            
+        // Utility blocks - Gray theme
+        case BlockType::DELAY:
+            title = "Delay";
+            subtitle = "Wait for time";
+            primaryColor = {108, 117, 125, 255};   // Bootstrap secondary gray
+            secondaryColor = {233, 236, 239, 255}; // Light gray
+            headerColor = {86, 94, 100, 255};      // Darker gray
+            hasExecutionFlow = true;
+            canHaveBranches = false;
+            size = {180, 80};
+            break;
+            
+        case BlockType::LOG:
+            title = "Log";
+            subtitle = "Debug output";
+            primaryColor = {108, 117, 125, 255};
+            secondaryColor = {233, 236, 239, 255};
+            headerColor = {86, 94, 100, 255};
+            hasExecutionFlow = true;
+            canHaveBranches = false;
+            size = {180, 80};
+            break;
+    }
+    
+    // Set border color based on selection state
+    borderColor = isSelected ? Color{255, 255, 255, 255} : Color{255, 255, 255, 100};
+    
+    // Update legacy fields for compatibility
+    label = title;
+    color = primaryColor;
+}
+
 void ScriptBlock::setDefaultConfig() {
     switch (type) {
         case BlockType::ON_KEY_PRESS:
@@ -422,6 +659,106 @@ Rectangle ScriptBlock::getConnectionBounds() const {
     return Rectangle{position.x - 10, position.y - 10, size.x + 20, size.y + 20};
 }
 
+// New professional block helper methods
+std::string ScriptBlock::getParameterSummary() const {
+    switch (type) {
+        case BlockType::ON_KEY_PRESS: {
+            auto keyIt = config.stringParams.find("key");
+            std::string key = (keyIt != config.stringParams.end()) ? keyIt->second : "Space";
+            return "Key: " + key;
+        }
+        case BlockType::MOVE: {
+            auto speedIt = config.floatParams.find("speed");
+            float speed = (speedIt != config.floatParams.end()) ? speedIt->second : 1.0f;
+            return "Speed: " + std::to_string((int)speed);
+        }
+        case BlockType::ROTATE: {
+            auto speedIt = config.floatParams.find("speed");
+            float speed = (speedIt != config.floatParams.end()) ? speedIt->second : 90.0f;
+            return std::to_string((int)speed) + "°/s";
+        }
+        case BlockType::DELAY: {
+            auto durationIt = config.floatParams.find("duration");
+            float duration = (durationIt != config.floatParams.end()) ? durationIt->second : 1.0f;
+            return std::to_string(duration) + "s";
+        }
+        case BlockType::VALUE: {
+            auto valueIt = config.floatParams.find("value");
+            float value = (valueIt != config.floatParams.end()) ? valueIt->second : 0.0f;
+            return std::to_string((int)value);
+        }
+        default:
+            return subtitle;
+    }
+}
+
+void ScriptBlock::setupConnectionPorts() {
+    inputPorts.clear();
+    outputPorts.clear();
+    
+    if (hasExecutionFlow) {
+        // Add execution input port (top center)
+        Vector2 inputPos = {position.x + size.x / 2, position.y};
+        inputPorts.push_back(ConnectionPoint(inputPos, ConnectionPortType::EXECUTION_IN, id, "In", WHITE));
+        
+        if (canHaveBranches) {
+            // Add true/false output ports for conditional blocks
+            Vector2 trueOut = {position.x + size.x * 0.75f, position.y + size.y};
+            Vector2 falseOut = {position.x + size.x * 0.25f, position.y + size.y};
+            outputPorts.push_back(ConnectionPoint(trueOut, ConnectionPortType::TRUE_OUT, id, "True", {25, 135, 84, 255}));
+            outputPorts.push_back(ConnectionPoint(falseOut, ConnectionPortType::FALSE_OUT, id, "False", {220, 53, 69, 255}));
+        } else {
+            // Add single execution output port (bottom center)
+            Vector2 outputPos = {position.x + size.x / 2, position.y + size.y};
+            outputPorts.push_back(ConnectionPoint(outputPos, ConnectionPortType::EXECUTION_OUT, id, "Out", WHITE));
+        }
+    }
+    
+    // Add value input/output ports for specific block types
+    switch (type) {
+        case BlockType::IF:
+        case BlockType::IF_ELSE:
+        case BlockType::WHILE: {
+            // Add condition value input port
+            Vector2 conditionIn = {position.x, position.y + size.y / 2};
+            inputPorts.push_back(ConnectionPoint(conditionIn, ConnectionPortType::VALUE_IN, id, "Condition", {255, 193, 7, 255}));
+            break;
+        }
+        case BlockType::VALUE:
+        case BlockType::TRUE:
+        case BlockType::FALSE: {
+            // Add value output port
+            Vector2 valueOut = {position.x + size.x, position.y + size.y / 2};
+            outputPorts.push_back(ConnectionPoint(valueOut, ConnectionPortType::VALUE_OUT, id, "Value", primaryColor));
+            break;
+        }
+        case BlockType::MOVE: {
+            // Add direction and speed input ports
+            Vector2 dirIn = {position.x, position.y + size.y * 0.4f};
+            Vector2 speedIn = {position.x, position.y + size.y * 0.7f};
+            inputPorts.push_back(ConnectionPoint(dirIn, ConnectionPortType::VALUE_IN, id, "Direction", {25, 135, 84, 255}));
+            inputPorts.push_back(ConnectionPoint(speedIn, ConnectionPortType::VALUE_IN, id, "Speed", {25, 135, 84, 255}));
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+Rectangle ScriptBlock::getHeaderBounds() const {
+    return Rectangle{position.x, position.y, size.x, size.y * 0.4f};
+}
+
+Rectangle ScriptBlock::getBodyBounds() const {
+    float headerHeight = size.y * 0.4f;
+    return Rectangle{position.x, position.y + headerHeight, size.x, size.y - headerHeight};
+}
+
+bool ScriptBlock::isPointInHeader(Vector2 point) const {
+    Rectangle headerRect = getHeaderBounds();
+    return CheckCollisionPointRec(point, headerRect);
+}
+
 void ScriptingEditor::drawBlockPalette(Rectangle bounds) {
     // Draw panel background
     DrawRectangleRec(bounds, UI::PANEL_BACKGROUND);
@@ -473,7 +810,7 @@ void ScriptingEditor::drawPaletteCategory(const std::string& title, const std::v
                            {paletteBlock.color.r, paletteBlock.color.g, paletteBlock.color.b, 150});
         }
         
-        drawBlock(paletteBlock, {0, 0}, false);
+        drawProfessionalBlock(paletteBlock, {0, 0});
         yOffset += 40;
     }
     
@@ -527,14 +864,9 @@ void ScriptingEditor::drawScriptCanvas(Rectangle bounds) {
         // Draw connections first (behind blocks)
         drawConnections(it->second);
         
-        // Draw all canvas blocks
+        // Draw all canvas blocks with professional styling
         for (const ScriptBlock* block : sortedBlocks) {
-            drawBlock(*block, _canvasOffset, true);
-            
-            // Draw connection points if this block is highlighted for connection
-            if (block->isHighlightedForConnection) {
-                drawConnectionPoints(*block);
-            }
+            drawProfessionalBlock(*block, _canvasOffset);
         }
     }
     
@@ -613,6 +945,215 @@ void ScriptingEditor::drawBlock(const ScriptBlock& block, Vector2 offset, bool s
     DrawTextEx(GetFontDefault(), displayText.c_str(), textPos, 14, 1, WHITE);
 }
 
+// Professional block drawing implementation
+void ScriptingEditor::drawProfessionalBlock(const ScriptBlock& block, Vector2 offset) {
+    Vector2 drawPos = {block.position.x + offset.x, block.position.y + offset.y};
+    Rectangle blockRect = {drawPos.x, drawPos.y, block.size.x, block.size.y};
+    
+    // Draw shadow for depth
+    Rectangle shadowRect = {drawPos.x + block.shadowOffset, drawPos.y + block.shadowOffset, block.size.x, block.size.y};
+    DrawRectangleRounded(shadowRect, block.cornerRadius / block.size.x, 8, block.shadowColor);
+    
+    // Draw main block background with gradient effect
+    DrawRectangleRounded(blockRect, block.cornerRadius / block.size.x, 8, block.primaryColor);
+    
+    // Draw subtle gradient overlay
+    Rectangle gradientRect = {drawPos.x, drawPos.y, block.size.x, block.size.y * 0.3f};
+    Color lightOverlay = {255, 255, 255, 30};
+    DrawRectangleRounded(gradientRect, block.cornerRadius / block.size.x, 8, lightOverlay);
+    
+    // Draw border
+    Color borderColor = block.borderColor;
+    if (block.isSelected) {
+        borderColor = {255, 255, 255, 255}; // Bright white for selection
+    } else if (block.isHovered) {
+        borderColor = {255, 255, 255, 180}; // Semi-transparent white for hover
+    } else if (block.isDragging) {
+        borderColor = {255, 255, 0, 255}; // Yellow for dragging
+    }
+    DrawRectangleRoundedLinesEx(blockRect, block.cornerRadius / block.size.x, 8, block.borderWidth, borderColor);
+    
+    // Draw header and body sections
+    Rectangle headerRect = {drawPos.x, drawPos.y, block.size.x, block.size.y * 0.4f};
+    Rectangle bodyRect = {drawPos.x, drawPos.y + block.size.y * 0.4f, block.size.x, block.size.y * 0.6f};
+    
+    drawBlockHeader(block, headerRect, offset);
+    drawBlockBody(block, bodyRect, offset);
+    
+    // Draw connection ports
+    drawBlockPorts(block, offset);
+    
+    // Draw selection highlight if selected
+    if (block.isSelected) {
+        Rectangle highlightRect = {drawPos.x - 2, drawPos.y - 2, block.size.x + 4, block.size.y + 4};
+        DrawRectangleRoundedLinesEx(highlightRect, block.cornerRadius / block.size.x, 8, 3.0f, {100, 200, 255, 200});
+    }
+}
+
+void ScriptingEditor::drawBlockHeader(const ScriptBlock& block, Rectangle headerRect, Vector2 offset) {
+    // Draw header background
+    DrawRectangleRounded(headerRect, block.cornerRadius / block.size.x, 8, block.headerColor);
+    
+    // Draw title
+    Vector2 titleSize = MeasureTextEx(GetFontDefault(), block.title.c_str(), 16, 1);
+    Vector2 titlePos = {
+        headerRect.x + (headerRect.width - titleSize.x) / 2,
+        headerRect.y + 8
+    };
+    
+    // Title shadow
+    DrawTextEx(GetFontDefault(), block.title.c_str(), 
+               Vector2{titlePos.x + 1, titlePos.y + 1}, 16, 1, Color{0, 0, 0, 100});
+    // Title text
+    DrawTextEx(GetFontDefault(), block.title.c_str(), titlePos, 16, 1, WHITE);
+}
+
+void ScriptingEditor::drawBlockBody(const ScriptBlock& block, Rectangle bodyRect, Vector2 offset) {
+    // Draw body background (slightly lighter than header)
+    Color bodyColor = block.secondaryColor;
+    DrawRectangleRounded(bodyRect, block.cornerRadius / block.size.x, 8, bodyColor);
+    
+    // Draw parameter summary or subtitle
+    std::string paramText = block.isOnCanvas ? block.getParameterSummary() : block.subtitle;
+    
+    Vector2 paramSize = MeasureTextEx(GetFontDefault(), paramText.c_str(), 12, 1);
+    Vector2 paramPos = {
+        bodyRect.x + (bodyRect.width - paramSize.x) / 2,
+        bodyRect.y + (bodyRect.height - paramSize.y) / 2
+    };
+    
+    // Parameter text (darker color for contrast)
+    Color textColor = {50, 50, 50, 255};
+    DrawTextEx(GetFontDefault(), paramText.c_str(), paramPos, 12, 1, textColor);
+    
+    // Draw parameter fields for specific block types
+    if (block.isOnCanvas) {
+        switch (block.type) {
+            case BlockType::MOVE: {
+                // Draw small directional arrow or vector indicator
+                Vector2 center = {bodyRect.x + bodyRect.width - 20, bodyRect.y + bodyRect.height / 2};
+                DrawCircle(center.x, center.y, 6, {25, 135, 84, 100});
+                DrawTriangle(
+                    {center.x - 3, center.y + 2},
+                    {center.x + 3, center.y + 2},
+                    {center.x, center.y - 3},
+                    {25, 135, 84, 255}
+                );
+                break;
+            }
+            case BlockType::ROTATE: {
+                // Draw rotation indicator
+                Vector2 center = {bodyRect.x + bodyRect.width - 20, bodyRect.y + bodyRect.height / 2};
+                DrawCircleLines(center.x, center.y, 6, {25, 135, 84, 255});
+                DrawCircle(center.x + 4, center.y - 4, 2, {25, 135, 84, 255});
+                break;
+            }
+            case BlockType::IF:
+            case BlockType::IF_ELSE: {
+                // Draw condition diamond
+                Vector2 center = {bodyRect.x + bodyRect.width - 20, bodyRect.y + bodyRect.height / 2};
+                Vector2 points[4] = {
+                    {center.x, center.y - 6},
+                    {center.x + 6, center.y},
+                    {center.x, center.y + 6},
+                    {center.x - 6, center.y}
+                };
+                DrawTriangle(points[0], points[1], points[2], {255, 193, 7, 200});
+                DrawTriangle(points[0], points[2], points[3], {255, 193, 7, 200});
+                break;
+            }
+            default:
+                break;
+        }
+    }
+}
+
+void ScriptingEditor::drawBlockPorts(const ScriptBlock& block, Vector2 offset) {
+    // Update port positions based on current block position
+    ScriptBlock* mutableBlock = const_cast<ScriptBlock*>(&block);
+    mutableBlock->setupConnectionPorts();
+    
+    // Draw input ports
+    for (const auto& port : block.inputPorts) {
+        Vector2 portPos = {port.position.x + offset.x, port.position.y + offset.y};
+        
+        // Draw port circle
+        DrawCircle(portPos.x, portPos.y, 6, port.portColor);
+        DrawCircleLines(portPos.x, portPos.y, 6, WHITE);
+        
+        // Draw port type indicator
+        switch (port.type) {
+            case ConnectionPortType::EXECUTION_IN:
+                // Draw triangle pointing right
+                DrawTriangle(
+                    {portPos.x - 3, portPos.y - 3},
+                    {portPos.x - 3, portPos.y + 3},
+                    {portPos.x + 3, portPos.y},
+                    WHITE
+                );
+                break;
+            case ConnectionPortType::VALUE_IN:
+                // Draw small square
+                DrawRectangle(portPos.x - 2, portPos.y - 2, 4, 4, WHITE);
+                break;
+            default:
+                break;
+        }
+        
+        // Draw port label if space allows
+        if (!port.label.empty() && block.size.x > 120) {
+            Vector2 labelSize = MeasureTextEx(GetFontDefault(), port.label.c_str(), 10, 1);
+            Vector2 labelPos = {portPos.x - labelSize.x - 10, portPos.y - labelSize.y / 2};
+            DrawTextEx(GetFontDefault(), port.label.c_str(), labelPos, 10, 1, {80, 80, 80, 255});
+        }
+    }
+    
+    // Draw output ports
+    for (const auto& port : block.outputPorts) {
+        Vector2 portPos = {port.position.x + offset.x, port.position.y + offset.y};
+        
+        // Draw port circle
+        DrawCircle(portPos.x, portPos.y, 6, port.portColor);
+        DrawCircleLines(portPos.x, portPos.y, 6, WHITE);
+        
+        // Draw port type indicator
+        switch (port.type) {
+            case ConnectionPortType::EXECUTION_OUT:
+                // Draw triangle pointing down
+                DrawTriangle(
+                    {portPos.x - 3, portPos.y - 3},
+                    {portPos.x + 3, portPos.y - 3},
+                    {portPos.x, portPos.y + 3},
+                    WHITE
+                );
+                break;
+            case ConnectionPortType::TRUE_OUT:
+                // Draw checkmark
+                DrawLineEx({portPos.x - 3, portPos.y}, {portPos.x - 1, portPos.y + 2}, 2, WHITE);
+                DrawLineEx({portPos.x - 1, portPos.y + 2}, {portPos.x + 3, portPos.y - 2}, 2, WHITE);
+                break;
+            case ConnectionPortType::FALSE_OUT:
+                // Draw X
+                DrawLineEx({portPos.x - 2, portPos.y - 2}, {portPos.x + 2, portPos.y + 2}, 2, WHITE);
+                DrawLineEx({portPos.x - 2, portPos.y + 2}, {portPos.x + 2, portPos.y - 2}, 2, WHITE);
+                break;
+            case ConnectionPortType::VALUE_OUT:
+                // Draw small circle
+                DrawCircle(portPos.x, portPos.y, 2, WHITE);
+                break;
+            default:
+                break;
+        }
+        
+        // Draw port label if space allows
+        if (!port.label.empty() && block.size.x > 120) {
+            Vector2 labelSize = MeasureTextEx(GetFontDefault(), port.label.c_str(), 10, 1);
+            Vector2 labelPos = {portPos.x + 10, portPos.y - labelSize.y / 2};
+            DrawTextEx(GetFontDefault(), port.label.c_str(), labelPos, 10, 1, {80, 80, 80, 255});
+        }
+    }
+}
+
 // Mouse and drag handling implementation
 void ScriptingEditor::handleMouseInput(Vector2 mousePos, bool mousePressed, bool mouseReleased, bool rightClick) {
     // Handle right-click first
@@ -621,6 +1162,24 @@ void ScriptingEditor::handleMouseInput(Vector2 mousePos, bool mousePressed, bool
         _rightClickHandled = true;
     } else if (!rightClick) {
         _rightClickHandled = false;
+    }
+    
+    // Handle left-click for block selection (when not right-clicking)
+    if (mousePressed && !rightClick && !_isMouseDragging) {
+        // Close context menu if open
+        if (_showContextMenu) {
+            closeContextMenu();
+        }
+        
+        // Check for block selection
+        if (isPositionInCanvas(mousePos)) {
+            ScriptBlock* clickedBlock = getCanvasBlockAtPosition(mousePos);
+            if (clickedBlock) {
+                selectBlock(clickedBlock);
+            } else {
+                deselectAllBlocks();
+            }
+        }
     }
     
     // Handle drag and drop state machine
@@ -844,8 +1403,14 @@ void ScriptingEditor::handleRightClick(Vector2 mousePos) {
     if (isPositionInCanvas(mousePos)) {
         ScriptBlock* block = getCanvasBlockAtPosition(mousePos);
         if (block) {
-            openConfigDialog(block);
+            openContextMenu(block, mousePos);
+        } else {
+            // Close context menu if clicking on empty canvas
+            closeContextMenu();
         }
+    } else {
+        // Close context menu if clicking outside canvas
+        closeContextMenu();
     }
 }
 
@@ -1398,4 +1963,157 @@ void ScriptingEditor::drawConnectionPoints(const ScriptBlock& block) {
     // Draw white outline
     DrawCircleLines(inputPoint.x, inputPoint.y, 4, WHITE);
     DrawCircleLines(outputPoint.x, outputPoint.y, 4, WHITE);
+}
+
+// Context menu implementation
+void ScriptingEditor::openContextMenu(ScriptBlock* block, Vector2 position) {
+    _showContextMenu = true;
+    _contextMenuPosition = position;
+    _contextMenuBlock = block;
+    std::cout << "[ScriptingEditor] Opened context menu for block: " << block->title << std::endl;
+}
+
+void ScriptingEditor::closeContextMenu() {
+    _showContextMenu = false;
+    _contextMenuBlock = nullptr;
+}
+
+void ScriptingEditor::handleContextMenuAction(const std::string& action) {
+    if (!_contextMenuBlock) return;
+    
+    if (action == "Edit") {
+        editBlock(_contextMenuBlock);
+    } else if (action == "Duplicate") {
+        duplicateBlock(_contextMenuBlock);
+    } else if (action == "Delete") {
+        deleteBlock(_contextMenuBlock);
+    }
+    
+    closeContextMenu();
+}
+
+void ScriptingEditor::duplicateBlock(ScriptBlock* block) {
+    if (!block) return;
+    
+    int selectedObjId = getSelectedObjectId();
+    if (selectedObjId == -1) return;
+    
+    // Create a new block of the same type
+    Vector2 newPos = {block->position.x + 20, block->position.y + 20}; // Offset slightly
+    ScriptBlock newBlock = createBlockFromType(block->type, newPos);
+    
+    // Copy configuration
+    newBlock.config = block->config;
+    newBlock.isOnCanvas = true;
+    newBlock.canvasOrder = _nextCanvasOrder++;
+    
+    // Add to canvas
+    auto it = _objectScripts.find(selectedObjId);
+    if (it != _objectScripts.end()) {
+        it->second.blocks.push_back(newBlock);
+        std::cout << "[ScriptingEditor] Duplicated block: " << block->title << std::endl;
+    }
+}
+
+void ScriptingEditor::deleteBlock(ScriptBlock* block) {
+    if (!block) return;
+    
+    // Remove all connections involving this block
+    removeAllConnectionsForBlock(block->id);
+    
+    // Remove the block from canvas
+    removeBlockFromCanvas(block->id);
+    
+    std::cout << "[ScriptingEditor] Deleted block: " << block->title << std::endl;
+}
+
+void ScriptingEditor::editBlock(ScriptBlock* block) {
+    openConfigDialog(block);
+}
+
+void ScriptingEditor::selectBlock(ScriptBlock* block) {
+    // Deselect all blocks first
+    deselectAllBlocks();
+    
+    if (block) {
+        block->isSelected = true;
+        _selectedBlock = block;
+        std::cout << "[ScriptingEditor] Selected block: " << block->title << std::endl;
+    }
+}
+
+void ScriptingEditor::deselectAllBlocks() {
+    int selectedObjId = getSelectedObjectId();
+    if (selectedObjId == -1) return;
+    
+    auto it = _objectScripts.find(selectedObjId);
+    if (it != _objectScripts.end()) {
+        for (auto& block : it->second.blocks) {
+            block.isSelected = false;
+        }
+    }
+    _selectedBlock = nullptr;
+}
+
+void ScriptingEditor::updateBlockHover(Vector2 mousePos) {
+    int selectedObjId = getSelectedObjectId();
+    if (selectedObjId == -1) return;
+    
+    auto it = _objectScripts.find(selectedObjId);
+    if (it != _objectScripts.end()) {
+        for (auto& block : it->second.blocks) {
+            if (block.isOnCanvas) {
+                bool wasHovered = block.isHovered;
+                block.isHovered = isPointInBlock(mousePos, block, _canvasOffset);
+                
+                // Update hover state
+                if (block.isHovered && !wasHovered) {
+                    _hoveredBlock = &block;
+                } else if (!block.isHovered && wasHovered) {
+                    _hoveredBlock = nullptr;
+                }
+            }
+        }
+    }
+}
+
+ScriptBlock* ScriptingEditor::getBlockAtPosition(Vector2 pos) {
+    return getCanvasBlockAtPosition(pos);
+}
+
+void ScriptingEditor::drawContextMenu() {
+    if (!_showContextMenu || !_contextMenuBlock) return;
+    
+    const float menuWidth = 120;
+    const float menuHeight = 100;
+    const float itemHeight = 25;
+    
+    // Adjust position to stay within screen bounds
+    Vector2 menuPos = _contextMenuPosition;
+    if (menuPos.x + menuWidth > 1800) menuPos.x = 1800 - menuWidth;
+    if (menuPos.y + menuHeight > 980) menuPos.y = 980 - menuHeight;
+    
+    Rectangle menuBounds = {menuPos.x, menuPos.y, menuWidth, menuHeight};
+    
+    // Draw menu background
+    DrawRectangleRec(menuBounds, {240, 240, 240, 255});
+    DrawRectangleLinesEx(menuBounds, 1, {120, 120, 120, 255});
+    
+    // Draw menu items
+    Rectangle editRect = {menuPos.x + 5, menuPos.y + 5, menuWidth - 10, itemHeight};
+    Rectangle duplicateRect = {menuPos.x + 5, menuPos.y + 35, menuWidth - 10, itemHeight};
+    Rectangle deleteRect = {menuPos.x + 5, menuPos.y + 65, menuWidth - 10, itemHeight};
+    
+    // Handle menu item clicks
+    if (GuiButton(editRect, "Edit")) {
+        handleContextMenuAction("Edit");
+    }
+    
+    if (GuiButton(duplicateRect, "Duplicate")) {
+        handleContextMenuAction("Duplicate");
+    }
+    
+    if (GuiButton(deleteRect, "Delete")) {
+        handleContextMenuAction("Delete");
+    }
 }
