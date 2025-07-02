@@ -16,6 +16,7 @@
 
 #include "Render/Window.hpp"
 #include "Render/Camera.hpp"
+#include "Render/PointLight.hpp"
 #include "Grid.hpp"
 
 #include "Input/MouseKeyboard.hpp"
@@ -380,6 +381,7 @@ class MapEditor : public UI::ISceneProvider {
         // Scene objects
         std::vector<std::shared_ptr<MapElement>> _objects3D; ///< All 3D objects in the scene
         std::vector<std::shared_ptr<Character>> _objects2D;  ///< All 2D objects in the scene
+        std::vector<std::shared_ptr<Render::PointLight>> _lights;
 
         // Current assets
         Asset2D _currentTextureType;                         ///< Currently selected texture for 3D asset placement;
@@ -389,7 +391,8 @@ class MapEditor : public UI::ISceneProvider {
         // Core references
         std::shared_ptr<Render::Window> _window;             ///< Reference to the application window
         std::shared_ptr<Render::Camera> _camera;             ///< Reference to the 3D camera
-        map::MapGrid _grid;                                  
+        Shader _shader;                                      ///< Lighting shader
+        map::MapGrid _grid;                                  ///< Map editing grid
 
         // Editor state
         bool _placePlayer;                                   ///< Flag for player placement mode

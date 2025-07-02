@@ -19,6 +19,15 @@ void MapEditor::init(std::shared_ptr<Render::Window> window, std::shared_ptr<Ren
     _window = window;
     _camera = camera;
 
+    const char *vsFilename = TextFormat("resources/shaders/glsl%i/lighting.vs", GLSL_VERSION);
+    const char *fsFilename = TextFormat("resources/shaders/glsl%i/lighting.fs", GLSL_VERSION);
+    _shader = LoadShader(vsFilename, fsFilename);
+
+    int ambientLoc = GetShaderLocation(_shader, "ambient");
+    SetShaderValue(_shader, ambientLoc, (float[4]){ 0.1f, 0.1f, 0.1f, 1.0f }, SHADER_UNIFORM_VEC4);
+    std::shared_ptr<Render::PointLight> light = std::make_shared<Render::PointLight>(_camera->getPosition(), _shader);
+    _lights.push_back(light);
+
     initGrid();
 
     setupEventHandlers();
@@ -103,10 +112,11 @@ void MapEditor::draw2DElements()
 void MapEditor::draw3DElements()
 {
     _grid.draw();
+    BeginShaderMode(_shader);
     for (auto i = _objects3D.begin(); i != _objects3D.end(); i++) {
         i->get()->draw();
     }
-
+    EndShaderMode();
     if (_currentTool == 4) {
         Vector3 size = (Vector3){ _cubeHeight, _cubeHeight, _cubeHeight };
         Color color = (Color){ 255, 255, 0, 128 }; // Yellow with 50% opacity

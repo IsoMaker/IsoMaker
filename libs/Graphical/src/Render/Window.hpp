@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../Utilities/Vector.hpp"
 #include "raylib.h"
+#include "Utilities/Vector.hpp"
 
 using namespace Utilities;
 

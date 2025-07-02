@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "../../includes/Objects/AEntity.hpp"
-#include "../Render/Camera.hpp"
+#include "Entities/AEntity.hpp"
+#include "Render/Camera.hpp"
 
 namespace objects
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AAsset.hpp"
+#include "Assets/AAsset.hpp"
 
 class Asset2D : public AAsset
 {

@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "../Assets/Asset3D.hpp"
-#include "../../includes/Objects/AEntity.hpp"
+#include "Assets/Asset3D.hpp"
+#include "Entities/AEntity.hpp"
 
 namespace objects
 {
