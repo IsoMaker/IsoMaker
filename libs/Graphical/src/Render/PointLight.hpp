@@ -13,7 +13,7 @@ using namespace Utilities;
 
 namespace Render
 {
-    class PointLight : public ILight
+    class PointLight
     {
         public:
             PointLight(Vector3D position);

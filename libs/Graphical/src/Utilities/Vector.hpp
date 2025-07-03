@@ -9,7 +9,7 @@ namespace Utilities
 {
     class Vector2D {
         public:
-            Vector2D() {};
+            Vector2D();
             Vector2D(const Vector2D& other);
             Vector2D(const Vector2& other);
             Vector2D(float, float);
@@ -39,7 +39,7 @@ namespace Utilities
 
     class Vector3D {
         public:
-            Vector3D() {};
+            Vector3D();
             Vector3D(const Vector3D& other);
             Vector3D(const Vector3& other);
             Vector3D(float, float, float);

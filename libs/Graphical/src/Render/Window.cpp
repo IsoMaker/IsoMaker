@@ -1,5 +1,4 @@
-#include "./Window.hpp"
-#include "../Utilities/Vector.hpp"
+#include "Window.hpp"
 #include <fstream>
 
 using namespace Utilities;

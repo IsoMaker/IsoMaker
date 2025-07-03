@@ -3,6 +3,11 @@
 using namespace Utilities;
 
 // VECTOR 2D
+Vector2D::Vector2D() {
+    x = 0;
+    y = 0;
+}
+
 Vector2D::Vector2D(const Vector2D& other) {
     x = other.x;
     y = other.y;
@@ -53,6 +58,12 @@ Vector2 Vector2D::convert() {
 }
 
 //VECTOR 3D
+Vector3D::Vector3D() {
+    x = 0;
+    y = 0;
+    z = 0;
+}
+
 Vector3D::Vector3D(const Vector3D& other) {
     x = other.x;
     y = other.y;

@@ -38,12 +38,20 @@ namespace Utilities
         public:
             using ObjectBox::ObjectBox;
 
-            void setPosX(float x);
-            void setPosY(float y);
+            void setPosX(float x) { _position.x = x; };
+            void setPosY(float y) { _position.y = y; };
 
-            Rectangle getRectangle();
+            Rectangle getRectangle()
+            {
+                return { _position.x, _position.y, _size.x, _size.y };
+            }
 
-            bool isInBox(Vector2D pos);
+            bool isInBox(Vector2D pos)
+            {
+                if (pos > _position && pos < (_position + (_size * _scale)))
+                    return true;
+                return false;
+            }
 
         protected:
         private:
@@ -53,13 +61,19 @@ namespace Utilities
         public:
             using ObjectBox::ObjectBox;
 
-            void setPosX(float x);
-            void setPosY(float y);
-            void setPosZ(float z);
+            void setPosX(float x) { _position.x = x; };
+            void setPosY(float y) { _position.y = y; };
+            void setPosZ(float z) { _position.z = z; };
 
-            void setSizeFromBounding(BoundingBox box);
+            void setSizeFromBounding(BoundingBox box) { _size = Vector3D(box.max) - Vector3D(box.min); };
 
-            BoundingBox convert();
+            BoundingBox convert()
+            {
+                Vector3 min = _position.convert();
+                Vector3 max = ((_position + _size) * _scale).convert();
+                BoundingBox box = { min, max };
+                return box;
+            };
 
         protected:
         private:

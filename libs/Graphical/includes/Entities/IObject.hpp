@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include "../src/Assets/Asset2D.hpp"
-#include "../src/Utilities/Vector.hpp"
-#include "../src/Utilities/ObjectBox.hpp"
+#include "Assets/Asset2D.hpp"
+#include "Utilities/Vector.hpp"
+#include "Utilities/ObjectBox.hpp"
 
 #define SCREENHEIGHT 1200
 #define SCREENWIDTH 1600

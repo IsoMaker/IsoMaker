@@ -1,8 +1,16 @@
 #include "AAsset.hpp"
 
+AAsset::AAsset()
+{
+}
+
 AAsset::AAsset(std::string fileName)
 {
     _fileName = fileName;
+}
+
+AAsset::~AAsset()
+{
 }
 
 void AAsset::removeTags(std::vector<std::string> tags)

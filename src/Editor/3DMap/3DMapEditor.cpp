@@ -24,7 +24,8 @@ void MapEditor::init(std::shared_ptr<Render::Window> window, std::shared_ptr<Ren
     _shader = LoadShader(vsFilename, fsFilename);
 
     int ambientLoc = GetShaderLocation(_shader, "ambient");
-    SetShaderValue(_shader, ambientLoc, (float[4]){ 0.1f, 0.1f, 0.1f, 1.0f }, SHADER_UNIFORM_VEC4);
+    float ambient[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
+    SetShaderValue(_shader, ambientLoc, ambient, SHADER_UNIFORM_VEC4);
     std::shared_ptr<Render::PointLight> light = std::make_shared<Render::PointLight>(_camera->getPosition(), _shader);
     _lights.push_back(light);
 

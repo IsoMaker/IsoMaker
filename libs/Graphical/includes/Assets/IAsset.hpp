@@ -83,6 +83,15 @@ class IAsset
         virtual void setDisplayName(std::string displayName) = 0;
 
         /**
+         * @brief Add a single tag to the asset
+         * 
+         * Adds the specified tag to the asset's list of tags.
+         * 
+         * @param tag The tag to add
+         */
+        virtual void addTag(std::string tag) = 0;
+
+        /**
          * @brief Replace all tags with a new set
          * 
          * Removes all existing tags and replaces them with the provided list.
@@ -101,14 +110,14 @@ class IAsset
         virtual void addTags(std::vector<std::string> tags) = 0;
         
         /**
-         * @brief Add a single tag to the asset
+         * @brief Remove a single tag from the asset
          * 
-         * Adds the specified tag to the asset's list of tags.
+         * Removes the specified tag from the asset's tag list.
          * 
-         * @param tag The tag to add
+         * @param tag The tag to remove
          */
-        virtual void addTag(std::string tag) = 0;
-        
+        virtual void removeTag(std::string tag) = 0;
+
         /**
          * @brief Remove multiple tags from the asset
          * 
@@ -119,13 +128,14 @@ class IAsset
         virtual void removeTags(std::vector<std::string> tags) = 0;
         
         /**
-         * @brief Remove a single tag from the asset
+         * @brief Check if the asset has a specific tag
          * 
-         * Removes the specified tag from the asset's tag list.
+         * Returns true if the asset has the specified tag.
          * 
-         * @param tag The tag to remove
+         * @param tag The tag to search for
+         * @return true if the tag is found, false otherwise
          */
-        virtual void removeTag(std::string tag) = 0;
+        virtual bool findTag(std::string tag) = 0;
         
         /**
          * @brief Check if the asset has all specified tags
@@ -146,22 +156,4 @@ class IAsset
          * @return true if any tag is found, false otherwise
          */
         virtual bool findAnyTags(std::vector<std::string> tags) = 0;
-        
-        /**
-         * @brief Check if the asset has a specific tag
-         * 
-         * Returns true if the asset has the specified tag.
-         * 
-         * @param tag The tag to search for
-         * @return true if the tag is found, false otherwise
-         */
-        virtual bool findTag(std::string tag) = 0;
-
-        /**
-         * @brief Load the asset file into memory
-         * 
-         * Loads the asset data from the file system into memory, making it
-         * ready for use in rendering or other operations.
-         */
-        virtual void loadFile() = 0;
 };
