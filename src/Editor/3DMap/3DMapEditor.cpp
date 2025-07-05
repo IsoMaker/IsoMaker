@@ -239,7 +239,7 @@ void MapEditor::saveMap(const std::string& filename)
     file << _objects3D.size() << "\n";
     for (auto& obj : _objects3D) {
         pos3D = obj->getBox3D().getPosition();
-        file << pos3D.x << " " << pos3D.y << " " << pos3D.z << " " << obj->getAsset3D().getFileName() << " " << obj->getBox3D().getScale() << "\n";
+        file << pos3D.x << " " << pos3D.y << " " << pos3D.z << " " << obj->getAsset3D().getFileName() << " " << obj->getAsset3D().getScale() << "\n";
     }
 
     if (!_objects2D.empty()) {

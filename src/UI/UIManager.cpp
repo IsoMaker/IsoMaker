@@ -456,7 +456,6 @@ void UIManager::drawBottomAssetsBar()
         drawBottomAssets3D(barY);
     else
         drawBottomAssets2D(barY);
-
 }
 
 void UIManager::drawBottomAssets2D(int barY)
