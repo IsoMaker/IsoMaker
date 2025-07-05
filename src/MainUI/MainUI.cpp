@@ -14,7 +14,7 @@ MainUI::MainUI(std::shared_ptr<Render::Camera> camera, std::shared_ptr<Render::W
     _uiManager.initialize();
 
     _gameProjectName = "game_project";
-    _currentEditor = SCRIPTING; // Default to Map Editor
+    _currentEditor = MAP; // Default to Map Editor
     
     _loader = std::make_shared<AssetLoader>();
     _3DMapEditor.setLoader(_loader);
@@ -90,8 +90,8 @@ void MainUI::draw() {
             _uiManager.draw(_3DMapEditor);
             break;
         case SCRIPTING:
-            _scriptingEditor.setSceneProvider(&_3DMapEditor); // Use map editor as scene provider
-            _scriptingEditor.draw(mainViewArea);
+            _scriptingEditor.setSceneProvider(&_3DMapEditor);
+            _scriptingEditor.draw(_uiManager.getFullViewArea());
             _uiManager.draw(_scriptingEditor);
             break;
         case PAINT:

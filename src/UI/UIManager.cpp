@@ -22,7 +22,7 @@ UIManager::UIManager(int screenWidth, int screenHeight)
       _renderMenuOpen(false),
       _helpMenuOpen(false),
       _searchActive(false),
-      _currentEditorType(1), // Start with Map Editor
+      _currentEditorType(1),
       _currentSceneProvider(nullptr)
 {
     // Initialize search text
@@ -148,14 +148,11 @@ void UIManager::draw(ISceneProvider &sceneProvider)
         refreshSceneObjects();
     }
     
-    // Draw UI components
-    drawLeftToolbar();
+    // Draw UI components - only top menu bar for scripting editor
     drawTopMenuBar();
-    drawRightPanels();
-    drawBottomAssetsBar();
     
-    // Draw main view area border
-    Rectangle mainViewArea = getMainViewArea();
+    // Draw main view area border - use full view area for scripting editor
+    Rectangle mainViewArea = getFullViewArea();
     DrawRectangleLinesEx(mainViewArea, 1, UI_SECONDARY);
 }
 
@@ -763,6 +760,16 @@ Rectangle UIManager::getMainViewArea() const
         static_cast<float>(_topBarHeight),
         static_cast<float>(_screenWidth - _leftToolbarWidth - _rightPanelsWidth),
         static_cast<float>(_screenHeight - _topBarHeight - _bottomAssetsBarHeight)
+    };
+}
+
+Rectangle UIManager::getFullViewArea() const
+{
+    return {
+        0.0f,
+        static_cast<float>(_topBarHeight),
+        static_cast<float>(_screenWidth),
+        static_cast<float>(_screenHeight - _topBarHeight)
     };
 }
 
