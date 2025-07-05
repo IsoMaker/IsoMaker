@@ -1,0 +1,4 @@
+Type: 3D
+Name: water
+File: /home/glea/Epitech/tek4/IsoMaker/ressources/cube_transparent_artistic_reference.glb
+Scale: 0.5

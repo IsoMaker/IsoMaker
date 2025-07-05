@@ -14,7 +14,7 @@
 #include <iostream>
 
 /** @brief Default screen height for the application window */
-#define SCREENHEIGHT 1080
+#define SCREENHEIGHT 1200
 /** @brief Default screen width for the application window */
 #define SCREENWIDTH 1600
 

@@ -183,7 +183,7 @@ int main()
                             bounds.max.y - bounds.min.y,
                             bounds.max.z - bounds.min.z
                         };
-                        char scaleInput[32] = "0.5";
+                        char scaleInput[32];
                         float maxDim = fmaxf(dims.x, fmaxf(dims.y, dims.z));
 
                         scale = (maxDim > 0.0f) ? 1.0f / maxDim : 1.0f;
