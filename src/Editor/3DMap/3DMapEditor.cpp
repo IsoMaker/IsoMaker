@@ -26,7 +26,7 @@ void MapEditor::init(std::shared_ptr<Render::Window> window, std::shared_ptr<Ren
     int ambientLoc = GetShaderLocation(_shader, "ambient");
     float ambient[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
     SetShaderValue(_shader, ambientLoc, ambient, SHADER_UNIFORM_VEC4);
-    std::shared_ptr<Render::PointLight> light = std::make_shared<Render::PointLight>(_camera->getPosition(), _shader);
+    std::shared_ptr<Render::PointLight> light = std::make_shared<Render::PointLight>(Vector3D(1.0f, 3.0f, 0.0f), _shader);
     _lights.push_back(light);
 
     initGrid();

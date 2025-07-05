@@ -27,6 +27,8 @@
 #include "../../UI/EditorEvents.hpp"
 #include "../../UI/SceneObject.hpp"
 
+#define GLSL_VERSION 330
+
 using namespace Utilities;
 using namespace objects;
 
