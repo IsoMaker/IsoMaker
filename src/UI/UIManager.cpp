@@ -23,8 +23,7 @@ UIManager::UIManager(int screenWidth, int screenHeight)
       _helpMenuOpen(false),
       _searchActive(false),
       _currentEditorType(0),
-      _currentSceneProvider(nullptr),
-      _loader()
+      _currentSceneProvider(nullptr)
 {
     // Initialize search text
     _searchText[0] = '\0';
@@ -97,8 +96,6 @@ void UIManager::update(input::IHandlerBase &inputHandler)
     if (IsKeyPressed(KEY_E)) { _currentTool = ToolType::ERASER; Events::toolChanged(3); }
     if (IsKeyPressed(KEY_C)) { _currentTool = ToolType::CUBE; Events::toolChanged(4); }
     if (IsKeyPressed(KEY_Z)) { _currentTool = ToolType::ZOOM; Events::toolChanged(5); }
-
-    _loader.updateAssets("ressources/loadedAssets");
 }
 
 void UIManager::draw(MapEditor &mapEditor)
@@ -463,7 +460,7 @@ void UIManager::drawBottomAssets2D(int barY)
     int assetSize = 80;
     int padding = 10;
     int rowCapacity = (_screenWidth - padding) / (assetSize + padding);
-    std::vector<Asset2D> assetTiles2D = _loader.getLoaded2DAssets();
+    std::vector<Asset2D> assetTiles2D = _loader->getLoaded2DAssets();
 
     for (int i = 0; i < assetTiles2D.size(); i++) {
         int row = i / rowCapacity;
@@ -481,6 +478,7 @@ void UIManager::drawBottomAssets2D(int barY)
         if (AssetTile(assetBounds, asset, i == _selectedAssetIndex2D, {x, y})) {
             _selectedAssetIndex2D = i;
             std::shared_ptr<Asset2D> assetBasic = std::make_shared<Asset2D>(assetTiles2D[i]);
+            std::cout << "ASSET 2D SIZE PLZ: " << assetBasic->getWidth() << " " << assetBasic->getHeight() << std::endl;
             Events::assetSelected(assetBasic);
         }
 
@@ -492,6 +490,7 @@ void UIManager::drawBottomAssets2D(int barY)
         if (CheckCollisionPointRec(GetMousePosition(), tileBounds) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             _selectedAssetIndex2D = i;
             std::shared_ptr<Asset2D> assetBasic = std::make_shared<Asset2D>(assetTiles2D[i]);
+            std::cout << "ASSET 2D SIZE PLZ: " << assetBasic->getWidth() << " " << assetBasic->getHeight() << std::endl;
             Events::assetSelected(assetBasic);
         }
     }
@@ -529,7 +528,7 @@ void UIManager::drawBottomAssets3D(int barY)
     int assetSize = 80;
     int padding = 10;
     int rowCapacity = (_screenWidth - padding) / (assetSize + padding);
-    std::vector<Asset3D> assetTiles3D = _loader.getLoaded3DAssets();
+    std::vector<Asset3D> assetTiles3D = _loader->getLoaded3DAssets();
 
     for (int i = 0; i < assetTiles3D.size(); i++) {
         int row = i / rowCapacity;
@@ -544,16 +543,18 @@ void UIManager::drawBottomAssets3D(int barY)
 
         if (AssetTile(assetBounds, assetTiles3D[i].getModel(), assetTiles3D[i].getDisplayName().c_str(), i == _selectedAssetIndex3D)) {
             _selectedAssetIndex3D = i;
-            std::shared_ptr<Asset3D> assetBasic1 = std::make_shared<Asset3D>(assetTiles3D[i]);
-            Events::assetSelected(assetBasic1);
+            std::shared_ptr<Asset3D> assetBasic = std::make_shared<Asset3D>(assetTiles3D[i]);
+            std::cout << "ASSET 3D SIZE PLZ: " << assetBasic->getScale() << std::endl;
+            Events::assetSelected(assetBasic);
         }
 
         drawModelPreview(assetTiles3D[i], assetBounds, barY);
 
-        if (CheckCollisionPointRec(GetMousePosition(), tileBounds) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {            std::shared_ptr<Asset3D> assetBasic = std::make_shared<Asset3D>(assetTiles3D[i]);
+        if (CheckCollisionPointRec(GetMousePosition(), tileBounds) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             _selectedAssetIndex3D = i;
-            std::shared_ptr<Asset3D> assetBasic2 = std::make_shared<Asset3D>(assetTiles3D[i]);
-            Events::assetSelected(assetBasic2);
+            std::shared_ptr<Asset3D> assetBasic = std::make_shared<Asset3D>(assetTiles3D[i]);
+            std::cout << "ASSET 3D SIZE PLZ: " << assetBasic->getScale() << std::endl;
+            Events::assetSelected(assetBasic);
         }
     }
 }
@@ -906,6 +907,11 @@ void UIManager::openAssetWindow() {
     } else if (pid < 0) {
         std::cerr << "Failed to fork AssetWindow\n";
     }
+}
+
+void UIManager::setLoader(std::shared_ptr<AssetLoader> loader)
+{
+    _loader = loader;
 }
 
 } // namespace UI

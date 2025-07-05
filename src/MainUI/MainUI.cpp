@@ -13,6 +13,9 @@ MainUI::MainUI(std::shared_ptr<Render::Camera> camera, std::shared_ptr<Render::W
 
     _gameProjectName = "game_project";
     
+    _loader = std::make_shared<AssetLoader>();
+    _3DMapEditor.setLoader(_loader);
+    _uiManager.setLoader(_loader);
     //temporary cube asset loading for the 3D map, to change after libraries are implemented
     initMapEditorAssets();
 }
@@ -44,6 +47,10 @@ void MainUI::initMapEditorAssets()
 
 void MainUI::update(input::IHandlerBase &inputHandler) {
     Vector2D cursorPos = inputHandler.getCursorCoords();
+
+    _loader->updateAssets("ressources/loadedAssets");
+    _3DMapEditor.setLoader(_loader);
+    _uiManager.setLoader(_loader);
     _3DMapEditor.update(inputHandler);
     _uiManager.update(inputHandler);
 }

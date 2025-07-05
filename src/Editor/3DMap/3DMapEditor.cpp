@@ -4,7 +4,7 @@
 #include "3DMapEditor.hpp"
 #include "Input/InputTypes.hpp"
 
-MapEditor::MapEditor() : _grid(), _cubeHeight(1.0f), _closestObject(std::nullopt),
+MapEditor::MapEditor() : _grid(), _cubeHeight(1.0f), _closestObject(std::nullopt), _closestSprite(std::nullopt),
                         _cursorPosition(0, 0), _alignedPosition(0, 0.5f, 0),
                         _placePlayer(false), _drawWireframe(false) 
 {
@@ -39,15 +39,22 @@ void MapEditor::update(input::IHandlerBase &inputHandler)
     updateCursor();;
 
     if (inputHandler.isReleased(input::Generic::SELECT1)) {
-        if (_currentTool == 4 && _alignedPosition != Vector3D(0, 0, 0)) { // CUBE tool
+        if (_currentTool == 4 && _alignedPosition != Vector3D(0, 0, 0) && _blocSelect) { // CUBE tool
             addCube(_alignedPosition);
+            UI::Events::objectCreated(_alignedPosition.convert());
+            notifySceneChanged();
+        } else if (_currentTool == 4 && _alignedPosition != Vector3D(0, 0, 0) && !_blocSelect) {
+            addPlayer(_alignedPosition);
             UI::Events::objectCreated(_alignedPosition.convert());
             notifySceneChanged();
         }
     }
     if (inputHandler.isReleased(input::Generic::SELECT2)) {
-        if (!_objects3D.empty() && _closestObject.has_value()) {
+        if (!_objects3D.empty() && _closestObject.has_value() && _blocSelect) {
             removeCube(_closestObject.value());
+            notifySceneChanged();
+        } else if (!_objects2D.empty() &&  _closestSprite.has_value() && !_blocSelect) {
+            removePlayer(_closestSprite.value());
             notifySceneChanged();
         }
     }
@@ -96,12 +103,12 @@ void MapEditor::update(input::IHandlerBase &inputHandler)
 void MapEditor::draw2DElements()
 {
     for (auto i = _objects2D.begin(); i != _objects2D.end(); i++) {
-        i->get()->draw();
+        i->get()->draw({0, 0});
     }
     Vector2 aligned = { _alignedPosition.convert().x, _alignedPosition.convert().y };
 
     if (_currentTool == 4) {
-        Vector2 size = { 32, 41 };
+        Vector2 size = { _currentSpriteType.getWidth(), _currentSpriteType.getHeight() };
         Color color = (Color){ 255, 255, 0, 128 }; // Yellow with 50% opacity
         DrawRectangleV(aligned, size, color); // Draw preview cube
     }
@@ -161,9 +168,18 @@ void MapEditor::addCube(Vector3D position)
     updateCursor();
 }
 
-void MapEditor::addPlayer(Vector2D position)
+void MapEditor::addPlayer(Vector3D position)
 {
-    std::shared_ptr<Character> newCharacter = std::make_shared<Character>(_currentSpriteType, Vector3D(position.x, 0.5f, position.y), Vector2D(0, 0), Vector2D(32, 40));
+    for (auto i = _objects2D.begin(); i != _objects2D.end(); i++) {
+        if (i->get()->getBoxPosition() == position) {
+            return;
+        }
+    }
+
+    std::shared_ptr<Character> newCharacter = std::make_shared<Character>(_currentSpriteType, position);
+    newCharacter->setBox3DPosition(position);
+    newCharacter->setBox2DSize({_currentSpriteType.getWidth(), _currentSpriteType.getHeight()});
+    newCharacter->setBox2DScale(_currentSpriteType.getScale());
     _objects2D.push_back(newCharacter);
 }
 
@@ -240,7 +256,6 @@ void MapEditor::saveMap(const std::string& filename)
     }
 
     Vector3D pos3D = Vector3D();
-    Vector2D pos2D = Vector2D();
 
     file << "MAP\n";
     file << _objects3D.size() << "\n";
@@ -250,9 +265,9 @@ void MapEditor::saveMap(const std::string& filename)
     }
 
     if (!_objects2D.empty()) {
-        pos2D = _objects2D[0]->getBox2D().getPosition();
+        pos3D = _objects2D[0]->getBox3D().getPosition();
         file << "PLAYER\n";
-        file << pos2D.x << " " << pos2D.y << "\n";
+        file << pos3D.x << " " << pos3D.y << " " << pos3D.z << "\n";
     }
 
     file.close();
@@ -292,8 +307,8 @@ void MapEditor::loadMap(const std::string& filename)
     file >> header;
     if (header == "PLAYER") {
         Vector3D playerPos = {0, 0, 0};
-        file >> playerPos.x >> playerPos.y;
-        addPlayer({playerPos.x, playerPos.y});
+        file >> playerPos.x >> playerPos.y >> playerPos.z;
+        addPlayer(playerPos);
     }
     file.close();
     std::cout << "Map loaded.\n";
@@ -331,9 +346,12 @@ void MapEditor::setupEventHandlers()
     UI::g_eventDispatcher.subscribe(UI::EditorEventType::OBJECT_DELETED, [this](const UI::EditorEvent& event) {
         if (std::holds_alternative<int>(event.data)) {
             int objectId = std::get<int>(event.data);
-            if (objectId >= 0 && objectId < _objects3D.size()) {
+            if (objectId >= 0 && objectId < _objects3D.size() && _blocSelect) {
                 auto it = _objects3D.begin() + objectId;
                 removeCube(it);
+            } else if (objectId >= 0 && objectId < _objects2D.size() && !_blocSelect) {
+                auto it = _objects2D.begin() + objectId;
+                removePlayer(it);
             }
         }
     });
@@ -422,10 +440,12 @@ void MapEditor::handleAssetSelected(std::shared_ptr<AAsset> asset)
     Asset2D *asset2D = dynamic_cast<Asset2D*>(asset.get());
 
     if (asset3D != nullptr) {
+        std::cout << "ASSET 3D SIZE PLZ HANDLE ASSET FUN: " << asset3D->getScale() << std::endl;
         _blocSelect = true;
         changeCubeType(*asset3D);
         std::cout << "Asset selected 3D" << std::endl;
     } else if (asset2D != nullptr) {
+        std::cout << "ASSET 2D SIZE PLZ HANDLE ASSET FUN: " << asset2D->getWidth() << " " << asset2D->getHeight() << std::endl;
         _blocSelect = false;
         changeSpriteType(*asset2D);
         std::cout << "Asset selected 2D" << std::endl;
@@ -604,7 +624,7 @@ bool MapEditor::selectObject(int objectId)
 bool MapEditor::deleteObject(int objectId)
 {
     // Check if it's a 3D object
-    if (objectId >= 0 && objectId < static_cast<int>(_objects3D.size())) {
+    if (objectId >= 0 && objectId < static_cast<int>(_objects3D.size()) && _blocSelect) {
         auto it = _objects3D.begin() + objectId;
         removeCube(it);
         
@@ -621,7 +641,7 @@ bool MapEditor::deleteObject(int objectId)
     
     // Check if it's a 2D object
     int sprite2DIndex = objectId - static_cast<int>(_objects3D.size());
-    if (sprite2DIndex >= 0 && sprite2DIndex < static_cast<int>(_objects2D.size())) {
+    if (sprite2DIndex >= 0 && sprite2DIndex < static_cast<int>(_objects2D.size())  && !_blocSelect) {
         auto it = _objects2D.begin() + sprite2DIndex;
         removePlayer(it);
         
@@ -647,4 +667,11 @@ void MapEditor::updateSceneObjects()
 void MapEditor::notifySceneChanged()
 {
     UI::Events::sceneUpdated();
+}
+
+void MapEditor::setLoader(std::shared_ptr<AssetLoader> loader)
+{
+    _loader = loader;
+    _objects3DLoaded = _loader->getLoaded3DAssets();
+    _objects2DLoaded = _loader->getLoaded2DAssets();
 }

@@ -100,6 +100,8 @@ class MainUI {
         MapEditor _3DMapEditor;              ///< 3D map editor instance
         std::string _gameProjectName;        ///< Name of the current game project
         UI::UIManager _uiManager;            ///< UI manager for all interface elements
+        std::shared_ptr<AssetLoader> _loader;
+
     private:
         void initMapEditorAssets();
 };

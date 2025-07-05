@@ -26,6 +26,8 @@
 #include "../../UI/EditorEvents.hpp"
 #include "../../UI/SceneObject.hpp"
 
+#include "../../Utilities/LoadedAssets.hpp"
+
 using namespace Utilities;
 using namespace objects;
 
@@ -182,13 +184,13 @@ class MapEditor : public UI::ISceneProvider {
         void changeSpriteType(Asset2D newAsset);
         
         /**
-         * @brief Add a player at the specified 2D position
+         * @brief Add a player at the specified 3D position
          * 
-         * Places a player object at the given 2D position.
+         * Places a player object at the given 3D position.
          * 
-         * @param position The 2D position where to place the player
+         * @param position The 3D position where to place the player
          */
-        void addPlayer(Vector2D position);
+        void addPlayer(Vector3D position);
         
         /**
          * @brief Remove a player object
@@ -356,6 +358,8 @@ class MapEditor : public UI::ISceneProvider {
          */
         void notifySceneChanged();
 
+        void setLoader(std::shared_ptr<AssetLoader> loader);
+
     protected:
     private:
         // Internal helper methods
@@ -398,9 +402,9 @@ class MapEditor : public UI::ISceneProvider {
         bool _blocSelect;
 
         // Assets Loaded
-        std::vector<MapElement> _objects3DLoaded;            ///< All 3D objects loaded
-        std::vector<Character> _objects2DLoaded;             ///< All 2D objects loaded
-
+        std::shared_ptr<AssetLoader> _loader;
+        std::vector<Asset3D> _objects3DLoaded;            ///< All 3D objects loaded
+        std::vector<Asset2D> _objects2DLoaded;             ///< All 2D objects loaded
 
         // Core references
         std::shared_ptr<Render::Window> _window;             ///< Reference to the application window
@@ -416,6 +420,7 @@ class MapEditor : public UI::ISceneProvider {
         Vector2D _cursorPosition;
         Vector3D _alignedPosition;                           ///< Current grid-aligned cursor position
         std::optional<std::vector<std::shared_ptr<MapElement>>::iterator> _closestObject; ///< Closest object to cursor
+        std::optional<std::vector<std::shared_ptr<Character>>::iterator> _closestSprite; ///< Closest object to cursor
         
         // Current tool and selection state
         int _currentTool = 0;                                ///< Current tool index (default: SELECT)

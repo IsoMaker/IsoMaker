@@ -338,6 +338,8 @@ public:
      * Refreshes the scene hierarchy panel to reflect current scene state.
      */
     void refreshSceneObjects();
+
+    void setLoader(std::shared_ptr<AssetLoader> loader);
     
 private:
     // Window dimensions
@@ -366,7 +368,7 @@ private:
     
     bool _show3DAssets;
 
-    AssetLoader _loader;
+    std::shared_ptr<AssetLoader> _loader;
 
     // Assets index
     int _selectedAssetIndex2D;               ///< Index of currently selected asset
