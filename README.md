@@ -1,5 +1,128 @@
 # IsoMaker
 
+IsoMaker est un game engine dédié à la création de jeux isométriques. Il est écrit en C++ et utilise la Raylib pour l’affichage.
+
+## Norme C++
+
+La fondation de la norme de programmation appliquée à ce projet est une adaptation au C++ de la norme de programmation en C d’Epitech. En voici les principes fondamentaux :
+
+### Conventions d'appellation
+- Tous les **sous dossiers** et **fichiers** contenus dans les dossiers `/src` et `/includes` devraient être composés d’un seul mot si possible. Ceux ci, ainsi que les noms des **classes** devraint suivre la convention [UpperCamelCase](https://www.techtarget.com/whatis/definition/CamelCase), selon laquelle chaque mot composant le nom doit commencer par une majuscule.
+- Les **interfaces** et **classes abstraites** doivent avoir des noms commençant respectivement par un I majuscule ou un A majuscule (ex. `IHandler`, `AHandler`).
+- Les **namespaces**, **fonctions** et **variables** devraient suivre la convention [lowerCamelCase](https://www.techtarget.com/whatis/definition/CamelCase), selon laquelle le premier mot composant le nom commence par une minuscule et les suivants par une majuscule (ex. `input::KeyboardHandler::startLoop(bool status)`).
+
+### Arborescence du dossier projet
+
+- Les fichiers `.hpp` contennant des **interfaces**, **implémentations de classes abstraites**, **types spécifiques au projet** et autres choses similaires devraient se trouver dans `/includes/<sous dossier>` (ex. `IHandler.hpp`, `AHandler.hpp` et `Types.hpp` dans `/includes/Input`).
+- Les fichiers source `.cpp `nécessaires à la compilation du project devraient se trouver dans `/src/<sous dossier>`, accompagnés de leurs fichiers `.hpp` respectifs (ex. `Keyboard.cpp` et `Keyboard.hpp` dans `/src/Input`).
+
+### Fichiers
+
+- Tous les fichiers devraient commencer par le header Epitech standard, obtenu grâce à l’extension VSCode dédiée.
+- Le contenu des fichiers `.hpp` devrait être précédé de `#pragma once`.
+- Tous les fichiers devraient se finir par `\n` (retour à la ligne).
+
+### Classes
+
+- Les **spécificateurs d’accès** d’une classe devraient être dasn l’ordre suivant: `public`, `protected`, `private`
+- Les **prototypes de fonction** devraient être déclarés avant les **variables**.
+- Les **noms des variables** de la classe devraient commencer par un tiret bas (ex. `_position`, `_size`, `_scale`)
+
+## Standard de messages de commit
+Tous les commits contribuant à ce projet doivent être accompagnés d’un message de commit adhérant au format suivant, basé sur les standards de [Commits Conventionnel](https://www.conventionalcommits.org/en/v1.0.0/)
+
+```
+<type>(<portée>): <description>
+```
+
+### Structure
+
+- **`type`**: Décrit l’objectif du commit. Un des types prédéfinis suivants devrait être utilisé:
+  - **feat**: Une nouvelle fonctionnalité.
+  - **fix**: Une réparation de bug.
+  - **refacto**: Changements dans le code qui ne résolvent pas de bug et n’ajoutent pas de fonctionnalitée.
+  - **doc**: Changements dans la documentation (ex. modifications du README).
+  - **style**: Changements dans la norme du code (ex. format, caractères manquants) qui n’affectent pas de fonctionnalités.
+  - **test**: Ajout ou modification de tests.
+  - **build**: Maintenance (ex. scripts de compilation, mise à jour des dépendances).
+
+- **`portée`**: Identifie la partie du code affectée. Devrait rester concis, par exemple:
+- Le nom d’un module (ex. `graphics`, `input handling`).
+- Le nom d’un composant (ex. `button`, `keyboard handler`).
+- `*` pour un changement global, impactant de multiples parts.
+
+- **`description`**: Un résumé bref des changements, à l’impératif.
+- Devrait commencer par un verbe à l’impératif présent.
+- Ne pas commencer par une majuscule ou finir par un point.
+
+#### Examples
+
+1. Ajouter une fonctionalité:
+   ```
+   feat(input handling): add support for joypad controls
+   ```
+
+2. Réparer un bug:
+   ```
+   fix(graphics): resolve crash on object rendering
+   ```
+
+3. Mettre à jour la documentation:
+   ```
+   doc(readme): improve commit convention examples
+   ```
+
+4. Mettre à jour du code:
+   ```
+   refacto(engine): simplify event loop logic
+   ```
+
+5. Mettre à jour des tests:
+   ```
+   test(graphics): add tests for sprite rendering
+   ```
+
+### Pourquoi utiliser ce format?
+
+- **Clarté**: Rend la compréhension du but d’un commit plus facile et rapide
+- **Automatisation**: Permet d’utiliser des outils pour générer des notes de version et des journaux de modifications.
+- **Uniformité**: Encourage les contributeurs à documenter les changements de façon uniforme
+
+
+## Comment créer une fonctionnalité et une pull request
+
+### 1. Ouvrir le [Github Project](https://github.com/AetherStollMetz/IsoMaker/projects?query=is%3Aopen) du répertoire
+
+<img src="ressources/readme/GithubDoc1.png" width=1000>
+
+### 2. Ajouter un **item** à la liste
+
+<img src="ressources/readme/GithubDoc2.png" width=1000>
+
+### 3. Ajouter un **nom** et une description
+
+<img src="ressources/readme/GithubDoc3.png" width=600>
+
+### 4. Cliquer sur le petit bouton **Create a branch**/**Créer une branche**
+
+<img src="ressources/readme/GithubDoc4.png" width=800>
+
+### 5. Vous voudrez peut être changer la branche source pour autre chose que le main. Sinon, laissez tout tel quel et **créez la branche**.
+
+<img src="ressources/readme/GithubDoc5.png" width=500>
+
+### 6. Faites un check out local de la branche et créez votre fonctionalité (faites attention à utiliser le [standard de messages de commit](#commit-message-standard))
+
+<img src="ressources/readme/GithubDoc6.png" width=500>
+
+<br>
+<br>
+<hr/>
+<br>
+<br>
+
+# IsoMaker
+
 IsoMaker is a game engine for creating isometric games. It is written in C++ and uses the Raylib for rendering.
 
 
