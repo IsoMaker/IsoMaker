@@ -510,7 +510,7 @@ void UIManager::drawModelPreview(Asset3D asset, Rectangle assetBounds, int barY)
 
     BeginMode3D(cam);
 
-    Vector3 pos = { 0.0f, 0.0f, 0.0f };
+    Vector3 pos = { -0.5f, -0.5f, -0.5f };
     Vector3 rotAxis = { 0.0f, 1.0f, 0.0f };
     float angle = GetTime() * 45.0f;
 

@@ -205,16 +205,14 @@ bool AssetTile(Rectangle bounds, Asset2D asset, bool isSelected, Vector2 positio
     if (asset.isLoaded()) {
         int texW = asset.getWidth();
         int texH = asset.getHeight();
-        float scale = 1.8;
-    
         Rectangle source = {
-            0.0f, 0.0f,
+            0.5f, 0.5f,
             (float)texW, (float)texH
         };
     
         Rectangle dest = {
             bounds.x, bounds.y,
-            texW * scale, texH * scale
+            texW * 1.5, texH * 1.5
         };
     
         Vector2 origin = { 0.0f, 0.0f };

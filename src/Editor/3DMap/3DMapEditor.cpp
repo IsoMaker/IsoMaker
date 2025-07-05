@@ -62,11 +62,11 @@ void MapEditor::update(input::IHandlerBase &inputHandler)
         std::cout << "Other Rotate Camera" << std::endl;
     }
     if (inputHandler.isPressed(input::Generic::DOWN)) {
-        saveMapBinary("game_project/assets/maps/game_map.dat");
+        saveMap("game_project/assets/maps/game_map.dat");
         std::cout << "Save map" << std::endl;
     }
     if (inputHandler.isPressed(input::Generic::UP)) {
-        loadMapBinary("game_project/assets/maps/game_map.dat");
+        loadMap("game_project/assets/maps/game_map.dat");
         std::cout << "Load map" << std::endl;
     }
     if (inputHandler.isPressed(input::Generic::ATTACK)) {
@@ -221,7 +221,7 @@ void MapEditor::updateCursor()
     }
 }
 
-void MapEditor::saveMapBinary(const std::string& filename)
+void MapEditor::saveMap(const std::string& filename)
 {
     std::filesystem::path filepath(filename);
     std::filesystem::create_directories(filepath.parent_path());
@@ -239,7 +239,7 @@ void MapEditor::saveMapBinary(const std::string& filename)
     file << _objects3D.size() << "\n";
     for (auto& obj : _objects3D) {
         pos3D = obj->getBox3D().getPosition();
-        file << pos3D.x << " " << pos3D.y << " " << pos3D.z << "\n";
+        file << pos3D.x << " " << pos3D.y << " " << pos3D.z << " " << obj->getAsset3D().getFileName() << " " << obj->getBox3D().getScale() << "\n";
     }
 
     if (!_objects2D.empty()) {
@@ -252,7 +252,7 @@ void MapEditor::saveMapBinary(const std::string& filename)
     std::cout << "Map saved to: " << filename << "\n";
 }
 
-void MapEditor::loadMapBinary(const std::string& filename)
+void MapEditor::loadMap(const std::string& filename)
 {
     std::ifstream file(filename);
     if (!file.is_open()) {
@@ -268,7 +268,16 @@ void MapEditor::loadMapBinary(const std::string& filename)
         _objects3D.clear();
         for (int i = 0; i < count; ++i) {
             Vector3 position;
-            file >> position.x >> position.y >> position.z;
+            std::string filePath;
+            float scale;
+
+            file >> position.x >> position.y >> position.z >> filePath >> scale;
+            std::cout << "FILENAME " << filePath << "\n";
+            std::cout << "POSITION: " << position << "\n";
+            Asset3D tmpAsset(filePath);
+            tmpAsset.loadFile();
+            tmpAsset.setScale(scale);
+            changeCubeType(tmpAsset);
             addCube(position);
         }
     }
@@ -382,11 +391,11 @@ void MapEditor::handleFileAction(UI::EditorEventType actionType, const std::stri
             std::cout << "New scene created" << std::endl;
             break;
         case UI::EditorEventType::FILE_SAVE:
-            saveMapBinary("game_project/assets/maps/game_map.dat");
+            saveMap("game_project/assets/maps/game_map.dat");
             std::cout << "Map saved" << std::endl;
             break;
         case UI::EditorEventType::FILE_OPEN:
-            loadMapBinary("game_project/assets/maps/game_map.dat");
+            loadMap("game_project/assets/maps/game_map.dat");
             notifySceneChanged();
             std::cout << "Map loaded" << std::endl;
             break;

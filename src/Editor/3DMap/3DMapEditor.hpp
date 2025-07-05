@@ -206,7 +206,7 @@ class MapEditor : public UI::ISceneProvider {
          * 
          * @param filename Path to the output file
          */
-        void saveMapBinary(const std::string& filename);
+        void saveMap(const std::string& filename);
         
         /**
          * @brief Load a map from a binary file
@@ -215,7 +215,7 @@ class MapEditor : public UI::ISceneProvider {
          * 
          * @param filename Path to the input file
          */
-        void loadMapBinary(const std::string& filename);
+        void loadMap(const std::string& filename);
 
         /**
          * @brief Compile the map for game runtime
