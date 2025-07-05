@@ -5,24 +5,24 @@
 #include <iostream>
 #include <fstream>
 #include <filesystem>
-
+#include <memory>
 #include "Entities/MapElement.hpp"
 #include "AnimateImage2D.hpp"
 
 enum class AssetType {
-    ASSET2D,       // For 2D sprites or textures
-    ASSET3D       // For 3D models
+    ASSET2D,
+    ASSET3D
 };
 
-bool saveAssetFile(Model& previewModel, AnimatedSprite sprite, std::string inputFileName, float modelScale, AssetType currentAsset, std::string filePath)
+bool saveAssetFile(Model& Asset3D, std::string inputFileName, float scale, AssetType type, std::string filePath, std::shared_ptr<objects::Character> character)
 {
     std::string fileName = std::filesystem::path(inputFileName).filename().string();
     std::string savePath = "ressources/loadedAssets/" + fileName + ".txt";
     std::ofstream outFile(savePath);
 
     if (outFile.is_open()) {
-        if (currentAsset == AssetType::ASSET3D) {
-            BoundingBox bounds = GetModelBoundingBox(previewModel);
+        if (type == AssetType::ASSET3D) {
+            BoundingBox bounds = GetModelBoundingBox(Asset3D);
             Vector3 modelDimensions = {
                 bounds.max.x - bounds.min.x,
                 bounds.max.y - bounds.min.y,
@@ -31,16 +31,16 @@ bool saveAssetFile(Model& previewModel, AnimatedSprite sprite, std::string input
             outFile << "Type: 3D\n";
             outFile << "Name: " << inputFileName << "\n";
             outFile << "File: " << filePath << "\n";
-            outFile << "Scale: " << modelScale << "\n";
-        } else if (currentAsset == AssetType::ASSET2D) {
+            outFile << "Scale: " << scale << "\n";
+        } else if (type == AssetType::ASSET2D) {
             outFile << "Type: 2D\n";
             outFile << "Name: " << inputFileName << "\n";
             outFile << "File: " << filePath << "\n";
-            outFile << "Scale: " << modelScale << "\n";
+            outFile << "Scale: " << scale << "\n";
             outFile << "Size: "
-                    << sprite.getFrameWidth() << " x "
-                    << sprite.getFrameHeight()<< "\n";
-            outFile << "Frames: " << sprite.getTotalFrames() << "\n";
+                    << character->getBox2D().getRectangle().width << " x "
+                    << character->getBox2D().getRectangle().height << "\n";
+            outFile << "Frames: " << character->getTotalFrames() << "\n";
         }
         outFile.close();
         std::cout << "Saved asset info to: " << savePath << std::endl;
@@ -50,6 +50,26 @@ bool saveAssetFile(Model& previewModel, AnimatedSprite sprite, std::string input
         std::cerr << "Failed to write file: " << savePath << std::endl;
         return false;
     }
+}
+
+bool buttonSave(Model& Asset3D, float scale, AssetType type, std::string filePath, std::shared_ptr<objects::Character> character)
+{
+    if (GuiButton((Rectangle){ 450, 100, 200, 30 }, "Save Asset Info")) {
+        FILE* f = popen("zenity --entry --title='Save Asset' --text='Enter filename to save asset info:'", "r");
+        if (f) {
+            char inputFileName[256] = { 0 };
+            if (fgets(inputFileName, sizeof(inputFileName), f)) {
+                size_t len = strlen(inputFileName);
+                if (len > 0 && inputFileName[len - 1] == '\n') inputFileName[len - 1] = '\0';
+                if (saveAssetFile(Asset3D, inputFileName, scale, type, filePath, character)) {
+                    pclose(f);
+                    return true;
+                }
+            }
+            pclose(f);
+        }
+    }
+    return false;
 }
 
 void drawModelPreview(Model& model, Rectangle viewport, int screenHeight, float scale)
@@ -79,33 +99,61 @@ void drawModelPreview(Model& model, Rectangle viewport, int screenHeight, float 
     EndScissorMode();
 }
 
-void drawImagePreview(AnimatedSprite& sprite, Rectangle viewport, float modelScale)
+void unloadData(AssetType type, std::shared_ptr<objects::Character> character, Model &model)
 {
-    int spriteWidth = sprite.getFrameWidth() * modelScale;
-    int spriteHeight = sprite.getFrameHeight() * modelScale;
+    if (type == AssetType::ASSET3D) {
+        UnloadModel(model);
+    } else if (type == AssetType::ASSET2D) {
+        UnloadTexture((character->getAsset2D().getTexture()));
+    }
+}
 
-    Vector2 position = {
-        viewport.x + (viewport.width - spriteWidth) / 2.0f,
-        viewport.y + (viewport.height - spriteHeight) / 2.0f
-    };
-    sprite.updateAnimation();
-    sprite.draw(position, 1);
+void drawImagePreview(std::shared_ptr<objects::Character> character, Rectangle viewport, float scale)
+{
+    character->updateAnimation();
+    character->draw({0,0,0});
+}
+
+void drawRectanglePreview(bool dataLoaded, Model& model, Rectangle previewRect, std::shared_ptr<objects::Character> character, float scale, std::string selectedFilePath, AssetType type)
+{
+    DrawRectangleLines((int)previewRect.x, (int)previewRect.y, (int)previewRect.width, (int)previewRect.height, DARKGRAY);
+    if (dataLoaded) {
+        if (type == AssetType::ASSET3D) {
+            drawModelPreview(model, previewRect, GetScreenHeight(), scale);
+        } else if (type == AssetType::ASSET2D) {
+            int width = character->getBox2D().getRectangle().width;
+            int height = character->getBox2D().getRectangle().height;
+            int frames = character->getTotalFrames();
+
+            GuiSpinner((Rectangle){ 450, 130, 120, 30 }, "Width", &(width), 1, 120, 0);
+            GuiSpinner((Rectangle){ 450, 160, 120, 30 }, "Height", &(height), 1, 120, 0);
+            GuiSpinner((Rectangle){ 450, 190, 120, 30 }, "Frames", &(frames), 1, 16, 0);
+            Asset2D tmpAsset = character->getAsset2D();
+            if (width != tmpAsset.getWidth() || height != tmpAsset.getHeight() || frames != character->getTotalFrames()) {
+                character->setTotalFrames(frames);
+                character->setMoving(true);
+                character->setBox2DSize(Vector2D(width, height));
+            }
+            drawImagePreview(character, previewRect, scale);
+        }
+
+        buttonSave(model, scale, type, selectedFilePath, character);
+    }
+    else {
+        DrawText("No model loaded", 160, 150, 20, GRAY);
+    }
 }
 
 int main()
 {
     Rectangle previewRect = { 100, 100, 300, 300 };
-    Model previewModel = {0};
+    Model model = {0};
     bool dataLoaded = false;
     std::string selectedFilePath;
-    float modelScale = 0.5f;
-    char scaleInput[32] = "0.5";
+    float scale = 0.5f;
     bool editMode = false;
-    AssetType currentAsset;
-    AnimatedSprite sprite;
-    int frameWidth = 32;
-    int frameHeight = 40;
-    int totalFrames = 4;
+    AssetType type;
+    std::shared_ptr<objects::Character> character;
 
     InitWindow(800, 600, "GLB Model Preview");
     SetTargetFPS(60);
@@ -125,34 +173,27 @@ int main()
                     std::filesystem::path filePath(path);
                     std::string extension = filePath.extension().string();
 
-                    if (dataLoaded && currentAsset == AssetType::ASSET3D) {
-                        UnloadModel(previewModel);
-                    } else if (dataLoaded && currentAsset == AssetType::ASSET2D) {
-                        sprite.unload();
-                    }
+                    unloadData(type, character, model);
                     if (extension == ".glb") {
-                        previewModel = LoadModel(path);
+                        model = LoadModel(path);
 
-                        BoundingBox bounds = GetModelBoundingBox(previewModel);
+                        BoundingBox bounds = GetModelBoundingBox(model);
                         Vector3 dims = {
                             bounds.max.x - bounds.min.x,
                             bounds.max.y - bounds.min.y,
                             bounds.max.z - bounds.min.z
                         };
+                        char scaleInput[32] = "0.5";
                         float maxDim = fmaxf(dims.x, fmaxf(dims.y, dims.z));
-                        modelScale = (maxDim > 0.0f) ? 1.0f / maxDim : 1.0f;
-                        snprintf(scaleInput, sizeof(scaleInput), "%.3f", modelScale);
-                        std::cout << "Auto-scaled to: " << modelScale << " to normalize model size\n";
-                        currentAsset = AssetType::ASSET3D;
+
+                        scale = (maxDim > 0.0f) ? 1.0f / maxDim : 1.0f;
+                        snprintf(scaleInput, sizeof(scaleInput), "%.3f", scale);
+                        std::cout << "Auto-scaled to: " << scale << " to normalize model size\n";
+                        type = AssetType::ASSET3D;
                     } else {
-                        sprite.load(path, frameWidth, frameHeight, totalFrames);
-
-                        float maxDim = fmaxf(frameWidth, frameHeight);
-                        modelScale = (maxDim > 0.0f) ? 300.0f / maxDim : 1.0f;
-                        snprintf(scaleInput, sizeof(scaleInput), "%.3f", modelScale);
-
-                        std::cout << "Loaded 2D image: " << path << " (" << frameWidth << "x" << frameHeight << ")\n";
-                        currentAsset = AssetType::ASSET2D;
+                        character = std::make_shared<objects::Character>(Asset2D(path), Vector3D(0,0,0), Vector2D(0, 0), Vector2D(32, 40));
+                        character->setMoving(true);
+                        type = AssetType::ASSET2D;
                     }
 
                     dataLoaded = true;
@@ -161,46 +202,11 @@ int main()
                 pclose(f);
             }
         }
-        DrawRectangleLines((int)previewRect.x, (int)previewRect.y, (int)previewRect.width, (int)previewRect.height, DARKGRAY);
-        if (dataLoaded) {
-            if (currentAsset == AssetType::ASSET3D) {
-                drawModelPreview(previewModel, previewRect, GetScreenHeight(), modelScale);
-            } else if (currentAsset == AssetType::ASSET2D) {
-                GuiSpinner((Rectangle){ 450, 130, 120, 30 }, "", &frameWidth, 1, 120, 0);
-                GuiSpinner((Rectangle){ 450, 160, 120, 30 }, "", &frameHeight, 1, 120, 0);
-                GuiSpinner((Rectangle){ 450, 190, 120, 30 }, "", &totalFrames, 1, 16, 0);
-                if (frameWidth != sprite.getFrameWidth() || frameHeight != sprite.getFrameHeight() || totalFrames != sprite.getTotalFrames())
-                    sprite.load(selectedFilePath, frameWidth, frameHeight, totalFrames);
-                drawImagePreview(sprite, previewRect, modelScale);
-            }
-
-            if (GuiButton((Rectangle){ 450, 100, 200, 30 }, "Save Asset Info")) {
-                FILE* f = popen("zenity --entry --title='Save Asset' --text='Enter filename to save asset info:'", "r");
-                if (f) {
-                    char inputFileName[256] = { 0 };
-                    if (fgets(inputFileName, sizeof(inputFileName), f)) {
-                        size_t len = strlen(inputFileName);
-                        if (len > 0 && inputFileName[len - 1] == '\n') inputFileName[len - 1] = '\0';
-                        if (saveAssetFile(previewModel, sprite, inputFileName, modelScale, currentAsset, selectedFilePath)) {
-                            pclose(f);
-                            break;
-                        }
-                    }
-                    pclose(f);
-                }
-            }
-        }
-        else {
-            DrawText("No model loaded", 160, 150, 20, GRAY);
-        }
+        drawRectanglePreview(dataLoaded, model, previewRect, character, scale, selectedFilePath, type);
         EndDrawing();
     }
 
-    if (dataLoaded && currentAsset == AssetType::ASSET3D) {
-        UnloadModel(previewModel);
-    } else if (dataLoaded && currentAsset == AssetType::ASSET2D) {
-        sprite.unload();
-    }
+    unloadData(type, character, model);
     CloseWindow();
     return 0;
 }

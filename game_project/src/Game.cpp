@@ -24,7 +24,6 @@ Game::Game(std::shared_ptr<Render::Window> window, std::shared_ptr<Render::Camer
     playerPos.z -= 0.5f;
     _playerAsset = Asset2D(playerPath);
     _player = std::make_shared<objects::Character>(_playerAsset, playerPos, Vector2D(0, 0), Vector2D(32, 40));
-    std::cout << "PLAYER POS DEFAULT: " << playerPos.x << " " << playerPos.y << " " << playerPos.z << std::endl;
 }
 
 Game::~Game()
@@ -131,15 +130,11 @@ bool Game::handleCollision(Utilities::Vector3D newPos)
     Utilities::Vector3D posTmp = {0.0f, 0.0f, 0.0f};
     bool thereIsACube = false;
 
-    std::cout << "FUTURE POS [BEFORE] ROUND: " << newPos.x << " " << newPos.y << " " << newPos.z << std::endl;
     newPos = getEntitieBlockPos(newPos);
-    std::cout << "FUTURE POS [AFTER] ROUND: " << newPos.x << " " << newPos.y << " " << newPos.z << std::endl;
     for (auto i = _mapElements.begin(); i != _mapElements.end(); i++) {
         posTmp = i->get()->getBoxPosition();
         if ((newPos.x == posTmp.x && newPos.z == posTmp.z)) {
-            std::cout << "Meme cube" << std::endl;
             if (newPos.y + 1 == posTmp.y || newPos.y - 1 == posTmp.y) {
-                std::cout << "OMG COLLISION" << std::endl;
                 return false;
             }
         }

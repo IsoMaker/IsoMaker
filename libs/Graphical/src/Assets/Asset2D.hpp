@@ -9,13 +9,13 @@ class Asset2D : public AAsset
         Asset2D(std::string fileName);
         Asset2D(Texture2D texture);
         ~Asset2D() = default;
-        Texture2D getTexture();
+        Texture2D getTexture() const;
         void setTexture(Texture2D texture);
         void loadFile();
         bool isLoaded() { return _textureLoaded; };
         int getWidth() { return _width; };
-        int getHeight() { return _width; };
-        int getFramesCount() { return _width; };
+        int getHeight() { return _height; };
+        int getFramesCount() { return _frames; };
         float getScale() { return _scale; };
 
         void setWidth(int width) { _width = width; };

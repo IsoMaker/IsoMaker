@@ -32,23 +32,26 @@ Character::~Character()
 
 bool Character::isMoving()
 {
-    return _moving;
+    return _isMoving;
 }
 
 void Character::setMoving(bool moving)
 {
-    _moving = moving;
+    _isMoving = moving;
 }
 
-void Character::updateAnimation() {
-    if (_moving) {
+void Character::updateAnimation()
+{
+    if (_isMoving) {
         _frameCounter += 1;
         if (_frameCounter >= _frameSpeed) {
             _frameCounter = 0;
+            _currentFrame = (_currentFrame + 1) % _totalFrames;
         }
-        _box2D.setPosX(_frameCounter * _box2D.getSize().x);
+        _box2D.setPosX(_currentFrame * _box2D.getSize().x);
     } else {
         _frameCounter = 0;
+        _currentFrame = 1;
         _box2D.setPosX(0);
     }
 }
@@ -78,4 +81,16 @@ void Character::draw(Vector2D tileSize)
     // Vector2D origin = size * _box2D.getScale();
 
     // DrawBillboardPro(camera->getRaylibCam(), texture, source, position.convert(), up.convert(), size.convert(), origin.convert(), 0.0f, WHITE);
+}
+
+void Character::draw(Vector3D tmp)
+{
+    Rectangle source = _box2D.getRectangle();
+    Vector3D pos = _box3D.getPosition();
+    Vector2 position = {
+        150 + (source.width * 2),
+        150 + (source.height * 2)
+    };
+
+    DrawTextureRec(_asset2D.getTexture(), source, position, WHITE);
 }

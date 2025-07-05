@@ -36,11 +36,6 @@ void AnimatedSprite::draw(Vector2 position, float scale)
         (float)_frameWidth, (float)_frameHeight
     };
 
-    Rectangle dest = {
-        position.x, position.y,
-        _frameWidth * scale, _frameHeight * scale
-    };
-
     DrawTextureRec(_texture, source, position, WHITE);
 }
 

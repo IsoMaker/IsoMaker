@@ -122,7 +122,7 @@ void MapEditor::draw(Rectangle mainViewArea)
     draw3DElements();
     _camera->end3D();
     EndScissorMode();
-    
+
     // Draw 2D elements
     draw2DElements();
 }

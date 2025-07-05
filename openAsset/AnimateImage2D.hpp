@@ -34,7 +34,8 @@ private:
 
     int _frameWidth = 0;
     int _frameHeight = 0;
-    int _totalFrames = 1;
+
+    int _totalFrames = 4;
     int _currentFrame = 0;
     int _frameCounter = 0;
     int _frameSpeed = 8;
