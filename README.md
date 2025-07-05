@@ -29,6 +29,7 @@ The foundation of the coding style applied to this project is a C++ adapatation 
 
 - A class' **access specifiers** should be written in the following order: `public`, `protected`, `private`.
 - **Function prototypes** should be declared before **variables**.
+- **Function variable names** should start with an underscore (e.g., `_position`, `_size`, `_scale`).
 
 
 ## Commit Message Standard
