@@ -66,7 +66,7 @@ void ScriptingEditor::draw(Rectangle mainViewArea) {
     // Clear the main view area with background
     DrawRectangleRec(mainViewArea, UI::BACKGROUND);
     
-    // Calculate panel layouts
+    // Calculate panel layouts with right panel for scene objects
     Rectangle leftPanel = {
         mainViewArea.x,
         mainViewArea.y,
@@ -74,16 +74,24 @@ void ScriptingEditor::draw(Rectangle mainViewArea) {
         mainViewArea.height
     };
     
+    Rectangle rightPanel = {
+        mainViewArea.x + mainViewArea.width - _rightPanelWidth,
+        mainViewArea.y,
+        _rightPanelWidth,
+        mainViewArea.height
+    };
+    
     Rectangle canvasPanel = {
         mainViewArea.x + _leftPanelWidth + _panelPadding,
         mainViewArea.y,
-        mainViewArea.width - _leftPanelWidth - _panelPadding,
+        mainViewArea.width - _leftPanelWidth - _rightPanelWidth - (_panelPadding * 2),
         mainViewArea.height
     };
     
     // Draw panels
     drawBlockPalette(leftPanel);
     drawScriptCanvas(canvasPanel);
+    drawSceneObjectPanel(rightPanel);
     
     // Draw drag preview if dragging from palette
     if (_isDraggingFromPalette) {
@@ -247,7 +255,7 @@ void ScriptingEditor::initializeBlockPalette() {
     
     // Conditions category
     _blockPalette.push_back({BlockCategory::CONDITIONS, {
-        BlockType::IF, BlockType::IF_ELSE, BlockType::WHILE
+        BlockType::IF, BlockType::LOOP
     }});
     
     // Miscellaneous category
@@ -312,12 +320,8 @@ void ScriptBlock::setBlockProperties() {
             label = "If";
             color = {255, 87, 34, 255}; // Orange
             break;
-        case BlockType::IF_ELSE:
-            label = "If Else";
-            color = {255, 87, 34, 255}; // Orange
-            break;
-        case BlockType::WHILE:
-            label = "While";
+        case BlockType::LOOP:
+            label = "Loop";
             color = {255, 87, 34, 255}; // Orange
             break;
             
@@ -474,31 +478,20 @@ void ScriptBlock::setProfessionalBlockProperties() {
             primaryColor = {255, 193, 7, 255};     // Bootstrap warning yellow
             secondaryColor = {255, 243, 205, 255}; // Light yellow
             headerColor = {255, 173, 0, 255};      // Darker yellow
-            hasExecutionFlow = true;
+            hasExecutionFlow = false; // No input execution port
             canHaveBranches = true; // Has true/false outputs
             size = {180, 90};
             break;
             
-        case BlockType::IF_ELSE:
-            title = "If Else";
-            subtitle = "Branch execution";
+        case BlockType::LOOP:
+            title = "Loop";
+            subtitle = "Repeat N times";
             primaryColor = {255, 193, 7, 255};
             secondaryColor = {255, 243, 205, 255};
             headerColor = {255, 173, 0, 255};
             hasExecutionFlow = true;
-            canHaveBranches = true;
+            canHaveBranches = true; // Has body and next outputs
             size = {180, 100};
-            break;
-            
-        case BlockType::WHILE:
-            title = "While";
-            subtitle = "Loop while true";
-            primaryColor = {255, 193, 7, 255};
-            secondaryColor = {255, 243, 205, 255};
-            headerColor = {255, 173, 0, 255};
-            hasExecutionFlow = true;
-            canHaveBranches = true;
-            size = {180, 90};
             break;
             
         // Value blocks - Purple theme
@@ -603,6 +596,9 @@ void ScriptBlock::setDefaultConfig() {
         case BlockType::LOG:
             config.stringParams["message"] = "Debug message";
             break;
+        case BlockType::LOOP:
+            config.floatParams["iterations"] = 5.0f;
+            break;
         default:
             // No configuration needed for other blocks
             break;
@@ -687,6 +683,11 @@ std::string ScriptBlock::getParameterSummary() const {
             float value = (valueIt != config.floatParams.end()) ? valueIt->second : 0.0f;
             return std::to_string((int)value);
         }
+        case BlockType::LOOP: {
+            auto iterIt = config.floatParams.find("iterations");
+            float iterations = (iterIt != config.floatParams.end()) ? iterIt->second : 5.0f;
+            return std::to_string((int)iterations) + " times";
+        }
         default:
             return subtitle;
     }
@@ -702,11 +703,19 @@ void ScriptBlock::setupConnectionPorts() {
         inputPorts.push_back(ConnectionPoint(inputPos, ConnectionPortType::EXECUTION_IN, id, "In", WHITE));
         
         if (canHaveBranches) {
-            // Add true/false output ports for conditional blocks
-            Vector2 trueOut = {position.x + size.x * 0.75f, position.y + size.y};
-            Vector2 falseOut = {position.x + size.x * 0.25f, position.y + size.y};
-            outputPorts.push_back(ConnectionPoint(trueOut, ConnectionPortType::TRUE_OUT, id, "True", {25, 135, 84, 255}));
-            outputPorts.push_back(ConnectionPoint(falseOut, ConnectionPortType::FALSE_OUT, id, "False", {220, 53, 69, 255}));
+            if (type == BlockType::LOOP) {
+                // Loop has Next (left) and Body (right) outputs
+                Vector2 nextOut = {position.x + size.x * 0.25f, position.y + size.y};   // Left = Exit/Next
+                Vector2 bodyOut = {position.x + size.x * 0.75f, position.y + size.y};   // Right = Loop Body
+                outputPorts.push_back(ConnectionPoint(nextOut, ConnectionPortType::EXECUTION_OUT, id, "Next", {220, 53, 69, 255})); // Red for exit
+                outputPorts.push_back(ConnectionPoint(bodyOut, ConnectionPortType::EXECUTION_OUT, id, "Body", {25, 135, 84, 255})); // Green for body
+            } else {
+                // Other conditional blocks have false (left) and true (right) outputs
+                Vector2 falseOut = {position.x + size.x * 0.25f, position.y + size.y};  // Left = False
+                Vector2 trueOut = {position.x + size.x * 0.75f, position.y + size.y};   // Right = True
+                outputPorts.push_back(ConnectionPoint(falseOut, ConnectionPortType::FALSE_OUT, id, "False", {220, 53, 69, 255})); // Red for false
+                outputPorts.push_back(ConnectionPoint(trueOut, ConnectionPortType::TRUE_OUT, id, "True", {25, 135, 84, 255})); // Green for true
+            }
         } else {
             // Add single execution output port (bottom center)
             Vector2 outputPos = {position.x + size.x / 2, position.y + size.y};
@@ -714,14 +723,31 @@ void ScriptBlock::setupConnectionPorts() {
         }
     }
     
+    // Special case for IF blocks - they have no input execution port but have outputs
+    if (type == BlockType::IF) {
+        // Clear input ports since IF blocks don't have execution input
+        inputPorts.clear();
+        
+        // Add false (left) and true (right) output ports only
+        Vector2 falseOut = {position.x + size.x * 0.25f, position.y + size.y};  // Left = False
+        Vector2 trueOut = {position.x + size.x * 0.75f, position.y + size.y};   // Right = True
+        outputPorts.clear();
+        outputPorts.push_back(ConnectionPoint(falseOut, ConnectionPortType::FALSE_OUT, id, "False", {220, 53, 69, 255})); // Red for false
+        outputPorts.push_back(ConnectionPoint(trueOut, ConnectionPortType::TRUE_OUT, id, "True", {25, 135, 84, 255})); // Green for true
+    }
+    
     // Add value input/output ports for specific block types
     switch (type) {
-        case BlockType::IF:
-        case BlockType::IF_ELSE:
-        case BlockType::WHILE: {
-            // Add condition value input port
+        case BlockType::IF: {
+            // Add condition value input port (left side)
             Vector2 conditionIn = {position.x, position.y + size.y / 2};
             inputPorts.push_back(ConnectionPoint(conditionIn, ConnectionPortType::VALUE_IN, id, "Condition", {255, 193, 7, 255}));
+            break;
+        }
+        case BlockType::LOOP: {
+            // Add iteration count value input port (left side, lower position)
+            Vector2 iterationsIn = {position.x, position.y + size.y * 0.7f};
+            inputPorts.push_back(ConnectionPoint(iterationsIn, ConnectionPortType::VALUE_IN, id, "Count", {255, 193, 7, 255}));
             break;
         }
         case BlockType::VALUE:
@@ -874,6 +900,60 @@ void ScriptingEditor::drawScriptCanvas(Rectangle bounds) {
     DrawRectangleLinesEx(canvasArea, 1, UI::UI_SECONDARY);
 }
 
+void ScriptingEditor::drawSceneObjectPanel(Rectangle bounds) {
+    // Draw panel background
+    DrawRectangleRec(bounds, UI::PANEL_BACKGROUND);
+    DrawRectangleLinesEx(bounds, 1, UI::UI_PRIMARY);
+    
+    // Panel title
+    Rectangle titleArea = {bounds.x + 5, bounds.y + 5, bounds.width - 10, 25};
+    GuiLabel(titleArea, "Scene Objects");
+    
+    // Content area
+    Rectangle contentArea = {bounds.x + 5, bounds.y + 35, bounds.width - 10, bounds.height - 40};
+    float yOffset = 5;
+    
+    // Get scene objects from the scene provider
+    std::vector<UI::SceneObjectInfo> sceneObjects = getSceneObjects();
+    int selectedObjId = getSelectedObjectId();
+    
+    // Draw each scene object
+    for (const auto& obj : sceneObjects) {
+        Rectangle objRect = {contentArea.x, contentArea.y + yOffset, contentArea.width, 30};
+        
+        // Check if this object is selected
+        bool isSelected = (obj.id == selectedObjId);
+        
+        // Draw background for selected object
+        if (isSelected) {
+            DrawRectangleRec(objRect, UI::ACCENT_PRIMARY);
+        } else {
+            // Check if mouse is hovering over this object
+            Vector2 mousePos = _currentMousePos;
+            if (CheckCollisionPointRec(mousePos, objRect)) {
+                DrawRectangleRec(objRect, Color{200, 200, 200, 100});
+            }
+        }
+        
+        // Draw object name
+        Rectangle textRect = {objRect.x + 5, objRect.y + 5, objRect.width - 10, 20};
+        GuiLabel(textRect, obj.name.c_str());
+        
+        // Check for click on this object
+        if (CheckCollisionPointRec(_currentMousePos, objRect) && _leftMousePressed) {
+            // Select this object
+            selectObject(obj.id);
+        }
+        
+        yOffset += 35;
+        
+        // Stop if we've gone past the visible area
+        if (yOffset > contentArea.height) {
+            break;
+        }
+    }
+}
+
 void ScriptingEditor::drawCanvasOverlay(Rectangle bounds) {
     // Draw dark transparent overlay
     DrawRectangleRec(bounds, Color{0, 0, 0, 100});
@@ -889,7 +969,7 @@ void ScriptingEditor::drawCanvasOverlay(Rectangle bounds) {
     DrawRectangleRec(messageArea, Color{255, 255, 255, 200});
     DrawRectangleLinesEx(messageArea, 1, UI::UI_PRIMARY);
     
-    GuiLabel(messageArea, "Select a scene object on the right to start scripting.");
+    GuiLabel(messageArea, "Select a scene object to start scripting.");
 }
 
 void ScriptingEditor::drawCanvasGrid(Rectangle bounds) {
@@ -1048,8 +1128,7 @@ void ScriptingEditor::drawBlockBody(const ScriptBlock& block, Rectangle bodyRect
                 DrawCircle(center.x + 4, center.y - 4, 2, {25, 135, 84, 255});
                 break;
             }
-            case BlockType::IF:
-            case BlockType::IF_ELSE: {
+            case BlockType::IF: {
                 // Draw condition diamond
                 Vector2 center = {bodyRect.x + bodyRect.width - 20, bodyRect.y + bodyRect.height / 2};
                 Vector2 points[4] = {
@@ -1060,6 +1139,19 @@ void ScriptingEditor::drawBlockBody(const ScriptBlock& block, Rectangle bodyRect
                 };
                 DrawTriangle(points[0], points[1], points[2], {255, 193, 7, 200});
                 DrawTriangle(points[0], points[2], points[3], {255, 193, 7, 200});
+                break;
+            }
+            case BlockType::LOOP: {
+                // Draw loop indicator (circular arrow)
+                Vector2 center = {bodyRect.x + bodyRect.width - 20, bodyRect.y + bodyRect.height / 2};
+                DrawCircleLines(center.x, center.y, 6, {255, 193, 7, 255});
+                // Draw small arrow tip
+                DrawTriangle(
+                    {center.x + 4, center.y - 4},
+                    {center.x + 6, center.y - 2},
+                    {center.x + 4, center.y},
+                    {255, 193, 7, 255}
+                );
                 break;
             }
             default:
@@ -1475,6 +1567,7 @@ void ScriptingEditor::reorderCanvasBlocks() {
 void ScriptingEditor::openConfigDialog(ScriptBlock* block) {
     _showConfigDialog = true;
     _configuredBlock = block;
+    std::cout << "[ScriptingEditor] Config dialog opened, showConfigDialog=" << _showConfigDialog << std::endl;
 }
 
 void ScriptingEditor::closeConfigDialog() {
@@ -1490,11 +1583,28 @@ void ScriptingEditor::applyBlockConfiguration() {
 void ScriptingEditor::drawConfigDialog() {
     if (!_configuredBlock) return;
     
-    Rectangle dialogBounds = {300, 200, 400, 300};
+    // Draw dark overlay over entire screen
+    float screenWidth = GetScreenWidth();
+    float screenHeight = GetScreenHeight();
+    DrawRectangle(0, 0, screenWidth, screenHeight, Color{0, 0, 0, 150});
+    
+    // Center the dialog on screen
+    float dialogWidth = 400;
+    float dialogHeight = 350;
+    Rectangle dialogBounds = {
+        (screenWidth - dialogWidth) / 2,
+        (screenHeight - dialogHeight) / 2,
+        dialogWidth,
+        dialogHeight
+    };
+    
+    // Draw dialog background with shadow
+    Rectangle shadowRect = {dialogBounds.x + 5, dialogBounds.y + 5, dialogBounds.width, dialogBounds.height};
+    DrawRectangleRec(shadowRect, Color{0, 0, 0, 100});
     
     // Draw dialog background
-    DrawRectangleRec(dialogBounds, UI::PANEL_BACKGROUND);
-    DrawRectangleLinesEx(dialogBounds, 2, UI::UI_PRIMARY);
+    DrawRectangleRec(dialogBounds, Color{255, 255, 255, 255});
+    DrawRectangleLinesEx(dialogBounds, 3, UI::UI_PRIMARY);
     
     // Title
     Rectangle titleArea = {dialogBounds.x + 10, dialogBounds.y + 10, dialogBounds.width - 20, 25};
@@ -1576,6 +1686,17 @@ void ScriptingEditor::drawConfigDialog() {
             static char messageText[128] = "Debug message";
             GuiTextBox(messageField, messageText, 128, true);
             _configuredBlock->config.stringParams["message"] = messageText;
+            break;
+        }
+        
+        case BlockType::LOOP: {
+            Rectangle iterLabel = {dialogBounds.x + 10, dialogBounds.y + yOffset, dialogBounds.width - 20, 20};
+            GuiLabel(iterLabel, "Number of iterations:");
+            
+            Rectangle iterField = {dialogBounds.x + 10, dialogBounds.y + yOffset + 20, dialogBounds.width - 20, 25};
+            static char iterText[32] = "5";
+            GuiTextBox(iterField, iterText, 32, true);
+            _configuredBlock->config.floatParams["iterations"] = std::stof(iterText);
             break;
         }
         
@@ -2028,7 +2149,10 @@ void ScriptingEditor::deleteBlock(ScriptBlock* block) {
 }
 
 void ScriptingEditor::editBlock(ScriptBlock* block) {
-    openConfigDialog(block);
+    if (block) {
+        std::cout << "[ScriptingEditor] Opening config dialog for block: " << block->title << std::endl;
+        openConfigDialog(block);
+    }
 }
 
 void ScriptingEditor::selectBlock(ScriptBlock* block) {

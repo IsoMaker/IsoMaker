@@ -265,6 +265,7 @@ public:
      * @return Rectangle The main viewport area
      */
     Rectangle getMainViewArea() const;
+    Rectangle getFullViewArea() const;
     
     // Event handling
     /**

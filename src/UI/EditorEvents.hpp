@@ -58,7 +58,7 @@ enum class EditorEventType {
     FILE_EXPORT,         ///< File export operation requested
     
     // Editor mode events
-    EDITOR_MODE_CHANGED, ///< Editor mode has changed (2D/3D)
+    EDITOR_MODE_CHANGED, ///< Editor mode has changed (MAP_EDITOR/SCRIPTING)
     
     // Asset events
     ASSET_SELECTED,      ///< An asset has been selected in the browser

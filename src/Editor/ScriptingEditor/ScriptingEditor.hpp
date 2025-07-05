@@ -50,8 +50,7 @@ enum class BlockType {
     
     // Conditions
     IF,
-    IF_ELSE,
-    WHILE,
+    LOOP,
     
     // Miscellaneous
     TRUE,
@@ -375,6 +374,7 @@ private:
     
     // UI layout constants
     const float _leftPanelWidth = 250.0f;              ///< Width of left block palette panel
+    const float _rightPanelWidth = 250.0f;             ///< Width of right scene objects panel
     const float _panelPadding = 10.0f;                 ///< Padding for panels
     
     // Block palette data
@@ -428,6 +428,7 @@ private:
     // UI helper methods
     void drawBlockPalette(Rectangle bounds);            ///< Draw left block palette panel
     void drawScriptCanvas(Rectangle bounds);            ///< Draw central script canvas
+    void drawSceneObjectPanel(Rectangle bounds);        ///< Draw right scene objects panel
     void drawCanvasGrid(Rectangle bounds);              ///< Draw grid background on canvas
     void drawCanvasOverlay(Rectangle bounds);           ///< Draw overlay when no object selected
     void drawBlock(const ScriptBlock& block, Vector2 offset = {0, 0}, bool shadow = true); ///< Draw a single block (legacy)
