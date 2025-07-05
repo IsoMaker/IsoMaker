@@ -22,7 +22,7 @@ UIManager::UIManager(int screenWidth, int screenHeight)
       _renderMenuOpen(false),
       _helpMenuOpen(false),
       _searchActive(false),
-      _currentEditorType(1),
+      _currentEditorType(0),
       _currentSceneProvider(nullptr)
 {
     // Initialize search text
@@ -249,7 +249,7 @@ void UIManager::drawTopMenuBar()
     int dropdownPos = _screenWidth - dropdownWidth - 10;
     
     // Dropdown to select editor type
-    const char *editorTypes[3] = { "Paint Editor", "Map Editor", "Scripting Editor" };
+    const char *editorTypes[3] = {"Map Editor", "Scripting Editor" };
     
     // Use the custom dropdown
     Rectangle dropdownBounds = {static_cast<float>(dropdownPos), 2.0f, static_cast<float>(dropdownWidth), static_cast<float>(_topBarHeight - 4)};

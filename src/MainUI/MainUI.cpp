@@ -66,9 +66,6 @@ void MainUI::update(input::IHandlerBase &inputHandler) {
         case SCRIPTING:
             _scriptingEditor.update(inputHandler);
             break;
-        case PAINT:
-            // 2D Editor update would go here
-            break;
     }
     
     _uiManager.update(inputHandler);
@@ -93,11 +90,6 @@ void MainUI::draw() {
             _scriptingEditor.setSceneProvider(&_3DMapEditor);
             _scriptingEditor.draw(_uiManager.getFullViewArea());
             _uiManager.draw(_scriptingEditor);
-            break;
-        case PAINT:
-            // 2D Editor draw would go here
-            // For now, just draw UI with map editor as fallback
-            _uiManager.draw(_3DMapEditor); // Fallback
             break;
     }
     
@@ -132,9 +124,8 @@ void MainUI::setupEventHandlers() {
                 
                 // Map UI editor indices to EditorType enum
                 switch (editorIndex) {
-                    case 0: newEditor = PAINT; break;
-                    case 1: newEditor = MAP; break;
-                    case 2: newEditor = SCRIPTING; break;
+                    case 0: newEditor = MAP; break;
+                    case 1: newEditor = SCRIPTING; break;
                     default: 
                         std::cout << "[MainUI] Unknown editor index: " << editorIndex << std::endl;
                         return;

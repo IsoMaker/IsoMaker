@@ -20,15 +20,12 @@
 /** @brief Default screen width for the application window */
 #define SCREENWIDTH 1800
 
-// using namespace paint;
-
 /**
  * @brief Editor type enumeration
  * 
  * Defines the different types of editors available in the application.
  */
 enum EditorType {
-    PAINT,     ///< 2D pixel art editor mode
     MAP,       ///< 3D map editor mode
     SCRIPTING, ///< Scripting editor mode
 };
