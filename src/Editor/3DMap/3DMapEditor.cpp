@@ -98,6 +98,13 @@ void MapEditor::draw2DElements()
     for (auto i = _objects2D.begin(); i != _objects2D.end(); i++) {
         i->get()->draw();
     }
+    Vector2 aligned = { _alignedPosition.convert().x, _alignedPosition.convert().y };
+
+    if (_currentTool == 4) {
+        Vector2 size = { 32, 41 };
+        Color color = (Color){ 255, 255, 0, 128 }; // Yellow with 50% opacity
+        DrawRectangleV(aligned, size, color); // Draw preview cube
+    }
 }
 
 void MapEditor::draw3DElements()
@@ -333,10 +340,11 @@ void MapEditor::setupEventHandlers()
 
     UI::g_eventDispatcher.subscribe(UI::EditorEventType::ASSET_SELECTED,
         [this](const UI::EditorEvent& event) {
-            if (std::holds_alternative<MapElement>(event.data)) {
-                MapElement asset = std::get<MapElement>(event.data);
+            if (std::holds_alternative<std::shared_ptr<AAsset>>(event.data)) {
+                std::shared_ptr<AAsset> asset = std::get<std::shared_ptr<AAsset>>(event.data);
                 handleAssetSelected(asset);
             }
+            
         });
 
     UI::g_eventDispatcher.subscribe(UI::EditorEventType::ASSET_LOADED, [this](const UI::EditorEvent& event) {
@@ -408,11 +416,22 @@ void MapEditor::handleFileAction(UI::EditorEventType actionType, const std::stri
     }
 }
 
-void MapEditor::handleAssetSelected(objects::MapElement asset)
+void MapEditor::handleAssetSelected(std::shared_ptr<AAsset> asset)
 {
-    Asset3D asset3D = asset.getAsset3D();
-    changeCubeType(asset3D);
-    std::cout << "Asset selected" << std::endl;
+    Asset3D *asset3D = dynamic_cast<Asset3D*>(asset.get());
+    Asset2D *asset2D = dynamic_cast<Asset2D*>(asset.get());
+
+    if (asset3D != nullptr) {
+        _blocSelect = true;
+        changeCubeType(*asset3D);
+        std::cout << "Asset selected 3D" << std::endl;
+    } else if (asset2D != nullptr) {
+        _blocSelect = false;
+        changeSpriteType(*asset2D);
+        std::cout << "Asset selected 2D" << std::endl;
+    } else {
+        std::cerr << "Unknown asset type selected!" << std::endl;
+    }
 }
 
 void MapEditor::handleAssetLoaded()

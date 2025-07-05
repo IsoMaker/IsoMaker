@@ -480,7 +480,8 @@ void UIManager::drawBottomAssets2D(int barY)
 
         if (AssetTile(assetBounds, asset, i == _selectedAssetIndex2D, {x, y})) {
             _selectedAssetIndex2D = i;
-            // Events::assetSelected(Character(assetTiles2D[i], Vector3D(0, 0, 0), Vector3D(0, 0, 0)));
+            std::shared_ptr<Asset2D> assetBasic = std::make_shared<Asset2D>(assetTiles2D[i]);
+            Events::assetSelected(assetBasic);
         }
 
         if (asset.isLoaded()) {
@@ -490,7 +491,8 @@ void UIManager::drawBottomAssets2D(int barY)
         // Selection
         if (CheckCollisionPointRec(GetMousePosition(), tileBounds) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             _selectedAssetIndex2D = i;
-            // Events::assetSelected(Character(assetTiles2D[i], Vector3D(0, 0, 0), Vector3D(0, 0, 0)));
+            std::shared_ptr<Asset2D> assetBasic = std::make_shared<Asset2D>(assetTiles2D[i]);
+            Events::assetSelected(assetBasic);
         }
     }
 }
@@ -540,21 +542,20 @@ void UIManager::drawBottomAssets3D(int barY)
         Rectangle tileBounds = { (float)x, (float)y, (float)assetSize, (float)assetSize };
 
 
-        if (AssetTile(assetBounds, assetTiles3D[i].getModel(), assetTiles3D[i].getDisplayName().c_str(), i == _selectedAssetIndex2D)) {
-            _selectedAssetIndex2D = i;
-            MapElement assetBasic(objects::MapElement(assetTiles3D[i], Vector3D(0, 0, 0)));
-            Events::assetSelected(assetBasic);
+        if (AssetTile(assetBounds, assetTiles3D[i].getModel(), assetTiles3D[i].getDisplayName().c_str(), i == _selectedAssetIndex3D)) {
+            _selectedAssetIndex3D = i;
+            std::shared_ptr<Asset3D> assetBasic1 = std::make_shared<Asset3D>(assetTiles3D[i]);
+            Events::assetSelected(assetBasic1);
         }
 
         drawModelPreview(assetTiles3D[i], assetBounds, barY);
 
-        if (CheckCollisionPointRec(GetMousePosition(), tileBounds) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        if (CheckCollisionPointRec(GetMousePosition(), tileBounds) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {            std::shared_ptr<Asset3D> assetBasic = std::make_shared<Asset3D>(assetTiles3D[i]);
             _selectedAssetIndex3D = i;
-            MapElement assetBasic(objects::MapElement(assetTiles3D[i], Vector3D(0, 0, 0)));
-            Events::assetSelected(assetBasic);
+            std::shared_ptr<Asset3D> assetBasic2 = std::make_shared<Asset3D>(assetTiles3D[i]);
+            Events::assetSelected(assetBasic2);
         }
     }
-
 }
 
 void UIManager::drawSubmenu(const char** items, int count, int x, int y, int width)
