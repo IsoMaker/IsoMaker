@@ -9,7 +9,6 @@
 #include "../../UI/UITheme.hpp"
 #include <iostream>
 #include <algorithm>
-#include <cstring>
 
 ScriptingEditor::ScriptingEditor() {
     std::cout << "[ScriptingEditor] Constructor called" << std::endl;
@@ -96,8 +95,8 @@ void ScriptingEditor::draw(Rectangle mainViewArea) {
     // Draw drag preview if dragging from palette
     if (_isDraggingFromPalette) {
         ScriptBlock previewBlock(0, _draggedBlockType, _currentMousePos);
-        previewBlock.color.a = 150; // Semi-transparent
-        drawBlock(previewBlock, {-previewBlock.size.x/2, -previewBlock.size.y/2}, true);
+        previewBlock.primaryColor.a = 150; // Semi-transparent
+        drawProfessionalBlock(previewBlock, {-previewBlock.size.x/2, -previewBlock.size.y/2});
     }
     
     // Draw configuration dialog on top if open
@@ -563,14 +562,7 @@ void ScriptBlock::setProfessionalBlockProperties() {
             break;
     }
     
-    // Set enhanced styling properties using UI theme
-    cornerRadius = UI::UI_BORDER_RADIUS_LARGE;
-    shadowOffset = UI::UI_SHADOW_OFFSET_MEDIUM;
-    shadowColor = UI::SHADOW_MEDIUM;
-    borderWidth = 2.0f;
-    
-    // Set border color based on selection state using enhanced theme
-    borderColor = isSelected ? UI::ACCENT_PRIMARY : UI::PANEL_BORDER;
+    // Enhanced styling is handled by the drawing functions using UI theme
     
     // Update legacy fields for compatibility
     label = title;
@@ -885,8 +877,7 @@ void ScriptingEditor::drawScriptCanvas(Rectangle bounds) {
                      return a->canvasOrder < b->canvasOrder;
                  });
         
-        // Draw connections first (behind blocks)
-        drawConnections(it->second);
+        // Connections removed - modern port-based system will be implemented later
         
         // Draw all canvas blocks with professional styling
         for (const ScriptBlock* block : sortedBlocks) {
@@ -983,48 +974,6 @@ void ScriptingEditor::drawCanvasGrid(Rectangle bounds) {
     for (float y = bounds.y; y < bounds.y + bounds.height; y += gridSize) {
         DrawLine(bounds.x, y, bounds.x + bounds.width, y, gridColor);
     }
-}
-
-void ScriptingEditor::drawBlock(const ScriptBlock& block, Vector2 offset, bool shadow) {
-    Vector2 drawPos = {block.position.x + offset.x, block.position.y + offset.y};
-    Rectangle blockRect = {drawPos.x, drawPos.y, block.size.x, block.size.y};
-    
-    // Draw shadow if requested using enhanced shadow system
-    if (shadow) {
-        Rectangle shadowRect = {drawPos.x + UI::UI_SHADOW_OFFSET_SMALL, drawPos.y + UI::UI_SHADOW_OFFSET_SMALL, block.size.x, block.size.y};
-        DrawRectangleRounded(shadowRect, 0.2f, 6, UI::SHADOW_LIGHT);
-    }
-    
-    // Draw block background
-    DrawRectangleRounded(blockRect, 0.2f, 6, block.color);
-    
-    // Draw border with enhanced styling using theme colors
-    Color borderColor = UI::PANEL_BORDER;
-    if (block.isDragging) {
-        borderColor = UI::ACCENT_TERTIARY; // Use accent tertiary for dragging
-    } else if (block.isSelected) {
-        borderColor = UI::ACCENT_PRIMARY; // Use accent primary for selection
-    } else if (block.isHovered) {
-        borderColor = UI::HOVER_BACKGROUND; // Use hover background for hover
-    }
-    DrawRectangleRoundedLinesEx(blockRect, 0.2f, 6, 2.0f, borderColor);
-    
-    // Get display label (with configuration)
-    std::string displayText = block.isOnCanvas ? block.getDisplayLabel() : block.label;
-    
-    // Draw block label with better typography using enhanced font sizing
-    Vector2 textSize = MeasureTextEx(GetFontDefault(), displayText.c_str(), UI::UI_FONT_SIZE_LARGE, 1);
-    Vector2 textPos = {
-        drawPos.x + (block.size.x - textSize.x) / 2,
-        drawPos.y + (block.size.y - textSize.y) / 2
-    };
-    
-    // Draw text shadow for better readability using enhanced shadow system
-    DrawTextEx(GetFontDefault(), displayText.c_str(), 
-               Vector2{textPos.x + 1, textPos.y + 1}, UI::UI_FONT_SIZE_LARGE, 1, UI::SHADOW_LIGHT);
-    
-    // Draw main text using enhanced text colors
-    DrawTextEx(GetFontDefault(), displayText.c_str(), textPos, UI::UI_FONT_SIZE_LARGE, 1, UI::UI_TEXT_PRIMARY);
 }
 
 // Professional block drawing implementation
@@ -1313,7 +1262,7 @@ void ScriptingEditor::startDragOperation(Vector2 mousePos) {
             _dragStartPos = mousePos;
             _dragOffset = {mousePos.x - canvasBlock->position.x, mousePos.y - canvasBlock->position.y};
             canvasBlock->isDragging = true;
-            std::cout << "[ScriptingEditor] Started dragging canvas block: " << canvasBlock->label << std::endl;
+            std::cout << "[ScriptingEditor] Started dragging canvas block: " << canvasBlock->title << std::endl;
             return;
         }
     }
@@ -1331,15 +1280,7 @@ void ScriptingEditor::updateDragOperation(Vector2 mousePos) {
             mousePos.y - _dragOffset.y
         };
         
-        // Update connection system
-        updateBlockConnections();
-        
-        // If block has connections, move connected blocks
-        Vector2 deltaPos = {_draggedCanvasBlock->position.x - oldPos.x, 
-                           _draggedCanvasBlock->position.y - oldPos.y};
-        if (deltaPos.x != 0 || deltaPos.y != 0) {
-            updateConnectedBlockPositions(_draggedCanvasBlock->id, deltaPos);
-        }
+        // Position updated - no legacy connection handling needed
     }
     // For palette dragging, the preview is handled in draw()
 }
@@ -1358,27 +1299,11 @@ void ScriptingEditor::endDragOperation(Vector2 mousePos) {
     } else if (_isDraggingCanvasBlock && _draggedCanvasBlock) {
         // Check if block was dragged out of canvas
         if (!isPositionInCanvas(mousePos)) {
-            // Remove block and all its connections
+            // Remove block when dragged out of canvas
             int blockId = _draggedCanvasBlock->id;
-            removeAllConnectionsForBlock(blockId);
             removeBlockFromCanvas(blockId);
             std::cout << "[ScriptingEditor] Removed block from canvas" << std::endl;
-        } else {
-            // Check if we should create a connection
-            if (_connectionCandidate) {
-                // Determine connection direction
-                if (_draggedCanvasBlock->position.y < _connectionCandidate->position.y) {
-                    // Dragged block is above - connect output to input
-                    createConnection(_draggedCanvasBlock->id, _connectionCandidate->id);
-                } else {
-                    // Dragged block is below - connect input to output
-                    createConnection(_connectionCandidate->id, _draggedCanvasBlock->id);
-                }
-            }
         }
-        
-        // Clear connection highlights
-        updateBlockConnections();
         
         // Reset drag state for the block
         _draggedCanvasBlock->isDragging = false;
@@ -1440,7 +1365,7 @@ void ScriptingEditor::addBlockToCanvas(BlockType type, Vector2 position) {
     newBlock.canvasOrder = _nextCanvasOrder++;
     _objectScripts[selectedObjId].blocks.push_back(newBlock);
     
-    std::cout << "[ScriptingEditor] Added block '" << newBlock.label << "' to object " << selectedObjId << std::endl;
+    std::cout << "[ScriptingEditor] Added block '" << newBlock.title << "' to object " << selectedObjId << std::endl;
 }
 
 void ScriptingEditor::removeBlockFromCanvas(int blockId) {
@@ -1473,12 +1398,12 @@ VisualScript& ScriptingEditor::getCurrentScript() {
 
 std::string ScriptingEditor::getBlockLabel(BlockType type) const {
     ScriptBlock tempBlock(0, type);
-    return tempBlock.label;
+    return tempBlock.title;
 }
 
 Color ScriptingEditor::getBlockColor(BlockType type) const {
     ScriptBlock tempBlock(0, type);
-    return tempBlock.color;
+    return tempBlock.primaryColor;
 }
 
 void ScriptingEditor::handleObjectSelection(int objectId) {
@@ -1766,327 +1691,15 @@ BlockType ScriptingEditor::getPaletteBlockTypeAtPosition(Vector2 pos) {
     return BlockType::INVALID;
 }
 
-// Connection management implementation
-void ScriptingEditor::updateBlockConnections() {
-    if (!_isDraggingCanvasBlock || !_draggedCanvasBlock) {
-        // Clear previous connection highlights
-        int selectedObjId = getSelectedObjectId();
-        if (selectedObjId != -1) {
-            auto it = _objectScripts.find(selectedObjId);
-            if (it != _objectScripts.end()) {
-                for (auto& block : it->second.blocks) {
-                    block.isHighlightedForConnection = false;
-                }
-            }
-        }
-        _connectionCandidate = nullptr;
-        _showConnectionPreview = false;
-        return;
-    }
-    
-    // Find potential connection candidate
-    ScriptBlock* candidate = findConnectionCandidate(*_draggedCanvasBlock);
-    _connectionCandidate = candidate;
-    
-    if (candidate) {
-        candidate->isHighlightedForConnection = true;
-        _showConnectionPreview = true;
-        
-        // Determine connection points based on relative positions
-        if (_draggedCanvasBlock->position.y < candidate->position.y) {
-            // Dragged block is above - connect output to input
-            _connectionPreviewStart = _draggedCanvasBlock->getOutputConnectionPoint();
-            _connectionPreviewEnd = candidate->getInputConnectionPoint();
-        } else {
-            // Dragged block is below - connect input to output
-            _connectionPreviewStart = candidate->getOutputConnectionPoint();
-            _connectionPreviewEnd = _draggedCanvasBlock->getInputConnectionPoint();
-        }
-    } else {
-        _showConnectionPreview = false;
-    }
-}
 
-void ScriptingEditor::createConnection(int fromBlockId, int toBlockId) {
-    int selectedObjId = getSelectedObjectId();
-    if (selectedObjId == -1) return;
-    
-    auto it = _objectScripts.find(selectedObjId);
-    if (it == _objectScripts.end()) return;
-    
-    // Find the blocks
-    ScriptBlock* fromBlock = nullptr;
-    ScriptBlock* toBlock = nullptr;
-    
-    for (auto& block : it->second.blocks) {
-        if (block.id == fromBlockId) fromBlock = &block;
-        if (block.id == toBlockId) toBlock = &block;
-    }
-    
-    if (!fromBlock || !toBlock || !canBlocksConnect(*fromBlock, *toBlock)) {
-        return;
-    }
-    
-    // Remove any existing connections for these blocks
-    removeConnection(fromBlockId, -1); // Remove fromBlock's output connection
-    removeConnection(-1, toBlockId);   // Remove toBlock's input connection
-    
-    // Create new connection
-    Vector2 fromPoint = fromBlock->getOutputConnectionPoint();
-    Vector2 toPoint = toBlock->getInputConnectionPoint();
-    
-    BlockConnection newConnection(fromBlockId, toBlockId, fromPoint, toPoint);
-    it->second.connections.push_back(newConnection);
-    
-    // Update block connection states
-    fromBlock->hasOutputConnection = true;
-    fromBlock->connectedToId = toBlockId;
-    toBlock->hasInputConnection = true;
-    toBlock->connectedFromId = fromBlockId;
-    
-    std::cout << "[ScriptingEditor] Created connection from block " << fromBlockId << " to block " << toBlockId << std::endl;
-}
 
-void ScriptingEditor::removeConnection(int fromBlockId, int toBlockId) {
-    int selectedObjId = getSelectedObjectId();
-    if (selectedObjId == -1) return;
-    
-    auto it = _objectScripts.find(selectedObjId);
-    if (it == _objectScripts.end()) return;
-    
-    auto& connections = it->second.connections;
-    
-    // Remove matching connections
-    connections.erase(
-        std::remove_if(connections.begin(), connections.end(),
-            [fromBlockId, toBlockId](const BlockConnection& conn) {
-                return (fromBlockId == -1 || conn.fromBlockId == fromBlockId) &&
-                       (toBlockId == -1 || conn.toBlockId == toBlockId);
-            }),
-        connections.end()
-    );
-    
-    // Update block connection states
-    for (auto& block : it->second.blocks) {
-        if (fromBlockId == -1 || block.id == fromBlockId) {
-            if (toBlockId == -1 || block.connectedToId == toBlockId) {
-                block.hasOutputConnection = false;
-                block.connectedToId = -1;
-            }
-        }
-        if (toBlockId == -1 || block.id == toBlockId) {
-            if (fromBlockId == -1 || block.connectedFromId == fromBlockId) {
-                block.hasInputConnection = false;
-                block.connectedFromId = -1;
-            }
-        }
-    }
-}
 
-void ScriptingEditor::removeAllConnectionsForBlock(int blockId) {
-    removeConnection(blockId, -1); // Remove as source
-    removeConnection(-1, blockId); // Remove as target
-}
 
-ScriptBlock* ScriptingEditor::findConnectionCandidate(const ScriptBlock& draggedBlock) {
-    int selectedObjId = getSelectedObjectId();
-    if (selectedObjId == -1) return nullptr;
-    
-    auto it = _objectScripts.find(selectedObjId);
-    if (it == _objectScripts.end()) return nullptr;
-    
-    ScriptBlock* closestBlock = nullptr;
-    float closestDistance = _connectionSnapDistance;
-    
-    for (auto& block : it->second.blocks) {
-        if (block.id == draggedBlock.id || !block.isOnCanvas) continue;
-        
-        if (canBlocksConnect(draggedBlock, block)) {
-            float distance = getDistanceBetweenConnectionPoints(draggedBlock, block);
-            if (distance < closestDistance) {
-                closestDistance = distance;
-                closestBlock = &block;
-            }
-        }
-    }
-    
-    return closestBlock;
-}
 
-void ScriptingEditor::updateConnectedBlockPositions(int movedBlockId, Vector2 deltaPos) {
-    int selectedObjId = getSelectedObjectId();
-    if (selectedObjId == -1) return;
-    
-    auto it = _objectScripts.find(selectedObjId);
-    if (it == _objectScripts.end()) return;
-    
-    // Find all blocks connected to the moved block and move them recursively
-    std::vector<int> blocksToMove;
-    
-    // Find blocks connected as outputs
-    for (const auto& connection : it->second.connections) {
-        if (connection.fromBlockId == movedBlockId) {
-            blocksToMove.push_back(connection.toBlockId);
-        }
-    }
-    
-    // Move connected blocks
-    for (int blockId : blocksToMove) {
-        for (auto& block : it->second.blocks) {
-            if (block.id == blockId) {
-                block.position.x += deltaPos.x;
-                block.position.y += deltaPos.y;
-                // Recursively move blocks connected to this one
-                updateConnectedBlockPositions(blockId, deltaPos);
-                break;
-            }
-        }
-    }
-}
 
-bool ScriptingEditor::canBlocksConnect(const ScriptBlock& from, const ScriptBlock& to) {
-    // Basic connection rules:
-    // 1. Blocks cannot connect to themselves
-    // 2. Event blocks (like OnStart) can connect to action blocks
-    // 3. Action blocks can connect to other action blocks or condition blocks
-    // 4. Condition blocks can connect to action blocks
-    // 5. A block can only have one input and one output connection
-    
-    if (from.id == to.id) return false;
-    
-    // Check if connection would create a cycle (simplified check)
-    if (from.connectedFromId == to.id) return false;
-    
-    // Check if either block already has the required connection type
-    bool connectingFromOutput = from.position.y < to.position.y;
-    if (connectingFromOutput) {
-        if (from.hasOutputConnection || to.hasInputConnection) return false;
-    } else {
-        if (to.hasOutputConnection || from.hasInputConnection) return false;
-    }
-    
-    return true;
-}
 
-float ScriptingEditor::getDistanceBetweenConnectionPoints(const ScriptBlock& from, const ScriptBlock& to) {
-    Vector2 fromPoint, toPoint;
-    
-    // Determine connection direction based on relative positions
-    if (from.position.y < to.position.y) {
-        // from is above to - connect output to input
-        fromPoint = from.getOutputConnectionPoint();
-        toPoint = to.getInputConnectionPoint();
-    } else {
-        // from is below to - connect input to output  
-        fromPoint = to.getOutputConnectionPoint();
-        toPoint = from.getInputConnectionPoint();
-    }
-    
-    float dx = fromPoint.x - toPoint.x;
-    float dy = fromPoint.y - toPoint.y;
-    return sqrt(dx * dx + dy * dy);
-}
 
-void ScriptingEditor::drawConnections(const VisualScript& script) {
-    for (const auto& connection : script.connections) {
-        // Update connection points in case blocks moved
-        const ScriptBlock* fromBlock = nullptr;
-        const ScriptBlock* toBlock = nullptr;
-        
-        for (const auto& block : script.blocks) {
-            if (block.id == connection.fromBlockId) fromBlock = &block;
-            if (block.id == connection.toBlockId) toBlock = &block;
-        }
-        
-        if (fromBlock && toBlock) {
-            Vector2 startPoint = fromBlock->getOutputConnectionPoint();
-            Vector2 endPoint = toBlock->getInputConnectionPoint();
-            
-            // Apply canvas offset
-            startPoint.x += _canvasOffset.x;
-            startPoint.y += _canvasOffset.y;
-            endPoint.x += _canvasOffset.x;
-            endPoint.y += _canvasOffset.y;
-            
-            drawConnectionLine(startPoint, endPoint, UI::UI_PRIMARY, 3.0f);
-        }
-    }
-    
-    // Draw connection preview if showing
-    if (_showConnectionPreview) {
-        Vector2 previewStart = {_connectionPreviewStart.x + _canvasOffset.x, 
-                               _connectionPreviewStart.y + _canvasOffset.y};
-        Vector2 previewEnd = {_connectionPreviewEnd.x + _canvasOffset.x, 
-                             _connectionPreviewEnd.y + _canvasOffset.y};
-        drawConnectionLine(previewStart, previewEnd, Color{100, 255, 100, 200}, 2.0f);
-    }
-}
 
-void ScriptingEditor::drawConnectionLine(Vector2 start, Vector2 end, Color color, float thickness) {
-    // Draw a curved line for better visual appeal
-    float midY = (start.y + end.y) / 2;
-    Vector2 control1 = {start.x, midY};
-    Vector2 control2 = {end.x, midY};
-    
-    // Draw bezier curve (approximated with line segments)
-    const int segments = 20;
-    Vector2 lastPoint = start;
-    
-    for (int i = 1; i <= segments; i++) {
-        float t = (float)i / segments;
-        float u = 1.0f - t;
-        float tt = t * t;
-        float uu = u * u;
-        float uuu = uu * u;
-        float ttt = tt * t;
-        
-        Vector2 point = {
-            uuu * start.x + 3 * uu * t * control1.x + 3 * u * tt * control2.x + ttt * end.x,
-            uuu * start.y + 3 * uu * t * control1.y + 3 * u * tt * control2.y + ttt * end.y
-        };
-        
-        DrawLineEx(lastPoint, point, thickness, color);
-        lastPoint = point;
-    }
-    
-    // Draw arrow at the end
-    Vector2 direction = {end.x - control2.x, end.y - control2.y};
-    float length = sqrt(direction.x * direction.x + direction.y * direction.y);
-    if (length > 0) {
-        direction.x /= length;
-        direction.y /= length;
-        
-        Vector2 arrowLeft = {end.x - direction.x * 8 - direction.y * 4, 
-                            end.y - direction.y * 8 + direction.x * 4};
-        Vector2 arrowRight = {end.x - direction.x * 8 + direction.y * 4, 
-                             end.y - direction.y * 8 - direction.x * 4};
-        
-        DrawLineEx(end, arrowLeft, thickness, color);
-        DrawLineEx(end, arrowRight, thickness, color);
-    }
-}
-
-void ScriptingEditor::drawConnectionPoints(const ScriptBlock& block) {
-    Vector2 inputPoint = block.getInputConnectionPoint();
-    Vector2 outputPoint = block.getOutputConnectionPoint();
-    
-    // Apply canvas offset
-    inputPoint.x += _canvasOffset.x;
-    inputPoint.y += _canvasOffset.y;
-    outputPoint.x += _canvasOffset.x;
-    outputPoint.y += _canvasOffset.y;
-    
-    // Draw connection points as small circles
-    Color inputColor = block.hasInputConnection ? Color{255, 100, 100, 255} : Color{150, 150, 150, 255};
-    Color outputColor = block.hasOutputConnection ? Color{100, 255, 100, 255} : Color{150, 150, 150, 255};
-    
-    DrawCircle(inputPoint.x, inputPoint.y, 4, inputColor);
-    DrawCircle(outputPoint.x, outputPoint.y, 4, outputColor);
-    
-    // Draw white outline
-    DrawCircleLines(inputPoint.x, inputPoint.y, 4, WHITE);
-    DrawCircleLines(outputPoint.x, outputPoint.y, 4, WHITE);
-}
 
 // Context menu implementation
 void ScriptingEditor::openContextMenu(ScriptBlock* block, Vector2 position) {
@@ -2141,8 +1754,7 @@ void ScriptingEditor::duplicateBlock(ScriptBlock* block) {
 void ScriptingEditor::deleteBlock(ScriptBlock* block) {
     if (!block) return;
     
-    // Remove all connections involving this block
-    removeAllConnectionsForBlock(block->id);
+    // Connection cleanup removed - modern port-based system will handle this
     
     // Remove the block from canvas
     removeBlockFromCanvas(block->id);
@@ -2210,36 +1822,79 @@ ScriptBlock* ScriptingEditor::getBlockAtPosition(Vector2 pos) {
 void ScriptingEditor::drawContextMenu() {
     if (!_showContextMenu || !_contextMenuBlock) return;
     
-    const float menuWidth = 120;
-    const float menuHeight = 100;
-    const float itemHeight = 25;
+    const float menuWidth = 140;
+    const float menuHeight = 110;
+    const float itemHeight = 30;
+    const float padding = 8.0f; // UI::UI_PADDING_MEDIUM
     
     // Adjust position to stay within screen bounds
     Vector2 menuPos = _contextMenuPosition;
-    if (menuPos.x + menuWidth > 1800) menuPos.x = 1800 - menuWidth;
-    if (menuPos.y + menuHeight > 980) menuPos.y = 980 - menuHeight;
+    int screenWidth = GetScreenWidth();
+    int screenHeight = GetScreenHeight();
+    
+    if (menuPos.x + menuWidth > screenWidth) menuPos.x = screenWidth - menuWidth;
+    if (menuPos.y + menuHeight > screenHeight) menuPos.y = screenHeight - menuHeight;
+    if (menuPos.x < 0) menuPos.x = 0;
+    if (menuPos.y < 0) menuPos.y = 0;
     
     Rectangle menuBounds = {menuPos.x, menuPos.y, menuWidth, menuHeight};
     
-    // Draw menu background
-    DrawRectangleRec(menuBounds, {240, 240, 240, 255});
-    DrawRectangleLinesEx(menuBounds, 1, {120, 120, 120, 255});
+    // Draw shadow first
+    Rectangle shadowBounds = {menuPos.x + 4, menuPos.y + 4, menuWidth, menuHeight};
+    DrawRectangleRec(shadowBounds, {0, 0, 0, 80});
     
-    // Draw menu items
-    Rectangle editRect = {menuPos.x + 5, menuPos.y + 5, menuWidth - 10, itemHeight};
-    Rectangle duplicateRect = {menuPos.x + 5, menuPos.y + 35, menuWidth - 10, itemHeight};
-    Rectangle deleteRect = {menuPos.x + 5, menuPos.y + 65, menuWidth - 10, itemHeight};
+    // Draw menu background with dark theme colors
+    DrawRectangleRec(menuBounds, UI::PANEL_BACKGROUND);
+    DrawRectangleLinesEx(menuBounds, 1, UI::PANEL_BORDER);
     
-    // Handle menu item clicks
-    if (GuiButton(editRect, "Edit")) {
+    // Draw menu items with enhanced styling
+    Rectangle editRect = {menuPos.x + padding, menuPos.y + padding, menuWidth - 2*padding, itemHeight};
+    Rectangle duplicateRect = {menuPos.x + padding, menuPos.y + padding + itemHeight + 5, menuWidth - 2*padding, itemHeight};
+    Rectangle deleteRect = {menuPos.x + padding, menuPos.y + padding + 2*(itemHeight + 5), menuWidth - 2*padding, itemHeight};
+    
+    // Check if Edit option should be enabled (only for blocks with parameters)
+    bool canEdit = _contextMenuBlock && (_contextMenuBlock->config.floatParams.size() > 0 || 
+                                        _contextMenuBlock->config.vectorParams.size() > 0 || 
+                                        _contextMenuBlock->config.stringParams.size() > 0 || 
+                                        _contextMenuBlock->config.boolParams.size() > 0);
+    
+    // Enhanced menu item drawing with hover effects
+    Vector2 mousePos = GetMousePosition();
+    
+    // Edit button
+    bool editHovered = CheckCollisionPointRec(mousePos, editRect);
+    Color editBgColor = canEdit ? (editHovered ? UI::ACCENT_PRIMARY : UI::UI_TERTIARY) : UI::UI_TEXT_TERTIARY;
+    Color editTextColor = canEdit ? UI::UI_TEXT_PRIMARY : UI::UI_TEXT_TERTIARY;
+    
+    DrawRectangleRec(editRect, editBgColor);
+    DrawRectangleLinesEx(editRect, 1, UI::PANEL_BORDER);
+    DrawText("Edit", editRect.x + 10, editRect.y + 8, 12, editTextColor);
+    
+    if (canEdit && editHovered && IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
         handleContextMenuAction("Edit");
     }
     
-    if (GuiButton(duplicateRect, "Duplicate")) {
+    // Duplicate button
+    bool duplicateHovered = CheckCollisionPointRec(mousePos, duplicateRect);
+    Color duplicateBgColor = duplicateHovered ? UI::ACCENT_SECONDARY : UI::UI_TERTIARY;
+    
+    DrawRectangleRec(duplicateRect, duplicateBgColor);
+    DrawRectangleLinesEx(duplicateRect, 1, UI::PANEL_BORDER);
+    DrawText("Duplicate", duplicateRect.x + 10, duplicateRect.y + 8, 12, UI::UI_TEXT_PRIMARY);
+    
+    if (duplicateHovered && IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
         handleContextMenuAction("Duplicate");
     }
     
-    if (GuiButton(deleteRect, "Delete")) {
+    // Delete button
+    bool deleteHovered = CheckCollisionPointRec(mousePos, deleteRect);
+    Color deleteBgColor = deleteHovered ? UI::ACCENT_DANGER : UI::UI_TERTIARY;
+    
+    DrawRectangleRec(deleteRect, deleteBgColor);
+    DrawRectangleLinesEx(deleteRect, 1, UI::PANEL_BORDER);
+    DrawText("Delete", deleteRect.x + 10, deleteRect.y + 8, 12, UI::UI_TEXT_PRIMARY);
+    
+    if (deleteHovered && IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
         handleContextMenuAction("Delete");
     }
 }
