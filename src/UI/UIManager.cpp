@@ -576,23 +576,34 @@ void UIManager::drawBottomAssets2D(int barY)
 
 void UIManager::drawModelPreview(Asset3D asset, Rectangle assetBounds, int barY)
 {
-    BeginScissorMode((int)assetBounds.x, (int)assetBounds.y, (int)assetBounds.width, (int)assetBounds.height);
-    rlViewport(assetBounds.x, GetScreenHeight() - (assetBounds.y + assetBounds.height), assetBounds.width, assetBounds.height);
+    // Adjust bounds to leave space for text at bottom and center the 3D preview
+    Rectangle previewBounds = {
+        assetBounds.x + 5, 
+        assetBounds.y + 5, 
+        assetBounds.width - 10, 
+        assetBounds.height - 25  // Leave 20px for text plus some padding
+    };
+    
+    BeginScissorMode((int)previewBounds.x, (int)previewBounds.y, (int)previewBounds.width, (int)previewBounds.height);
+    rlViewport(previewBounds.x, GetScreenHeight() - (previewBounds.y + previewBounds.height), previewBounds.width, previewBounds.height);
 
     Camera cam = { 0 };
     cam.position = { 2.0f, 2.0f, 2.0f };
-    cam.target = { 0.0f, 0.5f, 0.0f };
+    cam.target = { 0.0f, 0.0f, 0.0f };  // Center the target
     cam.up = { 0.0f, 1.0f, 0.0f };
     cam.fovy = 45.0f;
     cam.projection = CAMERA_PERSPECTIVE;
 
     BeginMode3D(cam);
 
-    Vector3 pos = { -0.5f, -0.5f, -0.5f };
+    // Center the model and make it appropriately sized for the preview
+    Vector3 pos = { 0.0f, 0.0f, 0.0f };  // Center the model
     Vector3 rotAxis = { 0.0f, 1.0f, 0.0f };
     float angle = GetTime() * 45.0f;
-
-    DrawModelEx(asset.getModel(), pos, rotAxis, angle, {asset.getScale(), asset.getScale(), asset.getScale()}, WHITE);
+    
+    // Scale the model appropriately for the preview size
+    float previewScale = asset.getScale() * 0.8f;  // Slightly smaller to fit nicely
+    DrawModelEx(asset.getModel(), pos, rotAxis, angle, {previewScale, previewScale, previewScale}, WHITE);
 
     EndMode3D();
 
