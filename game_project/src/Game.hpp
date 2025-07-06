@@ -57,5 +57,5 @@ class Game {
         bool _isJumping = false;
         float _jumpVelocity = 0.0f;
         float _gravity = -0.01f;
-        float oldPosY;
+        float oldPosY = 0.0f;
 };

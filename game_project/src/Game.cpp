@@ -258,6 +258,10 @@ void Game::update(input::IHandlerBase &inputHandler)
             _isJumping = false;
             _jumpVelocity = 0;
             playerPos.y -= 0.01f;
+        } else if (_jumpVelocity <= 0) {
+            _isJumping = false;
+            _jumpVelocity = 0;
+            playerPos.y = oldPosY;
         }
 
         _player->setBox3DPosition(playerPos);
@@ -265,7 +269,6 @@ void Game::update(input::IHandlerBase &inputHandler)
 
     _player->updateAnimation();
 }
-
 
 void drawVerticalGradient(Rectangle rect, Color top, Color bottom) {
     for (int y = 0; y < rect.height; y++) {
