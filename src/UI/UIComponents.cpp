@@ -9,31 +9,14 @@ bool CustomButton(Rectangle bounds, const char* text, Color normalColor, Color h
     Vector2 mousePoint = GetMousePosition();
     bool mouseHover = CheckCollisionPointRec(mousePoint, bounds);
     bool pressed = false;
+    bool isPressed = mouseHover && IsMouseButtonDown(MOUSE_LEFT_BUTTON);
     
-    // Determine button color based on state
-    Color buttonColor = normalColor;
-    if (mouseHover) {
-        if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
-            buttonColor = pressedColor;
-        } else {
-            buttonColor = hoverColor;
-        }
-        
-        if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
-            pressed = true;
-        }
+    if (mouseHover && IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
+        pressed = true;
     }
     
-    // Draw button
-    DrawRectangleRec(bounds, buttonColor);
-    
-    // Calculate text position
-    int textWidth = MeasureText(text, 10);
-    int textX = bounds.x + (bounds.width - textWidth) / 2;
-    int textY = bounds.y + (bounds.height - 10) / 2;
-    
-    // Draw text
-    DrawText(text, textX, textY, 10, UI_TEXT_PRIMARY);
+    // Use enhanced button drawing
+    DrawButton(bounds, text, normalColor, mouseHover, isPressed);
     
     return pressed;
 }
@@ -41,28 +24,44 @@ bool CustomButton(Rectangle bounds, const char* text, Color normalColor, Color h
 bool CollapsiblePanel(Rectangle bounds, const char* title, bool* isOpen, Color headerColor, Color bodyColor) {
     bool clicked = false;
     
-    // Draw panel header
-    DrawRectangle(bounds.x, bounds.y, bounds.width, 30, headerColor);
+    // Draw panel with enhanced styling
+    DrawPanel(bounds, "", bodyColor, PANEL_BACKGROUND, true);
     
-    // Draw panel title
-    DrawText(title, bounds.x + 10, bounds.y + 10, 10, UI_TEXT_PRIMARY);
+    // Draw header section
+    Rectangle headerBounds = {bounds.x, bounds.y, bounds.width, UI_PADDING_XLARGE + UI_PADDING_MEDIUM};
+    DrawRectangleRounded(headerBounds, UI_BORDER_RADIUS_MEDIUM, headerColor);
     
-    // Draw toggle button
-    Rectangle toggleBounds = {bounds.x + bounds.width - 25, bounds.y + 5, 20, 20};
-    DrawRectangleRec(toggleBounds, UI_SECONDARY);
+    // Draw panel title with better typography
+    int textX = bounds.x + UI_PADDING_MEDIUM;
+    int textY = bounds.y + UI_PADDING_MEDIUM;
+    DrawText(title, textX, textY, UI_FONT_SIZE_MEDIUM, UI_TEXT_PRIMARY);
     
-    // Draw +/- symbol based on panel state
-    DrawText(*isOpen ? "-" : "+", toggleBounds.x + 7, toggleBounds.y + 5, 10, UI_TEXT_PRIMARY);
+    // Draw enhanced toggle button
+    Rectangle toggleBounds = {
+        bounds.x + bounds.width - UI_PADDING_XLARGE - UI_PADDING_MEDIUM, 
+        bounds.y + UI_PADDING_SMALL, 
+        UI_PADDING_XLARGE, 
+        UI_PADDING_XLARGE
+    };
+    
+    bool toggleHovered = CheckCollisionPointRec(GetMousePosition(), toggleBounds);
+    DrawButton(toggleBounds, *isOpen ? "−" : "+", ACCENT_PRIMARY, toggleHovered, false);
     
     // Check for toggle button click
-    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(GetMousePosition(), toggleBounds)) {
+    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && toggleHovered) {
         *isOpen = !(*isOpen);
         clicked = true;
     }
     
-    // Draw panel body if open
+    // Draw panel body if open with rounded corners
     if (*isOpen) {
-        DrawRectangle(bounds.x, bounds.y + 30, bounds.width, bounds.height - 30, bodyColor);
+        Rectangle bodyBounds = {
+            bounds.x + 1, 
+            bounds.y + headerBounds.height, 
+            bounds.width - 2, 
+            bounds.height - headerBounds.height - 1
+        };
+        DrawRectangleRounded(bodyBounds, UI_BORDER_RADIUS_MEDIUM, bodyColor);
     }
     
     return clicked;
@@ -419,6 +418,115 @@ int CustomDropdown(Rectangle bounds, const char *text, int active, const char **
     }
     
     return result;
+}
+
+// Enhanced drawing helper functions for consistent styling
+void DrawRectangleRounded(Rectangle rec, float radius, Color color) {
+    // Simple rounded rectangle using multiple rectangles for corners
+    // This is a basic implementation - could be enhanced with actual rounded corners
+    
+    if (radius <= 0) {
+        DrawRectangleRec(rec, color);
+        return;
+    }
+    
+    // Clamp radius to reasonable bounds
+    float maxRadius = fmin(rec.width, rec.height) / 2.0f;
+    radius = fmin(radius, maxRadius);
+    
+    // Draw main rectangle
+    DrawRectangle(
+        rec.x + radius, rec.y,
+        rec.width - 2 * radius, rec.height,
+        color
+    );
+    
+    // Draw left and right rectangles
+    DrawRectangle(
+        rec.x, rec.y + radius,
+        radius, rec.height - 2 * radius,
+        color
+    );
+    DrawRectangle(
+        rec.x + rec.width - radius, rec.y + radius,
+        radius, rec.height - 2 * radius,
+        color
+    );
+    
+    // Draw corner circles
+    DrawCircle(rec.x + radius, rec.y + radius, radius, color);
+    DrawCircle(rec.x + rec.width - radius, rec.y + radius, radius, color);
+    DrawCircle(rec.x + radius, rec.y + rec.height - radius, radius, color);
+    DrawCircle(rec.x + rec.width - radius, rec.y + rec.height - radius, radius, color);
+}
+
+void DrawRectangleRoundedWithShadow(Rectangle rec, float radius, Color color, float shadowOffset, Color shadowColor) {
+    // Draw shadow first
+    Rectangle shadowRec = {
+        rec.x + shadowOffset,
+        rec.y + shadowOffset,
+        rec.width,
+        rec.height
+    };
+    DrawRectangleRounded(shadowRec, radius, shadowColor);
+    
+    // Draw main rectangle
+    DrawRectangleRounded(rec, radius, color);
+}
+
+void DrawPanel(Rectangle bounds, const char* title, Color headerColor, Color bodyColor, bool drawShadow) {
+    if (drawShadow) {
+        DrawRectangleRoundedWithShadow(bounds, UI_BORDER_RADIUS_MEDIUM, bodyColor, UI_SHADOW_OFFSET_SMALL, SHADOW_LIGHT);
+    } else {
+        DrawRectangleRounded(bounds, UI_BORDER_RADIUS_MEDIUM, bodyColor);
+    }
+    
+    // Draw header if title is provided
+    if (title && strlen(title) > 0) {
+        Rectangle headerBounds = {bounds.x, bounds.y, bounds.width, UI_PADDING_XLARGE};
+        DrawRectangleRounded(headerBounds, UI_BORDER_RADIUS_MEDIUM, headerColor);
+        
+        // Draw title text
+        int textX = bounds.x + UI_PADDING_MEDIUM;
+        int textY = bounds.y + (headerBounds.height - UI_FONT_SIZE_MEDIUM) / 2;
+        DrawText(title, textX, textY, UI_FONT_SIZE_MEDIUM, UI_TEXT_PRIMARY);
+    }
+    
+    // Draw border
+    DrawRectangleLinesEx(bounds, 1, PANEL_BORDER);
+}
+
+void DrawButton(Rectangle bounds, const char* text, Color baseColor, bool isHovered, bool isPressed) {
+    Color buttonColor = baseColor;
+    float shadowOffset = UI_SHADOW_OFFSET_SMALL;
+    
+    if (isPressed) {
+        buttonColor = ColorBrightness(baseColor, -0.2f);
+        shadowOffset = 1.0f;
+    } else if (isHovered) {
+        buttonColor = ColorBrightness(baseColor, 0.1f);
+    }
+    
+    DrawRectangleRoundedWithShadow(bounds, UI_BORDER_RADIUS_SMALL, buttonColor, shadowOffset, SHADOW_MEDIUM);
+    
+    // Draw text centered
+    int textWidth = MeasureText(text, UI_FONT_SIZE_MEDIUM);
+    int textX = bounds.x + (bounds.width - textWidth) / 2;
+    int textY = bounds.y + (bounds.height - UI_FONT_SIZE_MEDIUM) / 2;
+    DrawText(text, textX, textY, UI_FONT_SIZE_MEDIUM, UI_TEXT_PRIMARY);
+}
+
+void DrawInputField(Rectangle bounds, const char* text, bool isActive, bool isHovered) {
+    Color backgroundColor = isActive ? UI_SECONDARY : UI_TERTIARY;
+    Color borderColor = isActive ? ACCENT_PRIMARY : (isHovered ? HOVER_BACKGROUND : PANEL_BORDER);
+    
+    DrawRectangleRounded(bounds, UI_BORDER_RADIUS_SMALL, backgroundColor);
+    DrawRectangleLinesEx(bounds, isActive ? 2 : 1, borderColor);
+    
+    // Draw text
+    int textX = bounds.x + UI_PADDING_MEDIUM;
+    int textY = bounds.y + (bounds.height - UI_FONT_SIZE_MEDIUM) / 2;
+    DrawText(text, textX, textY, UI_FONT_SIZE_MEDIUM, UI_TEXT_PRIMARY);
 }
 
 } // namespace UI
