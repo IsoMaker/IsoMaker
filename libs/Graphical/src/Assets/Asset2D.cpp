@@ -15,7 +15,7 @@ Asset2D::Asset2D(Texture2D texture)
     setTexture(texture);
 }
 
-Texture2D Asset2D::getTexture()
+Texture2D Asset2D::getTexture() const
 {
     if (_textureLoaded)
         return _texture;

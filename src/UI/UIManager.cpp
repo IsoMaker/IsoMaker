@@ -7,7 +7,9 @@ UIManager::UIManager(int screenWidth, int screenHeight)
     : _screenWidth(screenWidth),
       _screenHeight(screenHeight),
       _currentTool(ToolType::SELECT),
-      _selectedAssetIndex(-1),
+      _show3DAssets(true),
+      _selectedAssetIndex2D(-1),
+      _selectedAssetIndex3D(-1),
       _selectedObjectIndex(-1),
       _transformSectionOpen(true),
       _lightingSectionOpen(false),
@@ -58,7 +60,6 @@ void UIManager::initialize()
     
     // Load icons
     loadIcons();
-    
     // Setup event handlers
     setupEventHandlers();
 }
@@ -436,33 +437,143 @@ void UIManager::drawBottomAssetsBar()
     DrawRectangle(0, static_cast<int>(barY), static_cast<int>(_screenWidth), static_cast<int>(_bottomAssetsBarHeight), UI_SECONDARY);
     
     // Draw header
-    DrawRectangle(0, static_cast<int>(barY), static_cast<int>(_screenWidth), 30, UI_PRIMARY);
-    DrawText("Assets", 10, static_cast<int>(barY + 10), 10, UI_TEXT_PRIMARY);
+    Rectangle buttonRect3D = { 0, static_cast<float>(barY), 65, 30 };
+    Color buttonColor3D = CheckCollisionPointRec(GetMousePosition(), buttonRect3D) ? UI_TEXT_SECONDARY : UI_TEXT_PRIMARY;
+
+    DrawRectangleRec(buttonRect3D, UI_SECONDARY);
+    DrawText("Assets 3D", 10, static_cast<int>(barY + 10), 10, buttonColor3D);
+
+    if (CheckCollisionPointRec(GetMousePosition(), buttonRect3D) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        _show3DAssets = true;
+        std::cout << "Assets 3D button clicked!" << std::endl;
+        // UI::Events::assetSelected(0);
+    }
+
+    Rectangle buttonRect2D = { 70, static_cast<float>(barY), 65, 30 };
+    Color buttonColor2D = CheckCollisionPointRec(GetMousePosition(), buttonRect2D) ? UI_TEXT_SECONDARY : UI_TEXT_PRIMARY;
+
+    DrawRectangleRec(buttonRect2D, UI_SECONDARY);
+    DrawText("Assets 2D", 80, static_cast<int>(barY + 10), 10, buttonColor2D);
+
+    if (CheckCollisionPointRec(GetMousePosition(), buttonRect2D) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        _show3DAssets = false;
+        std::cout << "Assets 2D button clicked!" << std::endl;
+        // UI::Events::assetSelected(0);
+    }
+
+    Rectangle buttonRectPlus = {static_cast<float>(140), static_cast<float>(barY), static_cast<float>(30), static_cast<float>(30)};
+    Color buttonColorPlus = CheckCollisionPointRec(GetMousePosition(), buttonRectPlus) ? UI_TEXT_SECONDARY : UI_TEXT_PRIMARY;
     
-    // Draw asset grid (placeholders)
+    DrawRectangleRec(buttonRectPlus, UI_SECONDARY);
+    DrawText("+", 150, static_cast<int>(barY + 10), 10, buttonColorPlus);
+    
+    if (CheckCollisionPointRec(GetMousePosition(), buttonRectPlus) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        std::cout << "+ button clicked! Launching asset preview window." << std::endl;
+        openAssetWindow();
+    }
+
+    if (_show3DAssets)
+        drawBottomAssets3D(barY);
+    else
+        drawBottomAssets2D(barY);
+}
+
+void UIManager::drawBottomAssets2D(int barY)
+{
     int assetSize = 80;
     int padding = 10;
     int rowCapacity = (_screenWidth - padding) / (assetSize + padding);
-    
-    for (int i = 0; i < 10; i++) { // Displaying 10 placeholder assets
+    std::vector<Asset2D> assetTiles2D = _loader->getLoaded2DAssets();
+
+    for (int i = 0; i < assetTiles2D.size(); i++) {
         int row = i / rowCapacity;
         int col = i % rowCapacity;
-        
+
         int x = padding + col * (assetSize + padding);
         int y = barY + 40 + row * (assetSize + padding);
-        
+
         Rectangle assetBounds = {static_cast<float>(x), static_cast<float>(y), static_cast<float>(assetSize), static_cast<float>(assetSize)};
-        
-        // We would have real asset textures here
-        Texture2D emptyTexture = { 0 };
-        
-        // Use AssetTile component
-        char assetName[20];
-        sprintf(assetName, "Asset %d", i + 1);
-        
-        if (AssetTile(assetBounds, emptyTexture, assetName, i == _selectedAssetIndex)) {
-            _selectedAssetIndex = i;
-            Events::assetSelected(i);
+        Rectangle tileBounds = { (float)x, (float)y, (float)assetSize, (float)assetSize };
+
+        Asset2D asset = assetTiles2D[i];
+        Texture2D texture = asset.getTexture();
+
+        if (AssetTile(assetBounds, asset, i == _selectedAssetIndex2D, {x, y})) {
+            _selectedAssetIndex2D = i;
+            std::shared_ptr<Asset2D> assetBasic = std::make_shared<Asset2D>(assetTiles2D[i]);
+            Events::assetSelected(assetBasic);
+        }
+
+        if (asset.isLoaded()) {
+
+        }
+
+        // Selection
+        if (CheckCollisionPointRec(GetMousePosition(), tileBounds) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            _selectedAssetIndex2D = i;
+            std::shared_ptr<Asset2D> assetBasic = std::make_shared<Asset2D>(assetTiles2D[i]);
+            Events::assetSelected(assetBasic);
+        }
+    }
+}
+
+void UIManager::drawModelPreview(Asset3D asset, Rectangle assetBounds, int barY)
+{
+    BeginScissorMode((int)assetBounds.x, (int)assetBounds.y, (int)assetBounds.width, (int)assetBounds.height);
+    rlViewport(assetBounds.x, GetScreenHeight() - (assetBounds.y + assetBounds.height), assetBounds.width, assetBounds.height);
+
+    Camera cam = { 0 };
+    cam.position = { 2.0f, 2.0f, 2.0f };
+    cam.target = { 0.0f, 0.5f, 0.0f };
+    cam.up = { 0.0f, 1.0f, 0.0f };
+    cam.fovy = 45.0f;
+    cam.projection = CAMERA_PERSPECTIVE;
+
+    BeginMode3D(cam);
+
+    Vector3 pos = { -0.5f, -0.5f, -0.5f };
+    Vector3 rotAxis = { 0.0f, 1.0f, 0.0f };
+    float angle = GetTime() * 45.0f;
+
+    DrawModelEx(asset.getModel(), pos, rotAxis, angle, {asset.getScale(), asset.getScale(), asset.getScale()}, WHITE);
+
+    EndMode3D();
+
+    rlViewport(0, 0, GetScreenWidth(), GetScreenHeight());
+    rlLoadIdentity();
+    EndScissorMode();
+}
+
+void UIManager::drawBottomAssets3D(int barY)
+{
+    int assetSize = 80;
+    int padding = 10;
+    int rowCapacity = (_screenWidth - padding) / (assetSize + padding);
+    std::vector<Asset3D> assetTiles3D = _loader->getLoaded3DAssets();
+
+    for (int i = 0; i < assetTiles3D.size(); i++) {
+        int row = i / rowCapacity;
+        int col = i % rowCapacity;
+
+        int x = padding + col * (assetSize + padding);
+        int y = barY + 40 + row * (assetSize + padding);
+
+        Rectangle assetBounds = {static_cast<float>(x), static_cast<float>(y), static_cast<float>(assetSize), static_cast<float>(assetSize)};
+        Rectangle tileBounds = { (float)x, (float)y, (float)assetSize, (float)assetSize };
+
+
+        if (AssetTile(assetBounds, assetTiles3D[i].getModel(), assetTiles3D[i].getDisplayName().c_str(), i == _selectedAssetIndex3D)) {
+            _selectedAssetIndex3D = i;
+            std::shared_ptr<Asset3D> assetBasic = std::make_shared<Asset3D>(assetTiles3D[i]);
+            Events::assetSelected(assetBasic);
+        }
+
+        drawModelPreview(assetTiles3D[i], assetBounds, barY);
+
+        if (CheckCollisionPointRec(GetMousePosition(), tileBounds) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            _selectedAssetIndex3D = i;
+            std::shared_ptr<Asset3D> assetBasic = std::make_shared<Asset3D>(assetTiles3D[i]);
+            Events::assetSelected(assetBasic);
         }
     }
 }
@@ -805,6 +916,21 @@ void UIManager::refreshSceneObjects()
             }
         }
     }
+}
+
+void UIManager::openAssetWindow() {
+    pid_t pid = fork();
+    if (pid == 0) {
+        execl("bin/OpenAsset", "AssetWindow", nullptr);
+        _exit(1);
+    } else if (pid < 0) {
+        std::cerr << "Failed to fork AssetWindow\n";
+    }
+}
+
+void UIManager::setLoader(std::shared_ptr<AssetLoader> loader)
+{
+    _loader = loader;
 }
 
 } // namespace UI

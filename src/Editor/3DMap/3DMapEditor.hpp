@@ -27,6 +27,8 @@
 #include "../../UI/EditorEvents.hpp"
 #include "../../UI/SceneObject.hpp"
 
+#include "../../Utilities/LoadedAssets.hpp"
+
 using namespace Utilities;
 using namespace objects;
 
@@ -119,7 +121,7 @@ class MapEditor : public UI::ISceneProvider {
          * 
          * Renders 2D overlay elements like cursor information and HUD elements.
          */
-        void draw2DElements();
+        void draw2DElements(Rectangle renderArea, std::shared_ptr<Render::Camera>);
 
         /**
          * @brief Draw 3D scene elements
@@ -135,7 +137,7 @@ class MapEditor : public UI::ISceneProvider {
          * 
          * @param mainViewArea Rectangle representing view area of map editor
          */
-        void draw(Rectangle mainViewArea);
+        void draw(Rectangle mainViewArea, std::shared_ptr<Render::Camera>);
 
         /**
          * @brief Change the current cube type for placement
@@ -183,13 +185,13 @@ class MapEditor : public UI::ISceneProvider {
         void changeSpriteType(Asset2D newAsset);
         
         /**
-         * @brief Add a player at the specified 2D position
+         * @brief Add a player at the specified 3D position
          * 
-         * Places a player object at the given 2D position.
+         * Places a player object at the given 3D position.
          * 
-         * @param position The 2D position where to place the player
+         * @param position The 3D position where to place the player
          */
-        void addPlayer(Vector2D position);
+        void addPlayer(Vector3D position, int totalFrames);
         
         /**
          * @brief Remove a player object
@@ -207,7 +209,7 @@ class MapEditor : public UI::ISceneProvider {
          * 
          * @param filename Path to the output file
          */
-        void saveMapBinary(const std::string& filename);
+        void saveMap(const std::string& filename);
         
         /**
          * @brief Load a map from a binary file
@@ -216,7 +218,7 @@ class MapEditor : public UI::ISceneProvider {
          * 
          * @param filename Path to the input file
          */
-        void loadMapBinary(const std::string& filename);
+        void loadMap(const std::string& filename);
 
         /**
          * @brief Compile the map for game runtime
@@ -261,8 +263,18 @@ class MapEditor : public UI::ISceneProvider {
          * Responds to asset selection from the assets browser.
          * 
          * @param assetIndex Index of the selected asset
+         * @param loadedAssets2D Vector of asset2D
          */
-        void handleAssetSelected(int assetIndex);
+        void handleAssetSelected(std::shared_ptr<AAsset> asset);
+
+        /**
+         * @brief Handle asset selection events
+         * 
+         * Responds to asset selection from the assets browser.
+         * 
+         * @param assetIndex Index of the selected asset
+         */
+        void handleAssetLoaded();
         
         // State queries for UI
         /**
@@ -347,6 +359,8 @@ class MapEditor : public UI::ISceneProvider {
          */
         void notifySceneChanged();
 
+        void setLoader(std::shared_ptr<AssetLoader> loader);
+
     protected:
     private:
         // Internal helper methods
@@ -385,7 +399,13 @@ class MapEditor : public UI::ISceneProvider {
         // Current assets
         Asset2D _currentTextureType;                         ///< Currently selected texture for 3D asset placement;
         Asset3D _currentCubeType;                            ///< Currently selected 3D asset for placement
-        Asset2D _currentSpriteType;                          ///< Currently selected 2D asset for placement
+        Asset2D _currentSpriteType;               ///< Currently selected 2D asset for placement
+        bool _blocSelect;
+
+        // Assets Loaded
+        std::shared_ptr<AssetLoader> _loader;
+        std::vector<Asset3D> _objects3DLoaded;            ///< All 3D objects loaded
+        std::vector<Asset2D> _objects2DLoaded;             ///< All 2D objects loaded
 
         // Core references
         std::shared_ptr<Render::Window> _window;             ///< Reference to the application window
@@ -396,11 +416,13 @@ class MapEditor : public UI::ISceneProvider {
         bool _placePlayer;                                   ///< Flag for player placement mode
         bool _drawWireframe = false;                         ///< Wireframe rendering mode
         float _cubeHeight;                                   ///< Height for cube placement
+        Vector2D _spriteSize;                                   ///< Height for cube placement
 
         // Interactive elements
         Vector2D _cursorPosition;
         Vector3D _alignedPosition;                           ///< Current grid-aligned cursor position
         std::optional<std::vector<std::shared_ptr<MapElement>>::iterator> _closestObject; ///< Closest object to cursor
+        std::optional<std::vector<std::shared_ptr<Character>>::iterator> _closestSprite; ///< Closest sprite to cursor
         
         // Current tool and selection state
         int _currentTool = 0;                                ///< Current tool index (default: SELECT)

@@ -20,8 +20,8 @@ if ! command -v g++ > /dev/null; then
     exit 1
 fi
 
-echo "Cleaning previous build directory..."
-rm -rf cmake/build
+echo "Cleaning previous build directory IsoMaker..."
+rm -rf cmake/build/CMakeCache.txt
 
 echo "Building IsoMaker..."
 cmake -B cmake/build -S cmake
@@ -35,5 +35,23 @@ if [ -f cmake/build/IsoMaker ]; then
     echo "You can run it with: ./bin/IsoMaker"
 else
     echo "Compilation failed: IsoMaker binary not found!"
+    exit 1
+fi
+
+echo "Cleaning previous build directory OpenAsset..."
+rm -rf openAsset/build/CMakeCache.txt
+
+echo "Building OpenAsset..."
+cmake -B openAsset/build -S openAsset
+cmake --build openAsset/build
+
+if [ -f openAsset/build/OpenAsset ]; then
+    echo "Build successful!"
+    mv openAsset/build/OpenAsset bin
+    chmod +x bin/OpenAsset
+    echo "OpenAsset has been installed to bin/OpenAsset"
+    echo "You can run it with: ./bin/OpenAsset"
+else
+    echo "Compilation failed: OpenAsset binary not found!"
     exit 1
 fi

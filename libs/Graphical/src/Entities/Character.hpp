@@ -24,15 +24,19 @@ namespace objects
             bool isMoving();
             void setMoving(bool moving);
 
+            int getTotalFrames() { return _totalFrames; };
+            void setTotalFrames(int frames) { _totalFrames = frames; };
+
             void updateAnimation();
 
             void draw() { AEntity::draw(); };
-            void draw(Vector2D tileSize);
+            void draw(Rectangle renderArea, std::shared_ptr<Render::Camera> camera);
+            void draw(Vector3D tmp);
         protected:
             int _totalFrames = 1;
             int _currentFrame = 0;
             int _frameCounter = 0;
             int _frameSpeed = 8;
-            bool _moving = false;
+            bool _isMoving = false;
     };
 }

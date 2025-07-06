@@ -21,7 +21,7 @@ namespace objects
     class IObject
     {
         public:
-            virtual Asset2D getAsset2D() const = 0;
+            virtual Asset2D& getAsset2D() = 0;
             virtual void setAsset2D(Asset2D) = 0;
 
             virtual ObjectBox2D &getBox2D() = 0;

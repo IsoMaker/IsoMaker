@@ -14,7 +14,9 @@ namespace Utilities
             ~ObjectBox() = default;
 
             T getPosition() const { return _position; };
-            void setPosition(T newPosition ) { _position = newPosition; };
+            void setPosition(T newPosition) {
+                _position = newPosition;
+            }
             virtual void setPosX(float x) = 0;
             virtual void setPosY(float y) = 0;
             void movePosition(T positionModifier) { _position += positionModifier; };

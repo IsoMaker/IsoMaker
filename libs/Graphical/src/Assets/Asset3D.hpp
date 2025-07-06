@@ -14,6 +14,7 @@ class Asset3D : public AAsset
         void setModel(Model model);
         void setModelTexture(Texture2D texture);
         void loadFile();
+        bool isLoaded() { return _modelLoaded; };
 
     protected:
         Model _model;
