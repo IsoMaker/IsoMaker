@@ -46,4 +46,11 @@ int Submenu(Rectangle bounds, const char** items, int count);
 // Search bar
 bool SearchBar(Rectangle bounds, char* text, int textSize, bool* active);
 
+// Enhanced drawing helper functions for consistent styling
+void DrawRectangleRounded(Rectangle rec, float radius, Color color);
+void DrawRectangleRoundedWithShadow(Rectangle rec, float radius, Color color, float shadowOffset, Color shadowColor);
+void DrawPanel(Rectangle bounds, const char* title, Color headerColor, Color bodyColor, bool drawShadow = true);
+void DrawButton(Rectangle bounds, const char* text, Color baseColor, bool isHovered, bool isPressed);
+void DrawInputField(Rectangle bounds, const char* text, bool isActive, bool isHovered);
+
 } // namespace UI
