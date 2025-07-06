@@ -276,79 +276,79 @@ void ScriptBlock::setBlockProperties() {
         // Events - Blue
         case BlockType::ON_START:
             label = "OnStart";
-            color = {52, 144, 220, 255}; // Blue
+            color = {35, 100, 155, 255}; // Blue
             break;
         case BlockType::ON_CLICK:
             label = "OnClick";
-            color = {52, 144, 220, 255}; // Blue
+            color = {35, 100, 155, 255}; // Blue
             break;
         case BlockType::ON_UPDATE:
             label = "OnUpdate";
-            color = {52, 144, 220, 255}; // Blue
+            color = {35, 100, 155, 255}; // Blue
             break;
         case BlockType::ON_KEY_PRESS:
             label = "On key press Space";
-            color = {52, 144, 220, 255}; // Blue
+            color = {35, 100, 155, 255}; // Blue
             size = {160, 40}; // Wider for longer text
             break;
             
         // Actions - Green
         case BlockType::MOVE:
             label = "Move";
-            color = {40, 167, 69, 255}; // Green
+            color = {28, 115, 48, 255}; // Green
             break;
         case BlockType::ROTATE:
             label = "Rotate";
-            color = {40, 167, 69, 255}; // Green
+            color = {28, 115, 48, 255}; // Green
             break;
         case BlockType::CHANGE_COLOR:
             label = "Change Color";
-            color = {40, 167, 69, 255}; // Green
+            color = {28, 115, 48, 255}; // Green
             size = {140, 40}; // Wider for longer text
             break;
         case BlockType::HIDE:
             label = "Hide";
-            color = {40, 167, 69, 255}; // Green
+            color = {28, 115, 48, 255}; // Green
             break;
         case BlockType::SHOW:
             label = "Show";
-            color = {40, 167, 69, 255}; // Green
+            color = {28, 115, 48, 255}; // Green
             break;
             
         // Conditions - Orange
         case BlockType::IF:
             label = "If";
-            color = {255, 87, 34, 255}; // Orange
+            color = {230, 120, 20, 255}; // Orange
             break;
         case BlockType::LOOP:
             label = "Loop";
-            color = {255, 87, 34, 255}; // Orange
+            color = {230, 120, 20, 255}; // Orange
             break;
             
         // Miscellaneous - Gray
         case BlockType::TRUE:
             label = "True";
-            color = {108, 117, 125, 255}; // Gray
+            color = {75, 80, 85, 255}; // Gray
             break;
         case BlockType::FALSE:
             label = "False";
-            color = {108, 117, 125, 255}; // Gray
+            color = {75, 80, 85, 255}; // Gray
             break;
         case BlockType::VALUE:
             label = "Value";
-            color = {108, 117, 125, 255}; // Gray
+            color = {75, 80, 85, 255}; // Gray
             break;
         case BlockType::ENTITY:
             label = "Entity";
-            color = {108, 117, 125, 255}; // Gray
+            color = {75, 80, 85, 255}; // Gray
             break;
         case BlockType::DELAY:
             label = "Delay";
-            color = {108, 117, 125, 255}; // Gray
+            color = {75, 80, 85, 255}; // Gray
             break;
         case BlockType::LOG:
             label = "Log";
-            color = {108, 117, 125, 255}; // Gray
+            color = {75, 80, 85, 255}; // Gray
             break;
     }
 }
@@ -711,8 +711,8 @@ void ScriptBlock::setupConnectionPorts() {
         if (canHaveBranches) {
             if (type == BlockType::LOOP) {
                 // Loop has Next (left) and Body (right) outputs
-                Vector2 nextOut = {position.x + size.x * 0.25f, position.y + size.y};   // Left = Exit/Next
-                Vector2 bodyOut = {position.x + size.x * 0.75f, position.y + size.y};   // Right = Loop Body
+                Vector2 nextOut = {position.x, position.y + size.y / 2};   // Left = Exit/Next
+                Vector2 bodyOut = {position.x + size.x, position.y + size.y / 2};   // Right = Loop Body
                 outputPorts.push_back(ConnectionPoint(nextOut, ConnectionPortType::EXECUTION_OUT, id, "Next", {220, 53, 69, 255})); // Red for exit
                 outputPorts.push_back(ConnectionPoint(bodyOut, ConnectionPortType::EXECUTION_OUT, id, "Body", {25, 135, 84, 255})); // Green for body
             } else {
@@ -735,8 +735,8 @@ void ScriptBlock::setupConnectionPorts() {
         inputPorts.clear();
         
         // Add false (left) and true (right) output ports only
-        Vector2 falseOut = {position.x + size.x * 0.25f, position.y + size.y};  // Left = False
-        Vector2 trueOut = {position.x + size.x * 0.75f, position.y + size.y};   // Right = True
+        Vector2 falseOut = {position.x, position.y + size.y / 2};  // Left = False
+        Vector2 trueOut = {position.x + size.x, position.y + size.y / 2};   // Right = True
         outputPorts.clear();
         outputPorts.push_back(ConnectionPoint(falseOut, ConnectionPortType::FALSE_OUT, id, "False", {220, 53, 69, 255})); // Red for false
         outputPorts.push_back(ConnectionPoint(trueOut, ConnectionPortType::TRUE_OUT, id, "True", {25, 135, 84, 255})); // Green for true
@@ -744,18 +744,10 @@ void ScriptBlock::setupConnectionPorts() {
     
     // Add value input/output ports for specific block types
     switch (type) {
-        case BlockType::IF: {
-            // Add condition value input port (left side)
-            Vector2 conditionIn = {position.x, position.y + size.y / 2};
-            inputPorts.push_back(ConnectionPoint(conditionIn, ConnectionPortType::VALUE_IN, id, "Condition", {255, 193, 7, 255}));
-            break;
-        }
-        case BlockType::LOOP: {
-            // Add iteration count value input port (left side, lower position)
-            Vector2 iterationsIn = {position.x, position.y + size.y * 0.7f};
-            inputPorts.push_back(ConnectionPoint(iterationsIn, ConnectionPortType::VALUE_IN, id, "Count", {255, 193, 7, 255}));
-            break;
-        }
+        case BlockType::IF:
+            break; // IF blocks don't have value ports
+        case BlockType::LOOP:
+            break; // LOOP blocks don't have value ports
         case BlockType::VALUE:
         case BlockType::TRUE:
         case BlockType::FALSE: {
@@ -972,7 +964,7 @@ void ScriptingEditor::drawCanvasOverlay(Rectangle bounds) {
     };
     
     // Draw message background
-    DrawRectangleRec(messageArea, Color{255, 255, 255, 200});
+    DrawRectangleRec(messageArea, UI::PANEL_BACKGROUND);
     DrawRectangleLinesEx(messageArea, 1, UI::UI_PRIMARY);
     
     GuiLabel(messageArea, "Select a scene object to start scripting.");
