@@ -65,12 +65,14 @@ void Character::draw(Rectangle renderArea, std::shared_ptr<Render::Camera> camer
     float isoX = (pos.x - pos.z) * tileWidth / 2.0f;
     float isoY = (pos.x + pos.z) * tileHeight / 2.0f - (pos.y * tileHeight);
     Vector2 position = {
-            (isoX + renderArea.x + renderArea.width / 2.0f) + (source.width / 2.0f),
-            (isoY + renderArea.y + renderArea.height / 2.0f) + (source.height / 2.0f)
-        };
-    if (camera != nullptr)
+            (isoX + renderArea.x + renderArea.width / 2.0f),
+            (isoY + renderArea.y + renderArea.height / 2.0f)
+    };
+    if (camera != nullptr) {
         position = GetWorldToScreen((Vector3){ pos.x, pos.y, pos.z }, camera->getRaylibCam());
-
+        position.x -= source.width / 2.0f;
+        position.y -= source.height / 2.0f;
+    }
     DrawTextureRec(_asset2D.getTexture(), source, position, WHITE);
 }
 
