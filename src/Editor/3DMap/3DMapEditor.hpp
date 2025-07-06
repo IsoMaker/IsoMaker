@@ -190,7 +190,7 @@ class MapEditor : public UI::ISceneProvider {
          * 
          * @param position The 3D position where to place the player
          */
-        void addPlayer(Vector3D position);
+        void addPlayer(Vector3D position, int totalFrames);
         
         /**
          * @brief Remove a player object

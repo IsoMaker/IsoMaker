@@ -85,6 +85,7 @@ Asset2D AssetLoader::loadAssetFile2D(std::ifstream& inFile)
     ss >> width >> ignoreChar >> height;
     asset.setWidth(width);
     asset.setHeight(height);
+    asset.setFramesCount(frames);
     asset.loadFile();
     std::cout << sizeOrScaledSize << std::endl;
     return asset;

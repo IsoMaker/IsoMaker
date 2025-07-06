@@ -44,7 +44,7 @@ void MapEditor::update(input::IHandlerBase &inputHandler)
             UI::Events::objectCreated(_alignedPosition.convert());
             notifySceneChanged();
         } else if (_currentTool == 4 && _alignedPosition != Vector3D(0, 0, 0) && !_blocSelect) {
-            addPlayer(_alignedPosition);
+            addPlayer(_alignedPosition, _currentSpriteType.getFramesCount());
             UI::Events::objectCreated(_alignedPosition.convert());
             notifySceneChanged();
         }
@@ -168,7 +168,7 @@ void MapEditor::addCube(Vector3D position)
     updateCursor();
 }
 
-void MapEditor::addPlayer(Vector3D position)
+void MapEditor::addPlayer(Vector3D position, int totalFrames)
 {
     for (auto i = _objects2D.begin(); i != _objects2D.end(); i++) {
         if (i->get()->getBoxPosition() == position) {
@@ -188,6 +188,7 @@ void MapEditor::addPlayer(Vector3D position)
     newCharacter->setBox2DSize({_currentSpriteType.getWidth(), _currentSpriteType.getHeight()});
     newCharacter->setBox2DScale(_currentSpriteType.getScale());
     _spriteSize = {_currentSpriteType.getWidth(), _currentSpriteType.getHeight()};
+    newCharacter->setTotalFrames(totalFrames);
     _objects2D.push_back(newCharacter);
 }
 
@@ -286,7 +287,7 @@ void MapEditor::saveMap(const std::string& filename)
     file << _objects2D.size() << "\n";
     for (auto& obj : _objects2D) {
         pos2D = obj->getBox3D().getPosition();
-        file << pos2D.x << " " << pos2D.y << " " << pos2D.z << " " << obj->getAsset2D().getFileName() << " " << obj->getBox2D().getSize().x << " " << obj->getBox2D().getSize().y << " " << obj->getAsset2D().getScale() << "\n";
+        file << pos2D.x << " " << pos2D.y << " " << pos2D.z << " " << obj->getAsset2D().getFileName() << " " << obj->getBox2D().getSize().x << " " << obj->getBox2D().getSize().y << " " << obj->getAsset2D().getScale() << " " << obj->getTotalFrames() << "\n";
     }
 
     file.close();
@@ -332,19 +333,23 @@ void MapEditor::loadMap(const std::string& filename)
         Vector2 size;
         std::string filePath;
         float scale;
+        int totalFrames;
+
         for (int i = 0; i < count2; ++i) {
-            file >> position.x >> position.y >> position.z >> filePath >> size.x >> size.y >> scale;
+            file >> position.x >> position.y >> position.z >> filePath >> size.x >> size.y >> scale >> totalFrames;
             std::cout << "FILENAME " << filePath << "\n";
             std::cout << "POSITION: " << position << "\n";
             std::cout << "SIZE: " << size << "\n";
             std::cout << "SCALE: " << scale << "\n";
+            std::cout << "FRAMES: " << totalFrames << "\n";
             Asset2D tmpAsset(filePath);
             tmpAsset.loadFile();
             tmpAsset.setScale(scale);
             tmpAsset.setWidth(size.x);
             tmpAsset.setHeight(size.y);
+            tmpAsset.setFramesCount(totalFrames);
             changeSpriteType(tmpAsset);
-            addPlayer(position);
+            addPlayer(position, totalFrames);
             std::cout << "ADD NEW PLAYER : " << i << "\n";
         }
     }
@@ -356,6 +361,7 @@ void MapEditor::gameCompilation(const std::string& gameProjectName)
 {
     std::string script = gameProjectName + "/install-linux.sh";
 
+    saveMap("game_project/assets/maps/game_map.dat");
     system(script.c_str());
     system("./game_project/GenericGame");
 }

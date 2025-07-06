@@ -19,13 +19,6 @@ Game::Game(std::shared_ptr<Render::Window> window, std::shared_ptr<Render::Camer
     std::cout << "MODEL PATH " << modelPath << "\n";
 
     loadMap(mapPath);
-    Vector3D playerPos(0, 0, 0);
-    if (!_objects3D.empty()) {
-        playerPos = _objects3D[0]->getBoxPosition();
-    }
-    playerPos.z -= 0.5f;
-    _playerAsset = Asset2D(playerPath);
-    _player = std::make_shared<objects::Character>(_playerAsset, playerPos, Vector2D(0, 0), Vector2D(32, 40));
 }
 
 Game::~Game()
@@ -76,6 +69,7 @@ void Game::addCharacter(Vector3D position)
     std::cout << "[SCALE NEW PLAYER]: " << _playerAsset.getScale() << std::endl;
     newCharacter->setBox2DSize({_playerAsset.getWidth(), _playerAsset.getHeight()});
     newCharacter->setBox2DScale(_playerAsset.getScale());
+    newCharacter->setTotalFrames(_playerAsset.getFramesCount());
     _objects2D.push_back(newCharacter);
 }
 
@@ -98,6 +92,7 @@ void Game::addPlayer(Vector3D position)
     std::cout << "[SCALE NEW PLAYER]: " << _playerAsset.getScale() << std::endl;
     newCharacter->setBox2DSize({_playerAsset.getWidth(), _playerAsset.getHeight()});
     newCharacter->setBox2DScale(_playerAsset.getScale());
+    newCharacter->setTotalFrames(_playerAsset.getFramesCount());
     _player = newCharacter;
 }
 
@@ -141,17 +136,21 @@ void Game::loadMap(const std::string& filename)
         Vector2 size;
         std::string filePath;
         float scale;
+        int frames;
         for (int i = 0; i < count2; ++i) {
-            file >> position.x >> position.y >> position.z >> filePath >> size.x >> size.y >> scale;
+            file >> position.x >> position.y >> position.z >> filePath >>
+                size.x >> size.y >> scale >> frames;
             std::cout << "FILENAME " << filePath << "\n";
             std::cout << "POSITION: " << position << "\n";
             std::cout << "SIZE: " << size << "\n";
             std::cout << "SCALE: " << scale << "\n";
+            std::cout << "Frames: " << frames << "\n";
             Asset2D tmpAsset(filePath);
             tmpAsset.loadFile();
             tmpAsset.setScale(scale);
             tmpAsset.setWidth(size.x);
             tmpAsset.setHeight(size.y);
+            tmpAsset.setFramesCount(frames);
             changeSpriteType(tmpAsset);
             if (i == 0)
                 addPlayer(position);
@@ -217,7 +216,6 @@ bool Game::handleCollision(Utilities::Vector3D newPos)
     Utilities::Vector3D posTmp = {0.0f, 0.0f, 0.0f};
     bool thereIsACube = false;
 
-    newPos = getEntitieBlockPos(newPos);
     for (auto i = _objects3D.begin(); i != _objects3D.end(); i++) {
         posTmp = i->get()->getBoxPosition();
         if ((newPos.x == posTmp.x && newPos.z == posTmp.z)) {
@@ -228,9 +226,7 @@ bool Game::handleCollision(Utilities::Vector3D newPos)
         if (newPos == posTmp)
             thereIsACube = true;
     }
-    // if (!thereIsACube)
-    //     std::cout << "False" << std::endl;
-    return thereIsACube;
+    return false;
 }
 
 Utilities::Vector3D Game::getEntitieBlockPos(Utilities::Vector3D pos)
