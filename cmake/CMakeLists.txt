@@ -19,7 +19,6 @@ if (NOT BUILD_TESTS)
         "../src/Editor/3DMap/3DMapEditor.cpp"
         "../src/Editor/3DMap/Grid.cpp"
         "../src/Editor/ScriptingEditor/ScriptingEditor.cpp"
-        "../src/Editor/ScriptingEditor/VisualScript.cpp"
         "../src/MainUI/MainUI.cpp"
         "../src/UI/UIManager.cpp"
         "../src/UI/UIComponents.cpp"

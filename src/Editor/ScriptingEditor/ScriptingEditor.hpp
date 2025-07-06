@@ -135,12 +135,7 @@ struct ScriptBlock {
     bool isSelected;          ///< Whether block is currently selected
     bool isHovered;           ///< Whether mouse is hovering over block
     
-    // Professional styling properties
-    float cornerRadius;        ///< Corner radius for rounded blocks
-    float shadowOffset;        ///< Shadow offset for depth
-    Color shadowColor;         ///< Shadow color
-    float borderWidth;         ///< Border width
-    Color borderColor;         ///< Border color
+    // Professional styling properties (managed by UI theme system)
     
     // Connection ports
     std::vector<ConnectionPoint> inputPorts;   ///< Input connection ports
@@ -148,21 +143,11 @@ struct ScriptBlock {
     bool hasExecutionFlow;     ///< Whether block participates in execution flow
     bool canHaveBranches;      ///< Whether block can have multiple outputs (conditions)
     
-    // Legacy connection system (for compatibility)
-    bool hasInputConnection;    ///< Whether this block has an input connection
-    bool hasOutputConnection;   ///< Whether this block has an output connection
-    int connectedFromId;        ///< ID of block connected to input (-1 if none)
-    int connectedToId;          ///< ID of block connected to output (-1 if none)
-    bool isHighlightedForConnection; ///< Visual highlight for connection preview
-    
     ScriptBlock(int blockId, BlockType blockType, Vector2 pos = {0, 0}) 
         : id(blockId), type(blockType), position(pos), size({160, 60}), 
           isDragging(false), dragOffset({0, 0}), isOnCanvas(false), canvasOrder(0),
-          isSelected(false), isHovered(false), cornerRadius(8.0f), shadowOffset(4.0f),
-          shadowColor({0, 0, 0, 80}), borderWidth(2.0f), borderColor(WHITE),
-          hasExecutionFlow(true), canHaveBranches(false),
-          hasInputConnection(false), hasOutputConnection(false),
-          connectedFromId(-1), connectedToId(-1), isHighlightedForConnection(false) {
+          isSelected(false), isHovered(false),
+          hasExecutionFlow(true), canHaveBranches(false) {
         // Set default colors and labels based on type
         setProfessionalBlockProperties();
         setDefaultConfig();
@@ -394,12 +379,6 @@ private:
     Vector2 _dragStartPos = {0, 0};                     ///< Initial drag position
     Vector2 _dragOffset = {0, 0};                       ///< Offset from mouse to block origin
     
-    // Connection system
-    const float _connectionSnapDistance = 30.0f;       ///< Distance for connection snapping
-    ScriptBlock* _connectionCandidate = nullptr;        ///< Block candidate for connection
-    bool _showConnectionPreview = false;                ///< Whether to show connection preview
-    Vector2 _connectionPreviewStart = {0, 0};          ///< Start point for connection preview
-    Vector2 _connectionPreviewEnd = {0, 0};            ///< End point for connection preview
     
     // Mouse state
     Vector2 _lastMousePos = {0, 0};                     ///< Last mouse position
@@ -431,14 +410,10 @@ private:
     void drawSceneObjectPanel(Rectangle bounds);        ///< Draw right scene objects panel
     void drawCanvasGrid(Rectangle bounds);              ///< Draw grid background on canvas
     void drawCanvasOverlay(Rectangle bounds);           ///< Draw overlay when no object selected
-    void drawBlock(const ScriptBlock& block, Vector2 offset = {0, 0}, bool shadow = true); ///< Draw a single block (legacy)
     void drawProfessionalBlock(const ScriptBlock& block, Vector2 offset = {0, 0}); ///< Draw modern styled block
     void drawBlockHeader(const ScriptBlock& block, Rectangle headerRect, Vector2 offset = {0, 0}); ///< Draw block header
     void drawBlockBody(const ScriptBlock& block, Rectangle bodyRect, Vector2 offset = {0, 0}); ///< Draw block body with parameters
     void drawBlockPorts(const ScriptBlock& block, Vector2 offset = {0, 0}); ///< Draw connection ports
-    void drawConnections(const VisualScript& script);   ///< Draw connections between blocks
-    void drawConnectionLine(Vector2 start, Vector2 end, Color color, float thickness = 3.0f); ///< Draw connection line
-    void drawConnectionPoints(const ScriptBlock& block); ///< Draw connection points on block (legacy)
     void drawPaletteCategory(const std::string& title, const std::vector<BlockType>& blocks, 
                            Rectangle bounds, float& yOffset); ///< Draw palette category
     void drawConfigDialog();                            ///< Draw block configuration dialog
@@ -455,15 +430,6 @@ private:
     Vector2 getNextCanvasPosition();                    ///< Get next position for new canvas block
     void reorderCanvasBlocks();                         ///< Reorder and snap canvas blocks to grid
     
-    // Connection management
-    void updateBlockConnections();                      ///< Update connection candidates and highlights
-    void createConnection(int fromBlockId, int toBlockId); ///< Create connection between blocks
-    void removeConnection(int fromBlockId, int toBlockId); ///< Remove connection between blocks
-    void removeAllConnectionsForBlock(int blockId);     ///< Remove all connections for a block
-    ScriptBlock* findConnectionCandidate(const ScriptBlock& draggedBlock); ///< Find block to connect to
-    void updateConnectedBlockPositions(int movedBlockId, Vector2 deltaPos); ///< Move connected blocks
-    bool canBlocksConnect(const ScriptBlock& from, const ScriptBlock& to); ///< Check if blocks can connect
-    float getDistanceBetweenConnectionPoints(const ScriptBlock& from, const ScriptBlock& to); ///< Distance between connection points
     
     // Mouse and drag handling
     void handleMouseInput(Vector2 mousePos, bool mousePressed, bool mouseReleased, bool rightClick);
