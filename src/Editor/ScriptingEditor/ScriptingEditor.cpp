@@ -370,13 +370,13 @@ void ScriptBlock::setProfessionalBlockProperties() {
             canHaveBranches = false;
             break;
             
-        // Event blocks - Blue theme
+        // Event blocks - Using harmonized theme colors
         case BlockType::ON_START:
             title = "On Start";
             subtitle = "When object starts";
-            primaryColor = {13, 110, 253, 255};    // Bootstrap primary blue
-            secondaryColor = {184, 218, 255, 255}; // Light blue
-            headerColor = {10, 88, 202, 255};      // Darker blue
+            primaryColor = UI::BLOCK_EVENT;           // Harmonized event red
+            secondaryColor = UI::BLOCK_EVENT_SECONDARY;
+            headerColor = UI::BLOCK_EVENT;
             hasExecutionFlow = true;
             canHaveBranches = false;
             size = {180, 70};
@@ -385,9 +385,9 @@ void ScriptBlock::setProfessionalBlockProperties() {
         case BlockType::ON_CLICK:
             title = "On Click";
             subtitle = "When object is clicked";
-            primaryColor = {13, 110, 253, 255};
-            secondaryColor = {184, 218, 255, 255};
-            headerColor = {10, 88, 202, 255};
+            primaryColor = UI::BLOCK_EVENT;
+            secondaryColor = UI::BLOCK_EVENT_SECONDARY;
+            headerColor = UI::BLOCK_EVENT;
             hasExecutionFlow = true;
             canHaveBranches = false;
             size = {180, 70};
@@ -396,9 +396,9 @@ void ScriptBlock::setProfessionalBlockProperties() {
         case BlockType::ON_UPDATE:
             title = "On Update";
             subtitle = "Every frame";
-            primaryColor = {13, 110, 253, 255};
-            secondaryColor = {184, 218, 255, 255};
-            headerColor = {10, 88, 202, 255};
+            primaryColor = UI::BLOCK_EVENT;
+            secondaryColor = UI::BLOCK_EVENT_SECONDARY;
+            headerColor = UI::BLOCK_EVENT;
             hasExecutionFlow = true;
             canHaveBranches = false;
             size = {180, 70};
@@ -407,21 +407,21 @@ void ScriptBlock::setProfessionalBlockProperties() {
         case BlockType::ON_KEY_PRESS:
             title = "On Key Press";
             subtitle = "When key is pressed";
-            primaryColor = {13, 110, 253, 255};
-            secondaryColor = {184, 218, 255, 255};
-            headerColor = {10, 88, 202, 255};
+            primaryColor = UI::BLOCK_EVENT;
+            secondaryColor = UI::BLOCK_EVENT_SECONDARY;
+            headerColor = UI::BLOCK_EVENT;
             hasExecutionFlow = true;
             canHaveBranches = false;
             size = {200, 80};
             break;
             
-        // Action blocks - Green theme
+        // Action blocks - Using harmonized theme colors
         case BlockType::MOVE:
             title = "Move";
             subtitle = "Change position";
-            primaryColor = {25, 135, 84, 255};     // Bootstrap success green
-            secondaryColor = {209, 231, 221, 255}; // Light green
-            headerColor = {20, 108, 67, 255};      // Darker green
+            primaryColor = UI::BLOCK_ACTION;          // Harmonized action blue
+            secondaryColor = UI::BLOCK_ACTION_SECONDARY;
+            headerColor = UI::BLOCK_ACTION;
             hasExecutionFlow = true;
             canHaveBranches = false;
             size = {180, 80};
@@ -430,9 +430,9 @@ void ScriptBlock::setProfessionalBlockProperties() {
         case BlockType::ROTATE:
             title = "Rotate";
             subtitle = "Change rotation";
-            primaryColor = {25, 135, 84, 255};
-            secondaryColor = {209, 231, 221, 255};
-            headerColor = {20, 108, 67, 255};
+            primaryColor = UI::BLOCK_ACTION;
+            secondaryColor = UI::BLOCK_ACTION_SECONDARY;
+            headerColor = UI::BLOCK_ACTION;
             hasExecutionFlow = true;
             canHaveBranches = false;
             size = {180, 80};
@@ -441,9 +441,9 @@ void ScriptBlock::setProfessionalBlockProperties() {
         case BlockType::CHANGE_COLOR:
             title = "Change Color";
             subtitle = "Modify appearance";
-            primaryColor = {25, 135, 84, 255};
-            secondaryColor = {209, 231, 221, 255};
-            headerColor = {20, 108, 67, 255};
+            primaryColor = UI::BLOCK_ACTION;
+            secondaryColor = UI::BLOCK_ACTION_SECONDARY;
+            headerColor = UI::BLOCK_ACTION;
             hasExecutionFlow = true;
             canHaveBranches = false;
             size = {190, 80};
@@ -452,9 +452,9 @@ void ScriptBlock::setProfessionalBlockProperties() {
         case BlockType::HIDE:
             title = "Hide";
             subtitle = "Make invisible";
-            primaryColor = {25, 135, 84, 255};
-            secondaryColor = {209, 231, 221, 255};
-            headerColor = {20, 108, 67, 255};
+            primaryColor = UI::BLOCK_ACTION;
+            secondaryColor = UI::BLOCK_ACTION_SECONDARY;
+            headerColor = UI::BLOCK_ACTION;
             hasExecutionFlow = true;
             canHaveBranches = false;
             size = {160, 70};
@@ -463,21 +463,21 @@ void ScriptBlock::setProfessionalBlockProperties() {
         case BlockType::SHOW:
             title = "Show";
             subtitle = "Make visible";
-            primaryColor = {25, 135, 84, 255};
-            secondaryColor = {209, 231, 221, 255};
-            headerColor = {20, 108, 67, 255};
+            primaryColor = UI::BLOCK_ACTION;
+            secondaryColor = UI::BLOCK_ACTION_SECONDARY;
+            headerColor = UI::BLOCK_ACTION;
             hasExecutionFlow = true;
             canHaveBranches = false;
             size = {160, 70};
             break;
             
-        // Condition blocks - Orange/Yellow theme
+        // Condition blocks - Using harmonized theme colors
         case BlockType::IF:
             title = "If";
             subtitle = "Conditional execution";
-            primaryColor = {255, 193, 7, 255};     // Bootstrap warning yellow
-            secondaryColor = {255, 243, 205, 255}; // Light yellow
-            headerColor = {255, 173, 0, 255};      // Darker yellow
+            primaryColor = UI::BLOCK_CONDITION;       // Harmonized condition green
+            secondaryColor = UI::BLOCK_CONDITION_SECONDARY;
+            headerColor = UI::BLOCK_CONDITION;
             hasExecutionFlow = false; // No input execution port
             canHaveBranches = true; // Has true/false outputs
             size = {180, 90};
@@ -486,21 +486,21 @@ void ScriptBlock::setProfessionalBlockProperties() {
         case BlockType::LOOP:
             title = "Loop";
             subtitle = "Repeat N times";
-            primaryColor = {255, 193, 7, 255};
-            secondaryColor = {255, 243, 205, 255};
-            headerColor = {255, 173, 0, 255};
+            primaryColor = UI::BLOCK_CONDITION;
+            secondaryColor = UI::BLOCK_CONDITION_SECONDARY;
+            headerColor = UI::BLOCK_CONDITION;
             hasExecutionFlow = true;
             canHaveBranches = true; // Has body and next outputs
             size = {180, 100};
             break;
             
-        // Value blocks - Purple theme
+        // Value blocks - Using harmonized theme colors
         case BlockType::TRUE:
             title = "True";
             subtitle = "Boolean value";
-            primaryColor = {111, 66, 193, 255};    // Bootstrap secondary purple
-            secondaryColor = {221, 210, 243, 255}; // Light purple
-            headerColor = {89, 53, 154, 255};      // Darker purple
+            primaryColor = UI::BLOCK_VALUE;           // Harmonized value yellow
+            secondaryColor = UI::BLOCK_VALUE_SECONDARY;
+            headerColor = UI::BLOCK_VALUE;
             hasExecutionFlow = false;
             canHaveBranches = false;
             size = {140, 60};
@@ -509,9 +509,9 @@ void ScriptBlock::setProfessionalBlockProperties() {
         case BlockType::FALSE:
             title = "False";
             subtitle = "Boolean value";
-            primaryColor = {111, 66, 193, 255};
-            secondaryColor = {221, 210, 243, 255};
-            headerColor = {89, 53, 154, 255};
+            primaryColor = UI::BLOCK_VALUE;
+            secondaryColor = UI::BLOCK_VALUE_SECONDARY;
+            headerColor = UI::BLOCK_VALUE;
             hasExecutionFlow = false;
             canHaveBranches = false;
             size = {140, 60};
@@ -520,9 +520,9 @@ void ScriptBlock::setProfessionalBlockProperties() {
         case BlockType::VALUE:
             title = "Value";
             subtitle = "Number value";
-            primaryColor = {111, 66, 193, 255};
-            secondaryColor = {221, 210, 243, 255};
-            headerColor = {89, 53, 154, 255};
+            primaryColor = UI::BLOCK_VALUE;
+            secondaryColor = UI::BLOCK_VALUE_SECONDARY;
+            headerColor = UI::BLOCK_VALUE;
             hasExecutionFlow = false;
             canHaveBranches = false;
             size = {160, 70};
@@ -531,21 +531,21 @@ void ScriptBlock::setProfessionalBlockProperties() {
         case BlockType::ENTITY:
             title = "Entity";
             subtitle = "Object reference";
-            primaryColor = {111, 66, 193, 255};
-            secondaryColor = {221, 210, 243, 255};
-            headerColor = {89, 53, 154, 255};
+            primaryColor = UI::BLOCK_VALUE;
+            secondaryColor = UI::BLOCK_VALUE_SECONDARY;
+            headerColor = UI::BLOCK_VALUE;
             hasExecutionFlow = false;
             canHaveBranches = false;
             size = {160, 70};
             break;
             
-        // Utility blocks - Gray theme
+        // Utility blocks - Using harmonized theme colors
         case BlockType::DELAY:
             title = "Delay";
             subtitle = "Wait for time";
-            primaryColor = {108, 117, 125, 255};   // Bootstrap secondary gray
-            secondaryColor = {233, 236, 239, 255}; // Light gray
-            headerColor = {86, 94, 100, 255};      // Darker gray
+            primaryColor = UI::BLOCK_MISC;            // Harmonized misc gray
+            secondaryColor = UI::BLOCK_MISC_SECONDARY;
+            headerColor = UI::BLOCK_MISC;
             hasExecutionFlow = true;
             canHaveBranches = false;
             size = {180, 80};
@@ -554,17 +554,23 @@ void ScriptBlock::setProfessionalBlockProperties() {
         case BlockType::LOG:
             title = "Log";
             subtitle = "Debug output";
-            primaryColor = {108, 117, 125, 255};
-            secondaryColor = {233, 236, 239, 255};
-            headerColor = {86, 94, 100, 255};
+            primaryColor = UI::BLOCK_MISC;
+            secondaryColor = UI::BLOCK_MISC_SECONDARY;
+            headerColor = UI::BLOCK_MISC;
             hasExecutionFlow = true;
             canHaveBranches = false;
             size = {180, 80};
             break;
     }
     
-    // Set border color based on selection state
-    borderColor = isSelected ? Color{255, 255, 255, 255} : Color{255, 255, 255, 100};
+    // Set enhanced styling properties using UI theme
+    cornerRadius = UI::UI_BORDER_RADIUS_LARGE;
+    shadowOffset = UI::UI_SHADOW_OFFSET_MEDIUM;
+    shadowColor = UI::SHADOW_MEDIUM;
+    borderWidth = 2.0f;
+    
+    // Set border color based on selection state using enhanced theme
+    borderColor = isSelected ? UI::ACCENT_PRIMARY : UI::PANEL_BORDER;
     
     // Update legacy fields for compatibility
     label = title;
@@ -991,38 +997,42 @@ void ScriptingEditor::drawBlock(const ScriptBlock& block, Vector2 offset, bool s
     Vector2 drawPos = {block.position.x + offset.x, block.position.y + offset.y};
     Rectangle blockRect = {drawPos.x, drawPos.y, block.size.x, block.size.y};
     
-    // Draw shadow if requested
+    // Draw shadow if requested using enhanced shadow system
     if (shadow) {
-        Rectangle shadowRect = {drawPos.x + 3, drawPos.y + 3, block.size.x, block.size.y};
-        DrawRectangleRounded(shadowRect, 0.2f, 6, Color{0, 0, 0, 50});
+        Rectangle shadowRect = {drawPos.x + UI::UI_SHADOW_OFFSET_SMALL, drawPos.y + UI::UI_SHADOW_OFFSET_SMALL, block.size.x, block.size.y};
+        DrawRectangleRounded(shadowRect, 0.2f, 6, UI::SHADOW_LIGHT);
     }
     
     // Draw block background
     DrawRectangleRounded(blockRect, 0.2f, 6, block.color);
     
-    // Draw border with enhanced styling
-    Color borderColor = UI::UI_PRIMARY;
+    // Draw border with enhanced styling using theme colors
+    Color borderColor = UI::PANEL_BORDER;
     if (block.isDragging) {
-        borderColor = Color{255, 255, 255, 255}; // White border when dragging
+        borderColor = UI::ACCENT_TERTIARY; // Use accent tertiary for dragging
+    } else if (block.isSelected) {
+        borderColor = UI::ACCENT_PRIMARY; // Use accent primary for selection
+    } else if (block.isHovered) {
+        borderColor = UI::HOVER_BACKGROUND; // Use hover background for hover
     }
     DrawRectangleRoundedLinesEx(blockRect, 0.2f, 6, 2.0f, borderColor);
     
     // Get display label (with configuration)
     std::string displayText = block.isOnCanvas ? block.getDisplayLabel() : block.label;
     
-    // Draw block label with better typography
-    Vector2 textSize = MeasureTextEx(GetFontDefault(), displayText.c_str(), 14, 1);
+    // Draw block label with better typography using enhanced font sizing
+    Vector2 textSize = MeasureTextEx(GetFontDefault(), displayText.c_str(), UI::UI_FONT_SIZE_LARGE, 1);
     Vector2 textPos = {
         drawPos.x + (block.size.x - textSize.x) / 2,
         drawPos.y + (block.size.y - textSize.y) / 2
     };
     
-    // Draw text shadow for better readability
+    // Draw text shadow for better readability using enhanced shadow system
     DrawTextEx(GetFontDefault(), displayText.c_str(), 
-               Vector2{textPos.x + 1, textPos.y + 1}, 14, 1, Color{0, 0, 0, 100});
+               Vector2{textPos.x + 1, textPos.y + 1}, UI::UI_FONT_SIZE_LARGE, 1, UI::SHADOW_LIGHT);
     
-    // Draw main text
-    DrawTextEx(GetFontDefault(), displayText.c_str(), textPos, 14, 1, WHITE);
+    // Draw main text using enhanced text colors
+    DrawTextEx(GetFontDefault(), displayText.c_str(), textPos, UI::UI_FONT_SIZE_LARGE, 1, UI::UI_TEXT_PRIMARY);
 }
 
 // Professional block drawing implementation
@@ -1030,30 +1040,30 @@ void ScriptingEditor::drawProfessionalBlock(const ScriptBlock& block, Vector2 of
     Vector2 drawPos = {block.position.x + offset.x, block.position.y + offset.y};
     Rectangle blockRect = {drawPos.x, drawPos.y, block.size.x, block.size.y};
     
-    // Draw shadow for depth
-    Rectangle shadowRect = {drawPos.x + block.shadowOffset, drawPos.y + block.shadowOffset, block.size.x, block.size.y};
-    DrawRectangleRounded(shadowRect, block.cornerRadius / block.size.x, 8, block.shadowColor);
+    // Draw shadow for depth using enhanced shadow system
+    Rectangle shadowRect = {drawPos.x + UI::UI_SHADOW_OFFSET_MEDIUM, drawPos.y + UI::UI_SHADOW_OFFSET_MEDIUM, block.size.x, block.size.y};
+    DrawRectangleRounded(shadowRect, UI::UI_BORDER_RADIUS_LARGE / block.size.x, 8, UI::SHADOW_MEDIUM);
     
     // Draw main block background with gradient effect
-    DrawRectangleRounded(blockRect, block.cornerRadius / block.size.x, 8, block.primaryColor);
+    DrawRectangleRounded(blockRect, UI::UI_BORDER_RADIUS_LARGE / block.size.x, 8, block.primaryColor);
     
     // Draw subtle gradient overlay
     Rectangle gradientRect = {drawPos.x, drawPos.y, block.size.x, block.size.y * 0.3f};
     Color lightOverlay = {255, 255, 255, 30};
-    DrawRectangleRounded(gradientRect, block.cornerRadius / block.size.x, 8, lightOverlay);
+    DrawRectangleRounded(gradientRect, UI::UI_BORDER_RADIUS_LARGE / block.size.x, 8, lightOverlay);
     
-    // Draw border
-    Color borderColor = block.borderColor;
+    // Draw border using enhanced theme colors
+    Color borderColor = UI::PANEL_BORDER;
     if (block.isSelected) {
-        borderColor = {255, 255, 255, 255}; // Bright white for selection
+        borderColor = UI::ACCENT_PRIMARY; // Use accent primary for selection
     } else if (block.isHovered) {
-        borderColor = {255, 255, 255, 180}; // Semi-transparent white for hover
+        borderColor = UI::HOVER_BACKGROUND; // Use hover background for hover
     } else if (block.isDragging) {
-        borderColor = {255, 255, 0, 255}; // Yellow for dragging
+        borderColor = UI::ACCENT_TERTIARY; // Use accent tertiary for dragging
     }
-    DrawRectangleRoundedLinesEx(blockRect, block.cornerRadius / block.size.x, 8, block.borderWidth, borderColor);
+    DrawRectangleRoundedLinesEx(blockRect, UI::UI_BORDER_RADIUS_LARGE / block.size.x, 8, 2.0f, borderColor);
     
-    // Draw header and body sections
+    // Draw header and body sections with consistent spacing
     Rectangle headerRect = {drawPos.x, drawPos.y, block.size.x, block.size.y * 0.4f};
     Rectangle bodyRect = {drawPos.x, drawPos.y + block.size.y * 0.4f, block.size.x, block.size.y * 0.6f};
     
@@ -1063,94 +1073,94 @@ void ScriptingEditor::drawProfessionalBlock(const ScriptBlock& block, Vector2 of
     // Draw connection ports
     drawBlockPorts(block, offset);
     
-    // Draw selection highlight if selected
+    // Draw selection highlight if selected using enhanced theme
     if (block.isSelected) {
-        Rectangle highlightRect = {drawPos.x - 2, drawPos.y - 2, block.size.x + 4, block.size.y + 4};
-        DrawRectangleRoundedLinesEx(highlightRect, block.cornerRadius / block.size.x, 8, 3.0f, {100, 200, 255, 200});
+        Rectangle highlightRect = {drawPos.x - UI::UI_PADDING_SMALL, drawPos.y - UI::UI_PADDING_SMALL, 
+                                  block.size.x + UI::UI_PADDING_MEDIUM, block.size.y + UI::UI_PADDING_MEDIUM};
+        DrawRectangleRoundedLinesEx(highlightRect, UI::UI_BORDER_RADIUS_LARGE / block.size.x, 8, 3.0f, UI::GLOW_ACCENT);
     }
 }
 
 void ScriptingEditor::drawBlockHeader(const ScriptBlock& block, Rectangle headerRect, Vector2 offset) {
     // Draw header background
-    DrawRectangleRounded(headerRect, block.cornerRadius / block.size.x, 8, block.headerColor);
+    DrawRectangleRounded(headerRect, UI::UI_BORDER_RADIUS_LARGE / block.size.x, 8, block.headerColor);
     
-    // Draw title
-    Vector2 titleSize = MeasureTextEx(GetFontDefault(), block.title.c_str(), 16, 1);
+    // Draw title using enhanced font sizing
+    Vector2 titleSize = MeasureTextEx(GetFontDefault(), block.title.c_str(), UI::UI_FONT_SIZE_LARGE, 1);
     Vector2 titlePos = {
         headerRect.x + (headerRect.width - titleSize.x) / 2,
-        headerRect.y + 8
+        headerRect.y + UI::UI_PADDING_MEDIUM
     };
     
-    // Title shadow
+    // Title shadow using enhanced shadow system
     DrawTextEx(GetFontDefault(), block.title.c_str(), 
-               Vector2{titlePos.x + 1, titlePos.y + 1}, 16, 1, Color{0, 0, 0, 100});
-    // Title text
-    DrawTextEx(GetFontDefault(), block.title.c_str(), titlePos, 16, 1, WHITE);
+               Vector2{titlePos.x + 1, titlePos.y + 1}, UI::UI_FONT_SIZE_LARGE, 1, UI::SHADOW_LIGHT);
+    // Title text using enhanced text colors
+    DrawTextEx(GetFontDefault(), block.title.c_str(), titlePos, UI::UI_FONT_SIZE_LARGE, 1, UI::UI_TEXT_PRIMARY);
 }
 
 void ScriptingEditor::drawBlockBody(const ScriptBlock& block, Rectangle bodyRect, Vector2 offset) {
     // Draw body background (slightly lighter than header)
     Color bodyColor = block.secondaryColor;
-    DrawRectangleRounded(bodyRect, block.cornerRadius / block.size.x, 8, bodyColor);
+    DrawRectangleRounded(bodyRect, UI::UI_BORDER_RADIUS_LARGE / block.size.x, 8, bodyColor);
     
     // Draw parameter summary or subtitle
     std::string paramText = block.isOnCanvas ? block.getParameterSummary() : block.subtitle;
     
-    Vector2 paramSize = MeasureTextEx(GetFontDefault(), paramText.c_str(), 12, 1);
+    Vector2 paramSize = MeasureTextEx(GetFontDefault(), paramText.c_str(), UI::UI_FONT_SIZE_MEDIUM, 1);
     Vector2 paramPos = {
         bodyRect.x + (bodyRect.width - paramSize.x) / 2,
         bodyRect.y + (bodyRect.height - paramSize.y) / 2
     };
     
-    // Parameter text (darker color for contrast)
-    Color textColor = {50, 50, 50, 255};
-    DrawTextEx(GetFontDefault(), paramText.c_str(), paramPos, 12, 1, textColor);
+    // Parameter text using enhanced text colors
+    DrawTextEx(GetFontDefault(), paramText.c_str(), paramPos, UI::UI_FONT_SIZE_MEDIUM, 1, UI::UI_TEXT_SECONDARY);
     
     // Draw parameter fields for specific block types
     if (block.isOnCanvas) {
         switch (block.type) {
             case BlockType::MOVE: {
                 // Draw small directional arrow or vector indicator
-                Vector2 center = {bodyRect.x + bodyRect.width - 20, bodyRect.y + bodyRect.height / 2};
-                DrawCircle(center.x, center.y, 6, {25, 135, 84, 100});
+                Vector2 center = {bodyRect.x + bodyRect.width - UI::UI_PADDING_LARGE, bodyRect.y + bodyRect.height / 2};
+                DrawCircle(center.x, center.y, 6, UI::BLOCK_ACTION_SECONDARY);
                 DrawTriangle(
                     {center.x - 3, center.y + 2},
                     {center.x + 3, center.y + 2},
                     {center.x, center.y - 3},
-                    {25, 135, 84, 255}
+                    UI::BLOCK_ACTION
                 );
                 break;
             }
             case BlockType::ROTATE: {
                 // Draw rotation indicator
-                Vector2 center = {bodyRect.x + bodyRect.width - 20, bodyRect.y + bodyRect.height / 2};
-                DrawCircleLines(center.x, center.y, 6, {25, 135, 84, 255});
-                DrawCircle(center.x + 4, center.y - 4, 2, {25, 135, 84, 255});
+                Vector2 center = {bodyRect.x + bodyRect.width - UI::UI_PADDING_LARGE, bodyRect.y + bodyRect.height / 2};
+                DrawCircleLines(center.x, center.y, 6, UI::BLOCK_ACTION);
+                DrawCircle(center.x + 4, center.y - 4, 2, UI::BLOCK_ACTION);
                 break;
             }
             case BlockType::IF: {
                 // Draw condition diamond
-                Vector2 center = {bodyRect.x + bodyRect.width - 20, bodyRect.y + bodyRect.height / 2};
+                Vector2 center = {bodyRect.x + bodyRect.width - UI::UI_PADDING_LARGE, bodyRect.y + bodyRect.height / 2};
                 Vector2 points[4] = {
                     {center.x, center.y - 6},
                     {center.x + 6, center.y},
                     {center.x, center.y + 6},
                     {center.x - 6, center.y}
                 };
-                DrawTriangle(points[0], points[1], points[2], {255, 193, 7, 200});
-                DrawTriangle(points[0], points[2], points[3], {255, 193, 7, 200});
+                DrawTriangle(points[0], points[1], points[2], UI::BLOCK_CONDITION_SECONDARY);
+                DrawTriangle(points[0], points[2], points[3], UI::BLOCK_CONDITION_SECONDARY);
                 break;
             }
             case BlockType::LOOP: {
                 // Draw loop indicator (circular arrow)
-                Vector2 center = {bodyRect.x + bodyRect.width - 20, bodyRect.y + bodyRect.height / 2};
-                DrawCircleLines(center.x, center.y, 6, {255, 193, 7, 255});
+                Vector2 center = {bodyRect.x + bodyRect.width - UI::UI_PADDING_LARGE, bodyRect.y + bodyRect.height / 2};
+                DrawCircleLines(center.x, center.y, 6, UI::BLOCK_CONDITION);
                 // Draw small arrow tip
                 DrawTriangle(
                     {center.x + 4, center.y - 4},
                     {center.x + 6, center.y - 2},
                     {center.x + 4, center.y},
-                    {255, 193, 7, 255}
+                    UI::BLOCK_CONDITION
                 );
                 break;
             }
@@ -1169,9 +1179,9 @@ void ScriptingEditor::drawBlockPorts(const ScriptBlock& block, Vector2 offset) {
     for (const auto& port : block.inputPorts) {
         Vector2 portPos = {port.position.x + offset.x, port.position.y + offset.y};
         
-        // Draw port circle
+        // Draw port circle using enhanced theme colors
         DrawCircle(portPos.x, portPos.y, 6, port.portColor);
-        DrawCircleLines(portPos.x, portPos.y, 6, WHITE);
+        DrawCircleLines(portPos.x, portPos.y, 6, UI::UI_TEXT_PRIMARY);
         
         // Draw port type indicator
         switch (port.type) {
@@ -1181,22 +1191,22 @@ void ScriptingEditor::drawBlockPorts(const ScriptBlock& block, Vector2 offset) {
                     {portPos.x - 3, portPos.y - 3},
                     {portPos.x - 3, portPos.y + 3},
                     {portPos.x + 3, portPos.y},
-                    WHITE
+                    UI::UI_TEXT_PRIMARY
                 );
                 break;
             case ConnectionPortType::VALUE_IN:
                 // Draw small square
-                DrawRectangle(portPos.x - 2, portPos.y - 2, 4, 4, WHITE);
+                DrawRectangle(portPos.x - 2, portPos.y - 2, 4, 4, UI::UI_TEXT_PRIMARY);
                 break;
             default:
                 break;
         }
         
-        // Draw port label if space allows
+        // Draw port label if space allows using enhanced typography
         if (!port.label.empty() && block.size.x > 120) {
-            Vector2 labelSize = MeasureTextEx(GetFontDefault(), port.label.c_str(), 10, 1);
-            Vector2 labelPos = {portPos.x - labelSize.x - 10, portPos.y - labelSize.y / 2};
-            DrawTextEx(GetFontDefault(), port.label.c_str(), labelPos, 10, 1, {80, 80, 80, 255});
+            Vector2 labelSize = MeasureTextEx(GetFontDefault(), port.label.c_str(), UI::UI_FONT_SIZE_SMALL, 1);
+            Vector2 labelPos = {portPos.x - labelSize.x - UI::UI_PADDING_MEDIUM, portPos.y - labelSize.y / 2};
+            DrawTextEx(GetFontDefault(), port.label.c_str(), labelPos, UI::UI_FONT_SIZE_SMALL, 1, UI::UI_TEXT_TERTIARY);
         }
     }
     
@@ -1204,9 +1214,9 @@ void ScriptingEditor::drawBlockPorts(const ScriptBlock& block, Vector2 offset) {
     for (const auto& port : block.outputPorts) {
         Vector2 portPos = {port.position.x + offset.x, port.position.y + offset.y};
         
-        // Draw port circle
+        // Draw port circle using enhanced theme colors
         DrawCircle(portPos.x, portPos.y, 6, port.portColor);
-        DrawCircleLines(portPos.x, portPos.y, 6, WHITE);
+        DrawCircleLines(portPos.x, portPos.y, 6, UI::UI_TEXT_PRIMARY);
         
         // Draw port type indicator
         switch (port.type) {
@@ -1216,22 +1226,22 @@ void ScriptingEditor::drawBlockPorts(const ScriptBlock& block, Vector2 offset) {
                     {portPos.x - 3, portPos.y - 3},
                     {portPos.x + 3, portPos.y - 3},
                     {portPos.x, portPos.y + 3},
-                    WHITE
+                    UI::UI_TEXT_PRIMARY
                 );
                 break;
             case ConnectionPortType::TRUE_OUT:
                 // Draw checkmark
-                DrawLineEx({portPos.x - 3, portPos.y}, {portPos.x - 1, portPos.y + 2}, 2, WHITE);
-                DrawLineEx({portPos.x - 1, portPos.y + 2}, {portPos.x + 3, portPos.y - 2}, 2, WHITE);
+                DrawLineEx({portPos.x - 3, portPos.y}, {portPos.x - 1, portPos.y + 2}, 2, UI::SUCCESS);
+                DrawLineEx({portPos.x - 1, portPos.y + 2}, {portPos.x + 3, portPos.y - 2}, 2, UI::SUCCESS);
                 break;
             case ConnectionPortType::FALSE_OUT:
                 // Draw X
-                DrawLineEx({portPos.x - 2, portPos.y - 2}, {portPos.x + 2, portPos.y + 2}, 2, WHITE);
-                DrawLineEx({portPos.x - 2, portPos.y + 2}, {portPos.x + 2, portPos.y - 2}, 2, WHITE);
+                DrawLineEx({portPos.x - 2, portPos.y - 2}, {portPos.x + 2, portPos.y + 2}, 2, UI::ERROR);
+                DrawLineEx({portPos.x - 2, portPos.y + 2}, {portPos.x + 2, portPos.y - 2}, 2, UI::ERROR);
                 break;
             case ConnectionPortType::VALUE_OUT:
                 // Draw small circle
-                DrawCircle(portPos.x, portPos.y, 2, WHITE);
+                DrawCircle(portPos.x, portPos.y, 2, UI::UI_TEXT_PRIMARY);
                 break;
             default:
                 break;
