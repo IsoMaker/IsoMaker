@@ -9,6 +9,7 @@
 #include "../../UI/UITheme.hpp"
 #include <iostream>
 #include <algorithm>
+#include <fstream>
 
 ScriptingEditor::ScriptingEditor() {
     std::cout << "[ScriptingEditor] Constructor called" << std::endl;
@@ -104,8 +105,13 @@ void ScriptingEditor::draw(Rectangle mainViewArea) {
         drawConfigDialog();
     }
     
-    // Draw context menu on top if open
-    if (_showContextMenu) {
+    // Draw connection preview if dragging
+    if (_connectionDrag.isDragging) {
+        drawConnectionPreview();
+    }
+    
+    // Draw context menu on top if visible
+    if (_contextMenu.isVisible) {
         drawContextMenu();
     }
     
@@ -877,7 +883,8 @@ void ScriptingEditor::drawScriptCanvas(Rectangle bounds) {
                      return a->canvasOrder < b->canvasOrder;
                  });
         
-        // Connections removed - modern port-based system will be implemented later
+        // Draw connections first (behind blocks)
+        drawConnections(it->second);
         
         // Draw all canvas blocks with professional styling
         for (const ScriptBlock* block : sortedBlocks) {
@@ -1207,11 +1214,19 @@ void ScriptingEditor::handleMouseInput(Vector2 mousePos, bool mousePressed, bool
         _rightClickHandled = false;
     }
     
-    // Handle left-click for block selection (when not right-clicking)
-    if (mousePressed && !rightClick && !_isMouseDragging) {
-        // Close context menu if open
-        if (_showContextMenu) {
-            closeContextMenu();
+    // Update context menu if visible (handles hovering and clicking)
+    if (_contextMenu.isVisible) {
+        updateContextMenu(mousePos);
+    }
+    
+    // Update connection system (handles connection creation)
+    updateConnectionSystem(mousePos, mousePressed, mouseReleased);
+    
+    // Handle left-click for block selection (when not right-clicking and not making connections)
+    if (mousePressed && !rightClick && !_isMouseDragging && !_connectionDrag.isDragging) {
+        // Close context menu if clicking elsewhere
+        if (_contextMenu.isVisible) {
+            hideContextMenu();
         }
         
         // Check for block selection
@@ -1414,24 +1429,6 @@ void ScriptingEditor::handleObjectSelection(int objectId) {
 
 // New method implementations for enhanced functionality
 
-void ScriptingEditor::handleRightClick(Vector2 mousePos) {
-    // Check if right-clicking on a canvas block
-    int selectedObjId = getSelectedObjectId();
-    if (selectedObjId == -1) return;
-    
-    if (isPositionInCanvas(mousePos)) {
-        ScriptBlock* block = getCanvasBlockAtPosition(mousePos);
-        if (block) {
-            openContextMenu(block, mousePos);
-        } else {
-            // Close context menu if clicking on empty canvas
-            closeContextMenu();
-        }
-    } else {
-        // Close context menu if clicking outside canvas
-        closeContextMenu();
-    }
-}
 
 
 Vector2 ScriptingEditor::getNextCanvasPosition() {
@@ -1701,32 +1698,6 @@ BlockType ScriptingEditor::getPaletteBlockTypeAtPosition(Vector2 pos) {
 
 
 
-// Context menu implementation
-void ScriptingEditor::openContextMenu(ScriptBlock* block, Vector2 position) {
-    _showContextMenu = true;
-    _contextMenuPosition = position;
-    _contextMenuBlock = block;
-    std::cout << "[ScriptingEditor] Opened context menu for block: " << block->title << std::endl;
-}
-
-void ScriptingEditor::closeContextMenu() {
-    _showContextMenu = false;
-    _contextMenuBlock = nullptr;
-}
-
-void ScriptingEditor::handleContextMenuAction(const std::string& action) {
-    if (!_contextMenuBlock) return;
-    
-    if (action == "Edit") {
-        editBlock(_contextMenuBlock);
-    } else if (action == "Duplicate") {
-        duplicateBlock(_contextMenuBlock);
-    } else if (action == "Delete") {
-        deleteBlock(_contextMenuBlock);
-    }
-    
-    closeContextMenu();
-}
 
 void ScriptingEditor::duplicateBlock(ScriptBlock* block) {
     if (!block) return;
@@ -1754,7 +1725,8 @@ void ScriptingEditor::duplicateBlock(ScriptBlock* block) {
 void ScriptingEditor::deleteBlock(ScriptBlock* block) {
     if (!block) return;
     
-    // Connection cleanup removed - modern port-based system will handle this
+    // Remove all connections involving this block
+    removeAllConnectionsForBlock(block->id);
     
     // Remove the block from canvas
     removeBlockFromCanvas(block->id);
@@ -1819,82 +1791,793 @@ ScriptBlock* ScriptingEditor::getBlockAtPosition(Vector2 pos) {
     return getCanvasBlockAtPosition(pos);
 }
 
-void ScriptingEditor::drawContextMenu() {
-    if (!_showContextMenu || !_contextMenuBlock) return;
+// ==========================================
+// Modern Context Menu System Implementation
+// ==========================================
+
+void ScriptingEditor::showContextMenu(ScriptBlock* block, Vector2 mousePosition) {
+    if (!block) return;
     
-    const float menuWidth = 140;
-    const float menuHeight = 110;
-    const float itemHeight = 30;
-    const float padding = 8.0f; // UI::UI_PADDING_MEDIUM
+    _contextMenu.clear();
+    _contextMenu.isVisible = true;
+    _contextMenu.targetBlock = block;
     
-    // Adjust position to stay within screen bounds
-    Vector2 menuPos = _contextMenuPosition;
+    // Create menu items for this block
+    createContextMenuItems(block);
+    
+    // Calculate optimal menu position
+    float menuHeight = _contextMenu.getMenuHeight();
+    _contextMenu.position = calculateContextMenuPosition(mousePosition, _contextMenu.width, menuHeight);
+    
+    std::cout << "[ScriptingEditor] Context menu opened for block: " << block->title << std::endl;
+}
+
+void ScriptingEditor::hideContextMenu() {
+    if (_contextMenu.isVisible) {
+        _contextMenu.clear();
+        std::cout << "[ScriptingEditor] Context menu closed" << std::endl;
+    }
+}
+
+void ScriptingEditor::createContextMenuItems(ScriptBlock* block) {
+    if (!block) return;
+    
+    _contextMenu.items.clear();
+    
+    // Edit item - only enabled if block has configurable parameters
+    bool hasParameters = (block->config.floatParams.size() > 0 || 
+                         block->config.vectorParams.size() > 0 || 
+                         block->config.stringParams.size() > 0 || 
+                         block->config.boolParams.size() > 0);
+    
+    Color editTextColor = hasParameters ? UI::UI_TEXT_PRIMARY : UI::UI_TEXT_TERTIARY;
+    Color editHoverColor = hasParameters ? UI::ACCENT_PRIMARY : UI::UI_TERTIARY;
+    
+    _contextMenu.items.emplace_back("edit", "Edit", editTextColor, editHoverColor, hasParameters);
+    
+    // Duplicate item - always enabled
+    _contextMenu.items.emplace_back("duplicate", "Duplicate", UI::UI_TEXT_PRIMARY, UI::ACCENT_SECONDARY, true);
+    
+    // Delete item - always enabled, but with danger color
+    _contextMenu.items.emplace_back("delete", "Delete", UI::UI_TEXT_PRIMARY, UI::ACCENT_DANGER, true);
+}
+
+Vector2 ScriptingEditor::calculateContextMenuPosition(Vector2 requestedPos, float menuWidth, float menuHeight) {
+    Vector2 finalPos = requestedPos;
+    
+    // Get screen bounds
     int screenWidth = GetScreenWidth();
     int screenHeight = GetScreenHeight();
     
-    if (menuPos.x + menuWidth > screenWidth) menuPos.x = screenWidth - menuWidth;
-    if (menuPos.y + menuHeight > screenHeight) menuPos.y = screenHeight - menuHeight;
-    if (menuPos.x < 0) menuPos.x = 0;
-    if (menuPos.y < 0) menuPos.y = 0;
+    // Add some padding from screen edges
+    const float screenPadding = 10.0f;
+    
+    // Adjust horizontal position if menu would go off-screen
+    if (finalPos.x + menuWidth > screenWidth - screenPadding) {
+        finalPos.x = screenWidth - menuWidth - screenPadding;
+    }
+    if (finalPos.x < screenPadding) {
+        finalPos.x = screenPadding;
+    }
+    
+    // Adjust vertical position if menu would go off-screen
+    if (finalPos.y + menuHeight > screenHeight - screenPadding) {
+        finalPos.y = screenHeight - menuHeight - screenPadding;
+    }
+    if (finalPos.y < screenPadding) {
+        finalPos.y = screenPadding;
+    }
+    
+    return finalPos;
+}
+
+void ScriptingEditor::drawContextMenu() {
+    if (!_contextMenu.isVisible || _contextMenu.items.empty()) {
+        return;
+    }
+    
+    const float borderRadius = UI::UI_BORDER_RADIUS_MEDIUM;
+    const float shadowOffset = UI::UI_SHADOW_OFFSET_MEDIUM;
+    const float padding = UI::UI_PADDING_MEDIUM;
+    
+    Vector2 menuPos = _contextMenu.position;
+    float menuWidth = _contextMenu.width;
+    float menuHeight = _contextMenu.getMenuHeight();
     
     Rectangle menuBounds = {menuPos.x, menuPos.y, menuWidth, menuHeight};
     
-    // Draw shadow first
-    Rectangle shadowBounds = {menuPos.x + 4, menuPos.y + 4, menuWidth, menuHeight};
-    DrawRectangleRec(shadowBounds, {0, 0, 0, 80});
+    // Draw shadow for depth
+    Rectangle shadowBounds = {
+        menuPos.x + shadowOffset, 
+        menuPos.y + shadowOffset, 
+        menuWidth, 
+        menuHeight
+    };
+    DrawRectangleRounded(shadowBounds, borderRadius / menuWidth, 8, UI::SHADOW_MEDIUM);
     
-    // Draw menu background with dark theme colors
-    DrawRectangleRec(menuBounds, UI::PANEL_BACKGROUND);
-    DrawRectangleLinesEx(menuBounds, 1, UI::PANEL_BORDER);
+    // Draw menu background
+    DrawRectangleRounded(menuBounds, borderRadius / menuWidth, 8, UI::PANEL_BACKGROUND);
+    DrawRectangleRoundedLinesEx(menuBounds, borderRadius / menuWidth, 8, 1.0f, UI::PANEL_BORDER);
     
-    // Draw menu items with enhanced styling
-    Rectangle editRect = {menuPos.x + padding, menuPos.y + padding, menuWidth - 2*padding, itemHeight};
-    Rectangle duplicateRect = {menuPos.x + padding, menuPos.y + padding + itemHeight + 5, menuWidth - 2*padding, itemHeight};
-    Rectangle deleteRect = {menuPos.x + padding, menuPos.y + padding + 2*(itemHeight + 5), menuWidth - 2*padding, itemHeight};
-    
-    // Check if Edit option should be enabled (only for blocks with parameters)
-    bool canEdit = _contextMenuBlock && (_contextMenuBlock->config.floatParams.size() > 0 || 
-                                        _contextMenuBlock->config.vectorParams.size() > 0 || 
-                                        _contextMenuBlock->config.stringParams.size() > 0 || 
-                                        _contextMenuBlock->config.boolParams.size() > 0);
-    
-    // Enhanced menu item drawing with hover effects
-    Vector2 mousePos = GetMousePosition();
-    
-    // Edit button
-    bool editHovered = CheckCollisionPointRec(mousePos, editRect);
-    Color editBgColor = canEdit ? (editHovered ? UI::ACCENT_PRIMARY : UI::UI_TERTIARY) : UI::UI_TEXT_TERTIARY;
-    Color editTextColor = canEdit ? UI::UI_TEXT_PRIMARY : UI::UI_TEXT_TERTIARY;
-    
-    DrawRectangleRec(editRect, editBgColor);
-    DrawRectangleLinesEx(editRect, 1, UI::PANEL_BORDER);
-    DrawText("Edit", editRect.x + 10, editRect.y + 8, 12, editTextColor);
-    
-    if (canEdit && editHovered && IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
-        handleContextMenuAction("Edit");
-    }
-    
-    // Duplicate button
-    bool duplicateHovered = CheckCollisionPointRec(mousePos, duplicateRect);
-    Color duplicateBgColor = duplicateHovered ? UI::ACCENT_SECONDARY : UI::UI_TERTIARY;
-    
-    DrawRectangleRec(duplicateRect, duplicateBgColor);
-    DrawRectangleLinesEx(duplicateRect, 1, UI::PANEL_BORDER);
-    DrawText("Duplicate", duplicateRect.x + 10, duplicateRect.y + 8, 12, UI::UI_TEXT_PRIMARY);
-    
-    if (duplicateHovered && IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
-        handleContextMenuAction("Duplicate");
-    }
-    
-    // Delete button
-    bool deleteHovered = CheckCollisionPointRec(mousePos, deleteRect);
-    Color deleteBgColor = deleteHovered ? UI::ACCENT_DANGER : UI::UI_TERTIARY;
-    
-    DrawRectangleRec(deleteRect, deleteBgColor);
-    DrawRectangleLinesEx(deleteRect, 1, UI::PANEL_BORDER);
-    DrawText("Delete", deleteRect.x + 10, deleteRect.y + 8, 12, UI::UI_TEXT_PRIMARY);
-    
-    if (deleteHovered && IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
-        handleContextMenuAction("Delete");
+    // Draw menu items
+    for (size_t i = 0; i < _contextMenu.items.size(); ++i) {
+        const ContextMenuItem& item = _contextMenu.items[i];
+        
+        Rectangle itemBounds = {
+            menuPos.x + padding,
+            menuPos.y + padding + i * _contextMenu.itemHeight,
+            menuWidth - 2 * padding,
+            _contextMenu.itemHeight
+        };
+        
+        // Draw hover background if this item is hovered
+        if (_contextMenu.hoveredItemIndex == static_cast<int>(i) && item.enabled) {
+            DrawRectangleRounded(itemBounds, 
+                               (borderRadius * 0.5f) / itemBounds.width, 
+                               4, 
+                               item.hoverColor);
+        }
+        
+        // Draw item text
+        Vector2 textPos = {
+            itemBounds.x + UI::UI_PADDING_MEDIUM,
+            itemBounds.y + (itemBounds.height - UI::UI_FONT_SIZE_MEDIUM) / 2
+        };
+        
+        DrawTextEx(GetFontDefault(), 
+                  item.label.c_str(), 
+                  textPos, 
+                  UI::UI_FONT_SIZE_MEDIUM, 
+                  1.0f, 
+                  item.textColor);
     }
 }
+
+void ScriptingEditor::updateContextMenu(Vector2 mousePosition) {
+    if (!_contextMenu.isVisible) {
+        return;
+    }
+    
+    const float padding = UI::UI_PADDING_MEDIUM;
+    Vector2 menuPos = _contextMenu.position;
+    float menuWidth = _contextMenu.width;
+    float menuHeight = _contextMenu.getMenuHeight();
+    
+    Rectangle menuBounds = {menuPos.x, menuPos.y, menuWidth, menuHeight};
+    
+    // Update hovered item
+    _contextMenu.hoveredItemIndex = -1;
+    
+    if (CheckCollisionPointRec(mousePosition, menuBounds)) {
+        // Calculate which item is hovered
+        float relativeY = mousePosition.y - menuPos.y - padding;
+        int itemIndex = static_cast<int>(relativeY / _contextMenu.itemHeight);
+        
+        if (itemIndex >= 0 && itemIndex < static_cast<int>(_contextMenu.items.size())) {
+            _contextMenu.hoveredItemIndex = itemIndex;
+        }
+        
+        // Handle click on menu items
+        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && _contextMenu.hoveredItemIndex >= 0) {
+            const ContextMenuItem& clickedItem = _contextMenu.items[_contextMenu.hoveredItemIndex];
+            if (clickedItem.enabled) {
+                handleContextMenuAction(clickedItem.id);
+            }
+        }
+    } else {
+        // Click outside menu - close it
+        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            hideContextMenu();
+        }
+    }
+}
+
+void ScriptingEditor::handleContextMenuAction(const std::string& actionId) {
+    if (!_contextMenu.targetBlock) {
+        hideContextMenu();
+        return;
+    }
+    
+    ScriptBlock* targetBlock = _contextMenu.targetBlock;
+    
+    // Execute the action
+    if (actionId == "edit") {
+        editBlock(targetBlock);
+    } else if (actionId == "duplicate") {
+        duplicateBlock(targetBlock);
+    } else if (actionId == "delete") {
+        deleteBlock(targetBlock);
+    }
+    
+    // Close the menu after action
+    hideContextMenu();
+    
+    std::cout << "[ScriptingEditor] Context menu action executed: " << actionId << std::endl;
+}
+
+void ScriptingEditor::handleRightClick(Vector2 mousePosition) {
+    int selectedObjId = getSelectedObjectId();
+    if (selectedObjId == -1) return;
+    
+    if (isPositionInCanvas(mousePosition)) {
+        ScriptBlock* block = getCanvasBlockAtPosition(mousePosition);
+        if (block) {
+            // Right-clicked on a block - show context menu
+            showContextMenu(block, mousePosition);
+        } else {
+            // Right-clicked on empty canvas - hide any open context menu
+            hideContextMenu();
+        }
+    } else {
+        // Right-clicked outside canvas - hide context menu
+        hideContextMenu();
+    }
+}
+
+// ==========================================
+// Modern Connection System Implementation
+// ==========================================
+
+void ScriptingEditor::updateConnectionSystem(Vector2 mousePosition, bool mousePressed, bool mouseReleased) {
+    // Handle connection drag lifecycle
+    if (_connectionDrag.isDragging) {
+        _connectionDrag.currentMousePosition = mousePosition;
+        
+        if (mouseReleased) {
+            endConnectionDrag(mousePosition);
+        } else {
+            updateConnectionDrag(mousePosition);
+        }
+        return;
+    }
+    
+    // Start new connection drag if pressing on a port
+    if (mousePressed && isPositionInCanvas(mousePosition)) {
+        ScriptBlock* clickedBlock = nullptr;
+        int portIndex = -1;
+        ConnectionPoint* port = getConnectionPointAt(mousePosition, &clickedBlock, &portIndex);
+        
+        if (port && clickedBlock) {
+            // Only start drag from output ports
+            if (port->type == ConnectionPortType::EXECUTION_OUT || 
+                port->type == ConnectionPortType::TRUE_OUT || 
+                port->type == ConnectionPortType::FALSE_OUT ||
+                port->type == ConnectionPortType::VALUE_OUT) {
+                startConnectionDrag(clickedBlock, portIndex, port->type, mousePosition);
+            }
+        }
+    }
+}
+
+void ScriptingEditor::startConnectionDrag(ScriptBlock* block, int portIndex, ConnectionPortType portType, Vector2 startPos) {
+    if (!block) return;
+    
+    _connectionDrag.isDragging = true;
+    _connectionDrag.sourceBlock = block;
+    _connectionDrag.sourcePortIndex = portIndex;
+    _connectionDrag.sourcePortType = portType;
+    _connectionDrag.dragStartPosition = startPos;
+    _connectionDrag.currentMousePosition = startPos;
+    _connectionDrag.previewColor = getConnectionColor(portType, ConnectionPortType::EXECUTION_IN);
+    
+    std::cout << "[ScriptingEditor] Started connection drag from block " << block->id << " port " << portIndex << std::endl;
+}
+
+void ScriptingEditor::updateConnectionDrag(Vector2 mousePosition) {
+    if (!_connectionDrag.isValid()) return;
+    
+    _connectionDrag.currentMousePosition = mousePosition;
+    
+    // Update preview color based on potential target
+    ScriptBlock* hoverBlock = nullptr;
+    int hoverPortIndex = -1;
+    ConnectionPoint* hoverPort = getConnectionPointAt(mousePosition, &hoverBlock, &hoverPortIndex);
+    
+    if (hoverPort && hoverBlock && hoverBlock != _connectionDrag.sourceBlock) {
+        // Check if this would be a valid connection
+        if (isConnectionValid(_connectionDrag.sourceBlock, _connectionDrag.sourcePortIndex, hoverBlock, hoverPortIndex)) {
+            _connectionDrag.previewColor = UI::SUCCESS; // Green for valid
+        } else {
+            _connectionDrag.previewColor = UI::ERROR; // Red for invalid
+        }
+    } else {
+        _connectionDrag.previewColor = getConnectionColor(_connectionDrag.sourcePortType, ConnectionPortType::EXECUTION_IN);
+    }
+}
+
+void ScriptingEditor::endConnectionDrag(Vector2 mousePosition) {
+    if (!_connectionDrag.isValid()) {
+        _connectionDrag.clear();
+        return;
+    }
+    
+    // Try to create connection at drop location
+    ScriptBlock* targetBlock = nullptr;
+    int targetPortIndex = -1;
+    ConnectionPoint* targetPort = getConnectionPointAt(mousePosition, &targetBlock, &targetPortIndex);
+    
+    if (targetPort && targetBlock && targetBlock != _connectionDrag.sourceBlock) {
+        if (createConnection(_connectionDrag.sourceBlock, _connectionDrag.sourcePortIndex, targetBlock, targetPortIndex)) {
+            std::cout << "[ScriptingEditor] Connection created successfully" << std::endl;
+        } else {
+            std::cout << "[ScriptingEditor] Connection creation failed - invalid connection" << std::endl;
+        }
+    }
+    
+    _connectionDrag.clear();
+}
+
+bool ScriptingEditor::createConnection(ScriptBlock* fromBlock, int fromPortIndex, ScriptBlock* toBlock, int toPortIndex) {
+    if (!fromBlock || !toBlock || fromBlock == toBlock) return false;
+    if (fromPortIndex < 0 || toPortIndex < 0) return false;
+    if (fromPortIndex >= fromBlock->outputPorts.size() || toPortIndex >= toBlock->inputPorts.size()) return false;
+    
+    // Validate connection compatibility
+    if (!isConnectionValid(fromBlock, fromPortIndex, toBlock, toPortIndex)) return false;
+    
+    int selectedObjId = getSelectedObjectId();
+    if (selectedObjId == -1) return false;
+    
+    auto it = _objectScripts.find(selectedObjId);
+    if (it == _objectScripts.end()) return false;
+    
+    VisualScript& script = it->second;
+    
+    // Remove any existing connections to the target port (each input can only have one connection)
+    removeConnection(-1, toBlock->id, -1, toPortIndex);
+    
+    // Create new connection
+    ConnectionPoint& fromPort = fromBlock->outputPorts[fromPortIndex];
+    ConnectionPoint& toPort = toBlock->inputPorts[toPortIndex];
+    
+    Color connectionColor = getConnectionColor(fromPort.type, toPort.type);
+    
+    BlockConnection newConnection(
+        fromBlock->id, toBlock->id,
+        fromPort.type, toPort.type,
+        fromPortIndex, toPortIndex,
+        fromPort.position, toPort.position,
+        connectionColor
+    );
+    
+    script.connections.push_back(newConnection);
+    
+    std::cout << "[ScriptingEditor] Created connection: Block " << fromBlock->id 
+              << " port " << fromPortIndex << " -> Block " << toBlock->id 
+              << " port " << toPortIndex << std::endl;
+    
+    return true;
+}
+
+void ScriptingEditor::removeConnection(int fromBlockId, int toBlockId, int fromPortIndex, int toPortIndex) {
+    int selectedObjId = getSelectedObjectId();
+    if (selectedObjId == -1) return;
+    
+    auto it = _objectScripts.find(selectedObjId);
+    if (it == _objectScripts.end()) return;
+    
+    auto& connections = it->second.connections;
+    
+    // Remove matching connections
+    connections.erase(
+        std::remove_if(connections.begin(), connections.end(),
+            [fromBlockId, toBlockId, fromPortIndex, toPortIndex](const BlockConnection& conn) {
+                bool matchFrom = (fromBlockId == -1 || conn.fromBlockId == fromBlockId);
+                bool matchTo = (toBlockId == -1 || conn.toBlockId == toBlockId);
+                bool matchFromPort = (fromPortIndex == -1 || conn.fromPortIndex == fromPortIndex);
+                bool matchToPort = (toPortIndex == -1 || conn.toPortIndex == toPortIndex);
+                return matchFrom && matchTo && matchFromPort && matchToPort;
+            }),
+        connections.end()
+    );
+}
+
+void ScriptingEditor::removeAllConnectionsForBlock(int blockId) {
+    removeConnection(blockId, -1); // Remove as source
+    removeConnection(-1, blockId); // Remove as target
+}
+
+void ScriptingEditor::drawConnections(const VisualScript& script) {
+    // Update connection positions before drawing
+    for (const auto& connection : script.connections) {
+        // Find the blocks
+        const ScriptBlock* fromBlock = nullptr;
+        const ScriptBlock* toBlock = nullptr;
+        
+        for (const auto& block : script.blocks) {
+            if (block.id == connection.fromBlockId) fromBlock = &block;
+            if (block.id == connection.toBlockId) toBlock = &block;
+        }
+        
+        if (fromBlock && toBlock && connection.fromPortIndex < fromBlock->outputPorts.size() 
+            && connection.toPortIndex < toBlock->inputPorts.size()) {
+            
+            Vector2 startPoint = fromBlock->outputPorts[connection.fromPortIndex].position;
+            Vector2 endPoint = toBlock->inputPorts[connection.toPortIndex].position;
+            
+            // Apply canvas offset
+            startPoint.x += _canvasOffset.x;
+            startPoint.y += _canvasOffset.y;
+            endPoint.x += _canvasOffset.x;
+            endPoint.y += _canvasOffset.y;
+            
+            drawConnectionLine(startPoint, endPoint, connection.connectionColor, 3.0f);
+        }
+    }
+}
+
+void ScriptingEditor::drawConnectionLine(Vector2 start, Vector2 end, Color color, float thickness) {
+    // Calculate control points for smooth bezier curve
+    float distance = abs(end.x - start.x);
+    float curvature = std::min(distance * 0.5f, 100.0f); // Adaptive curvature
+    
+    Vector2 control1 = {start.x + curvature, start.y};
+    Vector2 control2 = {end.x - curvature, end.y};
+    
+    // Draw bezier curve with multiple segments for smoothness
+    const int segments = 20;
+    Vector2 lastPoint = start;
+    
+    for (int i = 1; i <= segments; i++) {
+        float t = (float)i / segments;
+        float u = 1.0f - t;
+        float tt = t * t;
+        float uu = u * u;
+        float uuu = uu * u;
+        float ttt = tt * t;
+        
+        Vector2 point = {
+            uuu * start.x + 3 * uu * t * control1.x + 3 * u * tt * control2.x + ttt * end.x,
+            uuu * start.y + 3 * uu * t * control1.y + 3 * u * tt * control2.y + ttt * end.y
+        };
+        
+        DrawLineEx(lastPoint, point, thickness, color);
+        lastPoint = point;
+    }
+    
+    // Draw arrow at the end
+    Vector2 direction = {end.x - control2.x, end.y - control2.y};
+    float length = sqrt(direction.x * direction.x + direction.y * direction.y);
+    if (length > 0.1f) {
+        direction.x /= length;
+        direction.y /= length;
+        
+        Vector2 arrowLeft = {end.x - direction.x * 10 - direction.y * 5, 
+                            end.y - direction.y * 10 + direction.x * 5};
+        Vector2 arrowRight = {end.x - direction.x * 10 + direction.y * 5, 
+                             end.y - direction.y * 10 - direction.x * 5};
+        
+        DrawLineEx(end, arrowLeft, thickness, color);
+        DrawLineEx(end, arrowRight, thickness, color);
+    }
+}
+
+void ScriptingEditor::drawConnectionPreview() {
+    if (!_connectionDrag.isValid()) return;
+    
+    Vector2 start = _connectionDrag.dragStartPosition;
+    Vector2 end = _connectionDrag.currentMousePosition;
+    
+    // Apply canvas offset
+    start.x += _canvasOffset.x;
+    start.y += _canvasOffset.y;
+    end.x += _canvasOffset.x;
+    end.y += _canvasOffset.y;
+    
+    // Draw preview with slightly transparent color
+    Color previewColor = _connectionDrag.previewColor;
+    previewColor.a = 180; // Semi-transparent
+    
+    drawConnectionLine(start, end, previewColor, 2.5f);
+}
+
+bool ScriptingEditor::isConnectionValid(ScriptBlock* fromBlock, int fromPortIndex, ScriptBlock* toBlock, int toPortIndex) {
+    if (!fromBlock || !toBlock || fromBlock == toBlock) return false;
+    if (fromPortIndex < 0 || toPortIndex < 0) return false;
+    if (fromPortIndex >= fromBlock->outputPorts.size() || toPortIndex >= toBlock->inputPorts.size()) return false;
+    
+    ConnectionPortType fromType = fromBlock->outputPorts[fromPortIndex].type;
+    ConnectionPortType toType = toBlock->inputPorts[toPortIndex].type;
+    
+    // Execution flow connections
+    if (fromType == ConnectionPortType::EXECUTION_OUT && toType == ConnectionPortType::EXECUTION_IN) return true;
+    if (fromType == ConnectionPortType::TRUE_OUT && toType == ConnectionPortType::EXECUTION_IN) return true;
+    if (fromType == ConnectionPortType::FALSE_OUT && toType == ConnectionPortType::EXECUTION_IN) return true;
+    
+    // Value connections (for future data flow)
+    if (fromType == ConnectionPortType::VALUE_OUT && toType == ConnectionPortType::VALUE_IN) return true;
+    
+    return false;
+}
+
+ConnectionPoint* ScriptingEditor::getConnectionPointAt(Vector2 position, ScriptBlock** outBlock, int* outPortIndex) {
+    int selectedObjId = getSelectedObjectId();
+    if (selectedObjId == -1) return nullptr;
+    
+    auto it = _objectScripts.find(selectedObjId);
+    if (it == _objectScripts.end()) return nullptr;
+    
+    const float portRadius = 8.0f; // Port hit detection radius
+    
+    for (auto& block : it->second.blocks) {
+        if (!block.isOnCanvas) continue;
+        
+        // Check input ports
+        for (size_t i = 0; i < block.inputPorts.size(); ++i) {
+            Vector2 portPos = block.inputPorts[i].position;
+            float distance = sqrt(pow(position.x - portPos.x, 2) + pow(position.y - portPos.y, 2));
+            
+            if (distance <= portRadius) {
+                if (outBlock) *outBlock = &block;
+                if (outPortIndex) *outPortIndex = static_cast<int>(i);
+                return &block.inputPorts[i];
+            }
+        }
+        
+        // Check output ports
+        for (size_t i = 0; i < block.outputPorts.size(); ++i) {
+            Vector2 portPos = block.outputPorts[i].position;
+            float distance = sqrt(pow(position.x - portPos.x, 2) + pow(position.y - portPos.y, 2));
+            
+            if (distance <= portRadius) {
+                if (outBlock) *outBlock = &block;
+                if (outPortIndex) *outPortIndex = static_cast<int>(i);
+                return &block.outputPorts[i];
+            }
+        }
+    }
+    
+    return nullptr;
+}
+
+Color ScriptingEditor::getConnectionColor(ConnectionPortType fromType, ConnectionPortType toType) {
+    // Color connections based on type
+    switch (fromType) {
+        case ConnectionPortType::EXECUTION_OUT:
+            return UI::UI_TEXT_PRIMARY; // White for execution flow
+        case ConnectionPortType::TRUE_OUT:
+            return UI::SUCCESS; // Green for true branch
+        case ConnectionPortType::FALSE_OUT:
+            return UI::ERROR; // Red for false branch
+        case ConnectionPortType::VALUE_OUT:
+            return UI::ACCENT_SECONDARY; // Blue for data flow
+        default:
+            return UI::UI_TEXT_PRIMARY;
+    }
+}
+
+void ScriptingEditor::updateConnectionPositions(VisualScript& script) {
+    // Update cached positions in connections
+    for (auto& connection : script.connections) {
+        // Find the blocks
+        ScriptBlock* fromBlock = nullptr;
+        ScriptBlock* toBlock = nullptr;
+        
+        for (auto& block : script.blocks) {
+            if (block.id == connection.fromBlockId) fromBlock = &block;
+            if (block.id == connection.toBlockId) toBlock = &block;
+        }
+        
+        if (fromBlock && toBlock && connection.fromPortIndex < fromBlock->outputPorts.size() 
+            && connection.toPortIndex < toBlock->inputPorts.size()) {
+            
+            connection.fromPoint = fromBlock->outputPorts[connection.fromPortIndex].position;
+            connection.toPoint = toBlock->inputPorts[connection.toPortIndex].position;
+        }
+    }
+}
+
+// ==========================================
+// Script Compilation System Implementation
+// ==========================================
+
+CompiledScript VisualScript::compileToExecutionFlow() const {
+    CompiledScript compiled(objectId, name);
+    
+    // First, validate all connections
+    std::string validationErrors;
+    if (!validateConnections(validationErrors)) {
+        compiled.errors = validationErrors;
+        return compiled;
+    }
+    
+    // Create nodes for each block
+    for (const auto& block : blocks) {
+        if (!block.isOnCanvas) continue;
+        
+        CompiledScriptNode node(block.id, block.type, block.config);
+        
+        // Mark entry points (blocks with no execution input)
+        bool hasExecutionInput = false;
+        for (const auto& connection : connections) {
+            if (connection.toBlockId == block.id && 
+                (connection.toPortType == ConnectionPortType::EXECUTION_IN)) {
+                hasExecutionInput = true;
+                break;
+            }
+        }
+        
+        // Event blocks are always entry points
+        if (block.type == BlockType::ON_START || block.type == BlockType::ON_CLICK || 
+            block.type == BlockType::ON_UPDATE || block.type == BlockType::ON_KEY_PRESS) {
+            node.isEntryPoint = true;
+            compiled.entryPoints.push_back(block.id);
+        } else if (!hasExecutionInput) {
+            node.isEntryPoint = true;
+            compiled.entryPoints.push_back(block.id);
+        }
+        
+        // Find connected next nodes
+        for (const auto& connection : connections) {
+            if (connection.fromBlockId == block.id) {
+                if (connection.fromPortType == ConnectionPortType::EXECUTION_OUT) {
+                    node.nextNodes.push_back(connection.toBlockId);
+                } else if (connection.fromPortType == ConnectionPortType::TRUE_OUT) {
+                    node.trueNextNode = connection.toBlockId;
+                } else if (connection.fromPortType == ConnectionPortType::FALSE_OUT) {
+                    node.falseNextNode = connection.toBlockId;
+                }
+            }
+        }
+        
+        compiled.nodes.push_back(node);
+    }
+    
+    compiled.isValid = true;
+    return compiled;
+}
+
+bool VisualScript::validateConnections(std::string& errors) const {
+    errors.clear();
+    bool isValid = true;
+    
+    // Check for orphaned blocks (except entry points)
+    for (const auto& block : blocks) {
+        if (!block.isOnCanvas) continue;
+        
+        bool isEntryPoint = (block.type == BlockType::ON_START || block.type == BlockType::ON_CLICK || 
+                           block.type == BlockType::ON_UPDATE || block.type == BlockType::ON_KEY_PRESS);
+        
+        if (!isEntryPoint) {
+            bool hasInput = false;
+            for (const auto& connection : connections) {
+                if (connection.toBlockId == block.id && 
+                    connection.toPortType == ConnectionPortType::EXECUTION_IN) {
+                    hasInput = true;
+                    break;
+                }
+            }
+            
+            if (!hasInput) {
+                errors += "Block " + std::to_string(block.id) + " (" + block.title + ") has no input connection.\n";
+                isValid = false;
+            }
+        }
+    }
+    
+    // Check for invalid connections
+    for (const auto& connection : connections) {
+        // Find source and target blocks
+        const ScriptBlock* fromBlock = nullptr;
+        const ScriptBlock* toBlock = nullptr;
+        
+        for (const auto& block : blocks) {
+            if (block.id == connection.fromBlockId) fromBlock = &block;
+            if (block.id == connection.toBlockId) toBlock = &block;
+        }
+        
+        if (!fromBlock || !toBlock) {
+            errors += "Connection references non-existent block(s).\n";
+            isValid = false;
+            continue;
+        }
+        
+        // Validate port indices
+        if (connection.fromPortIndex >= fromBlock->outputPorts.size() ||
+            connection.toPortIndex >= toBlock->inputPorts.size()) {
+            errors += "Connection has invalid port indices.\n";
+            isValid = false;
+        }
+    }
+    
+    return isValid;
+}
+
+CompiledScript ScriptingEditor::compileScript(int objectId) {
+    auto it = _objectScripts.find(objectId);
+    if (it == _objectScripts.end()) {
+        CompiledScript empty(objectId);
+        empty.errors = "No script found for object " + std::to_string(objectId);
+        return empty;
+    }
+    
+    CompiledScript compiled = it->second.compileToExecutionFlow();
+    
+    if (compiled.isValid) {
+        std::cout << "[ScriptingEditor] Successfully compiled script for object " << objectId 
+                  << " with " << compiled.nodes.size() << " nodes and " 
+                  << compiled.entryPoints.size() << " entry points" << std::endl;
+    } else {
+        std::cout << "[ScriptingEditor] Compilation failed for object " << objectId 
+                  << ": " << compiled.errors << std::endl;
+    }
+    
+    return compiled;
+}
+
+bool ScriptingEditor::validateScript(int objectId, std::string& errors) {
+    auto it = _objectScripts.find(objectId);
+    if (it == _objectScripts.end()) {
+        errors = "No script found for object " + std::to_string(objectId);
+        return false;
+    }
+    
+    return it->second.validateConnections(errors);
+}
+
+void ScriptingEditor::exportCompiledScripts(const std::string& filePath) {
+    std::ofstream file(filePath);
+    if (!file.is_open()) {
+        std::cout << "[ScriptingEditor] Failed to open file for export: " << filePath << std::endl;
+        return;
+    }
+    
+    file << "{\n";
+    file << "  \"compiledScripts\": [\n";
+    
+    bool first = true;
+    for (const auto& pair : _objectScripts) {
+        if (!first) file << ",\n";
+        first = false;
+        
+        CompiledScript compiled = compileScript(pair.first);
+        
+        file << "    {\n";
+        file << "      \"objectId\": " << compiled.objectId << ",\n";
+        file << "      \"name\": \"" << compiled.name << "\",\n";
+        file << "      \"isValid\": " << (compiled.isValid ? "true" : "false") << ",\n";
+        
+        if (!compiled.isValid) {
+            file << "      \"errors\": \"" << compiled.errors << "\",\n";
+        }
+        
+        file << "      \"entryPoints\": [";
+        for (size_t i = 0; i < compiled.entryPoints.size(); ++i) {
+            if (i > 0) file << ", ";
+            file << compiled.entryPoints[i];
+        }
+        file << "],\n";
+        
+        file << "      \"nodes\": [\n";
+        for (size_t i = 0; i < compiled.nodes.size(); ++i) {
+            if (i > 0) file << ",\n";
+            const auto& node = compiled.nodes[i];
+            
+            file << "        {\n";
+            file << "          \"blockId\": " << node.blockId << ",\n";
+            file << "          \"blockType\": " << static_cast<int>(node.blockType) << ",\n";
+            file << "          \"isEntryPoint\": " << (node.isEntryPoint ? "true" : "false") << ",\n";
+            
+            file << "          \"nextNodes\": [";
+            for (size_t j = 0; j < node.nextNodes.size(); ++j) {
+                if (j > 0) file << ", ";
+                file << node.nextNodes[j];
+            }
+            file << "],\n";
+            
+            file << "          \"trueNextNode\": " << node.trueNextNode << ",\n";
+            file << "          \"falseNextNode\": " << node.falseNextNode << "\n";
+            file << "        }";
+        }
+        file << "\n      ]\n";
+        file << "    }";
+    }
+    
+    file << "\n  ]\n";
+    file << "}\n";
+    
+    file.close();
+    std::cout << "[ScriptingEditor] Exported " << _objectScripts.size() 
+              << " compiled scripts to " << filePath << std::endl;
+}
+

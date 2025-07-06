@@ -98,16 +98,31 @@ struct ConnectionPoint {
 };
 
 /**
- * @brief Block connection between two blocks
+ * @brief Enhanced block connection with port type information
  */
 struct BlockConnection {
-    int fromBlockId;            ///< Source block ID
-    int toBlockId;              ///< Target block ID
-    Vector2 fromPoint;          ///< Connection point on source block
-    Vector2 toPoint;            ///< Connection point on target block
+    int fromBlockId;                    ///< Source block ID
+    int toBlockId;                      ///< Target block ID
+    ConnectionPortType fromPortType;    ///< Type of source port
+    ConnectionPortType toPortType;      ///< Type of target port
+    int fromPortIndex;                  ///< Index of source port on block
+    int toPortIndex;                    ///< Index of target port on block
+    Vector2 fromPoint;                  ///< Connection point on source block (cached)
+    Vector2 toPoint;                    ///< Connection point on target block (cached)
+    Color connectionColor;              ///< Visual color of the connection
+    bool isValid;                       ///< Whether connection is valid
     
+    BlockConnection(int from, int to, ConnectionPortType fromType, ConnectionPortType toType,
+                   int fromIdx, int toIdx, Vector2 fromPos, Vector2 toPos, Color color = WHITE)
+        : fromBlockId(from), toBlockId(to), fromPortType(fromType), toPortType(toType),
+          fromPortIndex(fromIdx), toPortIndex(toIdx), fromPoint(fromPos), toPoint(toPos),
+          connectionColor(color), isValid(true) {}
+    
+    // Legacy constructor for compatibility
     BlockConnection(int from, int to, Vector2 fromPos, Vector2 toPos)
-        : fromBlockId(from), toBlockId(to), fromPoint(fromPos), toPoint(toPos) {}
+        : fromBlockId(from), toBlockId(to), fromPortType(ConnectionPortType::EXECUTION_OUT),
+          toPortType(ConnectionPortType::EXECUTION_IN), fromPortIndex(0), toPortIndex(0),
+          fromPoint(fromPos), toPoint(toPos), connectionColor(WHITE), isValid(true) {}
 };
 
 /**
@@ -173,6 +188,37 @@ struct ScriptBlock {
 /**
  * @brief Visual script for an object (collection of blocks)
  */
+/**
+ * @brief Compiled script node for runtime execution
+ */
+struct CompiledScriptNode {
+    int blockId;                            ///< Original block ID
+    BlockType blockType;                    ///< Type of block
+    BlockConfig config;                     ///< Block configuration parameters
+    std::vector<int> nextNodes;             ///< IDs of next nodes to execute
+    int trueNextNode = -1;                  ///< Next node for true branch (conditions)
+    int falseNextNode = -1;                 ///< Next node for false branch (conditions)
+    bool isEntryPoint = false;              ///< Whether this is a script entry point
+    
+    CompiledScriptNode(int id, BlockType type, const BlockConfig& cfg = {})
+        : blockId(id), blockType(type), config(cfg) {}
+};
+
+/**
+ * @brief Compiled script flow for runtime execution
+ */
+struct CompiledScript {
+    int objectId;                           ///< Associated scene object ID
+    std::string name;                       ///< Script name
+    std::vector<CompiledScriptNode> nodes;  ///< Execution nodes in topological order
+    std::vector<int> entryPoints;           ///< Entry point node IDs (OnStart, OnClick, etc.)
+    bool isValid = false;                   ///< Whether compilation was successful
+    std::string errors;                     ///< Compilation error messages
+    
+    CompiledScript(int objId, const std::string& scriptName = "New Script")
+        : objectId(objId), name(scriptName) {}
+};
+
 struct VisualScript {
     int objectId;                           ///< Associated scene object ID
     std::vector<ScriptBlock> blocks;        ///< Blocks in this script
@@ -185,6 +231,10 @@ struct VisualScript {
     
     VisualScript(int objId, const std::string& scriptName = "New Script")
         : objectId(objId), name(scriptName), enabled(true) {}
+    
+    // Compilation methods
+    CompiledScript compileToExecutionFlow() const;     ///< Compile visual script to execution flow
+    bool validateConnections(std::string& errors) const; ///< Validate all connections
 };
 
 /**
@@ -391,14 +441,76 @@ private:
     bool _showConfigDialog = false;                     ///< Whether config dialog is open
     ScriptBlock* _configuredBlock = nullptr;            ///< Block being configured
     
-    // Context menu state
-    bool _showContextMenu = false;                      ///< Whether context menu is open
-    Vector2 _contextMenuPosition = {0, 0};             ///< Position of context menu
-    ScriptBlock* _contextMenuBlock = nullptr;           ///< Block associated with context menu
     
     // Block selection and interaction
     ScriptBlock* _selectedBlock = nullptr;              ///< Currently selected block
     ScriptBlock* _hoveredBlock = nullptr;               ///< Currently hovered block
+    
+    // Modern Context Menu System
+    /**
+     * @brief Context menu item definition
+     */
+    struct ContextMenuItem {
+        std::string id;              ///< Unique identifier for the action
+        std::string label;           ///< Display text
+        Color textColor;             ///< Text color
+        Color hoverColor;            ///< Background color when hovered
+        bool enabled;                ///< Whether the item is clickable
+        
+        ContextMenuItem(const std::string& itemId, const std::string& itemLabel, 
+                       Color text = WHITE, Color hover = GRAY, bool isEnabled = true)
+            : id(itemId), label(itemLabel), textColor(text), hoverColor(hover), enabled(isEnabled) {}
+    };
+    
+    /**
+     * @brief Context menu state and management
+     */
+    struct ContextMenuState {
+        bool isVisible = false;                          ///< Whether menu is currently shown
+        Vector2 position = {0, 0};                       ///< Menu position on screen
+        ScriptBlock* targetBlock = nullptr;              ///< Block the menu is associated with
+        std::vector<ContextMenuItem> items;              ///< Menu items to display
+        float width = 140.0f;                            ///< Menu width
+        float itemHeight = 32.0f;                        ///< Height of each menu item
+        int hoveredItemIndex = -1;                       ///< Index of currently hovered item
+        
+        void clear() {
+            isVisible = false;
+            targetBlock = nullptr;
+            items.clear();
+            hoveredItemIndex = -1;
+        }
+        
+        float getMenuHeight() const {
+            return items.size() * itemHeight + 16.0f; // 2 * 8px padding
+        }
+    } _contextMenu;
+    
+    // Modern Connection System
+    /**
+     * @brief Connection drag state for creating new connections
+     */
+    struct ConnectionDragState {
+        bool isDragging = false;                         ///< Whether actively dragging to create connection
+        ScriptBlock* sourceBlock = nullptr;             ///< Block where drag started
+        int sourcePortIndex = -1;                       ///< Index of source port
+        ConnectionPortType sourcePortType;              ///< Type of source port
+        Vector2 dragStartPosition = {0, 0};             ///< World position where drag started
+        Vector2 currentMousePosition = {0, 0};          ///< Current mouse position for preview
+        Color previewColor = WHITE;                     ///< Color for connection preview
+        
+        void clear() {
+            isDragging = false;
+            sourceBlock = nullptr;
+            sourcePortIndex = -1;
+            dragStartPosition = {0, 0};
+            currentMousePosition = {0, 0};
+        }
+        
+        bool isValid() const {
+            return isDragging && sourceBlock != nullptr && sourcePortIndex >= 0;
+        }
+    } _connectionDrag;
     
     // Canvas layout
     const float _blockSpacing = 10.0f;                 ///< Spacing between blocks on canvas
@@ -417,7 +529,6 @@ private:
     void drawPaletteCategory(const std::string& title, const std::vector<BlockType>& blocks, 
                            Rectangle bounds, float& yOffset); ///< Draw palette category
     void drawConfigDialog();                            ///< Draw block configuration dialog
-    void drawContextMenu();                             ///< Draw right-click context menu
     
     // Block management
     void initializeBlockPalette();                      ///< Initialize the block palette
@@ -436,7 +547,6 @@ private:
     void startDragOperation(Vector2 mousePos);          ///< Start drag operation
     void updateDragOperation(Vector2 mousePos);         ///< Update ongoing drag operation
     void endDragOperation(Vector2 mousePos);            ///< End drag operation
-    void handleRightClick(Vector2 mousePos);            ///< Handle right-click context menu
     void resetDragState();                              ///< Reset all drag state variables
     
     // Position and collision detection
@@ -453,13 +563,40 @@ private:
     void closeConfigDialog();                           ///< Close configuration dialog
     void applyBlockConfiguration();                     ///< Apply configuration changes
     
-    // Context menu and block operations
-    void openContextMenu(ScriptBlock* block, Vector2 position); ///< Open context menu for block
-    void closeContextMenu();                           ///< Close context menu
-    void handleContextMenuAction(const std::string& action); ///< Handle context menu selection
     void duplicateBlock(ScriptBlock* block);            ///< Duplicate a block with same parameters
     void deleteBlock(ScriptBlock* block);               ///< Delete a block and its connections
     void editBlock(ScriptBlock* block);                 ///< Open edit dialog for block
+    
+    // Modern Context Menu System Methods
+    void showContextMenu(ScriptBlock* block, Vector2 mousePosition); ///< Show context menu for a block
+    void hideContextMenu();                             ///< Hide the context menu
+    void drawContextMenu();                             ///< Render the context menu
+    void updateContextMenu(Vector2 mousePosition);     ///< Update context menu state and handle interactions
+    void handleContextMenuAction(const std::string& actionId); ///< Execute context menu action
+    Vector2 calculateContextMenuPosition(Vector2 requestedPos, float menuWidth, float menuHeight); ///< Calculate optimal menu position
+    void createContextMenuItems(ScriptBlock* block);   ///< Create appropriate menu items for the block
+    void handleRightClick(Vector2 mousePosition);      ///< Handle right-click events
+    
+    // Modern Connection System Methods
+    void updateConnectionSystem(Vector2 mousePosition, bool mousePressed, bool mouseReleased); ///< Update connection drag system
+    void startConnectionDrag(ScriptBlock* block, int portIndex, ConnectionPortType portType, Vector2 startPos); ///< Start connection creation
+    void updateConnectionDrag(Vector2 mousePosition);  ///< Update connection drag preview
+    void endConnectionDrag(Vector2 mousePosition);     ///< Finish connection creation
+    bool createConnection(ScriptBlock* fromBlock, int fromPortIndex, ScriptBlock* toBlock, int toPortIndex); ///< Create new connection
+    void removeConnection(int fromBlockId, int toBlockId, int fromPortIndex = -1, int toPortIndex = -1); ///< Remove specific connection
+    void removeAllConnectionsForBlock(int blockId);    ///< Remove all connections involving a block
+    void drawConnections(const VisualScript& script);  ///< Draw all connections in script
+    void drawConnectionLine(Vector2 start, Vector2 end, Color color, float thickness = 3.0f); ///< Draw connection line with curve
+    void drawConnectionPreview();                      ///< Draw connection drag preview
+    bool isConnectionValid(ScriptBlock* fromBlock, int fromPortIndex, ScriptBlock* toBlock, int toPortIndex); ///< Validate connection
+    ConnectionPoint* getConnectionPointAt(Vector2 position, ScriptBlock** outBlock, int* outPortIndex); ///< Get connection point at position
+    Color getConnectionColor(ConnectionPortType fromType, ConnectionPortType toType); ///< Get connection visual color
+    void updateConnectionPositions(VisualScript& script); ///< Update cached connection positions
+    
+    // Script Compilation System
+    CompiledScript compileScript(int objectId);           ///< Compile visual script to execution flow
+    bool validateScript(int objectId, std::string& errors); ///< Validate script connections and structure
+    void exportCompiledScripts(const std::string& filePath); ///< Export all compiled scripts to file
     
     // Block selection and interaction
     void selectBlock(ScriptBlock* block);               ///< Select a block
