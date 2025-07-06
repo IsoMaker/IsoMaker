@@ -10,6 +10,7 @@
 #include <iostream>
 #include <algorithm>
 #include <fstream>
+#include <sstream>
 
 ScriptingEditor::ScriptingEditor() {
     std::cout << "[ScriptingEditor] Constructor called" << std::endl;
@@ -137,13 +138,18 @@ void ScriptingEditor::handleToolChanged(int toolIndex) {
 void ScriptingEditor::handleFileAction(UI::EditorEventType actionType, const std::string& filepath) {
     switch (actionType) {
         case UI::EditorEventType::FILE_NEW:
-            std::cout << "[ScriptingEditor] New script project" << std::endl;
+            clearAllScripts();
+            std::cout << "[ScriptingEditor] New script project created" << std::endl;
             break;
         case UI::EditorEventType::FILE_SAVE:
-            std::cout << "[ScriptingEditor] Save scripts" << std::endl;
+            saveCurrentScript();
+            std::cout << "[ScriptingEditor] Scripts saved" << std::endl;
             break;
         case UI::EditorEventType::FILE_OPEN:
-            std::cout << "[ScriptingEditor] Open script project" << std::endl;
+            if (!filepath.empty()) {
+                loadScriptFromFile(filepath);
+            }
+            std::cout << "[ScriptingEditor] Script project loaded" << std::endl;
             break;
         default:
             break;
@@ -2314,19 +2320,7 @@ ConnectionPoint* ScriptingEditor::getConnectionPointAt(Vector2 position, ScriptB
 }
 
 Color ScriptingEditor::getConnectionColor(ConnectionPortType fromType, ConnectionPortType toType) {
-    // Color connections based on type
-    switch (fromType) {
-        case ConnectionPortType::EXECUTION_OUT:
-            return UI::UI_TEXT_PRIMARY; // White for execution flow
-        case ConnectionPortType::TRUE_OUT:
-            return UI::SUCCESS; // Green for true branch
-        case ConnectionPortType::FALSE_OUT:
-            return UI::ERROR; // Red for false branch
-        case ConnectionPortType::VALUE_OUT:
-            return UI::ACCENT_SECONDARY; // Blue for data flow
-        default:
-            return UI::UI_TEXT_PRIMARY;
-    }
+    return BLACK;
 }
 
 void ScriptingEditor::updateConnectionPositions(VisualScript& script) {
@@ -2562,5 +2556,201 @@ void ScriptingEditor::exportCompiledScripts(const std::string& filePath) {
     file.close();
     std::cout << "[ScriptingEditor] Exported " << _objectScripts.size() 
               << " compiled scripts to " << filePath << std::endl;
+}
+
+void ScriptingEditor::saveCurrentScript() {
+    int selectedObjId = getSelectedObjectId();
+    if (selectedObjId == -1) {
+        std::cout << "[ScriptingEditor] No object selected for saving" << std::endl;
+        return;
+    }
+    
+    auto it = _objectScripts.find(selectedObjId);
+    if (it == _objectScripts.end()) {
+        std::cout << "[ScriptingEditor] No script found for object " << selectedObjId << std::endl;
+        return;
+    }
+    
+    std::string filename = "scripts/script_object_" + std::to_string(selectedObjId) + ".json";
+    saveScriptToFile(it->second, filename);
+}
+
+void ScriptingEditor::saveScriptToFile(const VisualScript& script, const std::string& filepath) {
+    std::string jsonContent = scriptToJson(script);
+    
+    std::ofstream file(filepath);
+    if (!file.is_open()) {
+        std::cout << "[ScriptingEditor] Failed to create file: " << filepath << std::endl;
+        return;
+    }
+    
+    file << jsonContent;
+    file.close();
+    
+    std::cout << "[ScriptingEditor] Script saved to: " << filepath << std::endl;
+}
+
+void ScriptingEditor::loadScriptFromFile(const std::string& filepath) {
+    std::ifstream file(filepath);
+    if (!file.is_open()) {
+        std::cout << "[ScriptingEditor] Failed to open file: " << filepath << std::endl;
+        return;
+    }
+    
+    std::string jsonContent((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    file.close();
+    
+    VisualScript loadedScript = jsonToScript(jsonContent);
+    if (loadedScript.objectId != -1) {
+        _objectScripts[loadedScript.objectId] = loadedScript;
+        std::cout << "[ScriptingEditor] Script loaded for object " << loadedScript.objectId << std::endl;
+    }
+}
+
+void ScriptingEditor::clearAllScripts() {
+    _objectScripts.clear();
+    _nextBlockId = 1;
+    _nextCanvasOrder = 0;
+    std::cout << "[ScriptingEditor] All scripts cleared" << std::endl;
+}
+
+std::string ScriptingEditor::scriptToJson(const VisualScript& script) {
+    std::ostringstream json;
+    
+    json << "{\n";
+    json << "  \"objectId\": " << script.objectId << ",\n";
+    json << "  \"name\": \"" << script.name << "\",\n";
+    json << "  \"enabled\": " << (script.enabled ? "true" : "false") << ",\n";
+    
+    // Serialize blocks
+    json << "  \"blocks\": [\n";
+    for (size_t i = 0; i < script.blocks.size(); ++i) {
+        const ScriptBlock& block = script.blocks[i];
+        
+        json << "    {\n";
+        json << "      \"id\": " << block.id << ",\n";
+        json << "      \"type\": " << static_cast<int>(block.type) << ",\n";
+        json << "      \"position\": {\n";
+        json << "        \"x\": " << block.position.x << ",\n";
+        json << "        \"y\": " << block.position.y << "\n";
+        json << "      },\n";
+        json << "      \"size\": {\n";
+        json << "        \"width\": " << block.size.x << ",\n";
+        json << "        \"height\": " << block.size.y << "\n";
+        json << "      },\n";
+        json << "      \"title\": \"" << block.title << "\",\n";
+        json << "      \"subtitle\": \"" << block.subtitle << "\",\n";
+        json << "      \"isOnCanvas\": " << (block.isOnCanvas ? "true" : "false") << ",\n";
+        json << "      \"canvasOrder\": " << block.canvasOrder << ",\n";
+        
+        // Serialize block configuration
+        json << "      \"config\": {\n";
+        json << "        \"floatParams\": {\n";
+        bool firstFloat = true;
+        for (const auto& param : block.config.floatParams) {
+            if (!firstFloat) json << ",\n";
+            json << "          \"" << param.first << "\": " << param.second;
+            firstFloat = false;
+        }
+        json << "\n        },\n";
+        
+        json << "        \"vectorParams\": {\n";
+        bool firstVector = true;
+        for (const auto& param : block.config.vectorParams) {
+            if (!firstVector) json << ",\n";
+            json << "          \"" << param.first << "\": {\n";
+            json << "            \"x\": " << param.second.x << ",\n";
+            json << "            \"y\": " << param.second.y << ",\n";
+            json << "            \"z\": " << param.second.z << "\n";
+            json << "          }";
+            firstVector = false;
+        }
+        json << "\n        },\n";
+        
+        json << "        \"stringParams\": {\n";
+        bool firstString = true;
+        for (const auto& param : block.config.stringParams) {
+            if (!firstString) json << ",\n";
+            json << "          \"" << param.first << "\": \"" << param.second << "\"";
+            firstString = false;
+        }
+        json << "\n        },\n";
+        
+        json << "        \"boolParams\": {\n";
+        bool firstBool = true;
+        for (const auto& param : block.config.boolParams) {
+            if (!firstBool) json << ",\n";
+            json << "          \"" << param.first << "\": " << (param.second ? "true" : "false");
+            firstBool = false;
+        }
+        json << "\n        }\n";
+        json << "      }\n";
+        json << "    }";
+        
+        if (i < script.blocks.size() - 1) json << ",";
+        json << "\n";
+    }
+    json << "  ],\n";
+    
+    // Serialize connections
+    json << "  \"connections\": [\n";
+    for (size_t i = 0; i < script.connections.size(); ++i) {
+        const BlockConnection& conn = script.connections[i];
+        
+        json << "    {\n";
+        json << "      \"fromBlockId\": " << conn.fromBlockId << ",\n";
+        json << "      \"toBlockId\": " << conn.toBlockId << ",\n";
+        json << "      \"fromPortType\": " << static_cast<int>(conn.fromPortType) << ",\n";
+        json << "      \"toPortType\": " << static_cast<int>(conn.toPortType) << ",\n";
+        json << "      \"fromPortIndex\": " << conn.fromPortIndex << ",\n";
+        json << "      \"toPortIndex\": " << conn.toPortIndex << ",\n";
+        json << "      \"isValid\": " << (conn.isValid ? "true" : "false") << "\n";
+        json << "    }";
+        
+        if (i < script.connections.size() - 1) json << ",";
+        json << "\n";
+    }
+    json << "  ]\n";
+    json << "}";
+    
+    return json.str();
+}
+
+VisualScript ScriptingEditor::jsonToScript(const std::string& jsonContent) {
+    VisualScript script;
+    
+    // Simple JSON parsing (basic implementation)
+    // In a production system, you would use a proper JSON library like nlohmann/json
+    
+    // Extract objectId
+    size_t objectIdPos = jsonContent.find("\"objectId\":");
+    if (objectIdPos != std::string::npos) {
+        size_t numStart = jsonContent.find_first_of("0123456789-", objectIdPos);
+        size_t numEnd = jsonContent.find_first_of(",\n}", numStart);
+        if (numStart != std::string::npos && numEnd != std::string::npos) {
+            script.objectId = std::stoi(jsonContent.substr(numStart, numEnd - numStart));
+        }
+    }
+    
+    // Extract name
+    size_t namePos = jsonContent.find("\"name\":");
+    if (namePos != std::string::npos) {
+        size_t nameStart = jsonContent.find("\"", namePos + 7) + 1;
+        size_t nameEnd = jsonContent.find("\"", nameStart);
+        if (nameStart != std::string::npos && nameEnd != std::string::npos) {
+            script.name = jsonContent.substr(nameStart, nameEnd - nameStart);
+        }
+    }
+    
+    // Extract enabled
+    size_t enabledPos = jsonContent.find("\"enabled\":");
+    if (enabledPos != std::string::npos) {
+        script.enabled = jsonContent.find("true", enabledPos) < jsonContent.find("false", enabledPos);
+    }
+    
+    std::cout << "[ScriptingEditor] Basic JSON parsing implemented. For full loading functionality, " 
+              << "integrate a proper JSON library like nlohmann/json" << std::endl;
+    
+    return script;
 }
 
