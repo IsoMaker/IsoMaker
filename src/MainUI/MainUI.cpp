@@ -14,7 +14,7 @@ MainUI::MainUI(std::shared_ptr<Render::Camera> camera, std::shared_ptr<Render::W
     _uiManager.initialize();
 
     _gameProjectName = "game_project";
-    _currentEditor = SCRIPTING; // Default to Map Editor
+    _currentEditor = MAP; // Default to Map Editor
     
     _loader = std::make_shared<AssetLoader>();
     _3DMapEditor.setLoader(_loader);

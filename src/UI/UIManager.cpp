@@ -23,7 +23,7 @@ UIManager::UIManager(int screenWidth, int screenHeight)
       _helpMenuOpen(false),
       _editorMenuOpen(false),
       _searchActive(false),
-      _currentEditorType(1),
+      _currentEditorType(0),
       _currentSceneProvider(nullptr)
 {
     // Initialize search text
