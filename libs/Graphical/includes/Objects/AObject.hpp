@@ -50,7 +50,7 @@ namespace objects
 
             ~AObject() = default;
 
-            const Asset2D& getAsset2D() const { return _asset2D; };
+            Asset2D& getAsset2D() { return _asset2D; };
             void setAsset2D(Asset2D asset2D) { _asset2D = asset2D; };
 
             ObjectBox2D &getBox2D() { return _box2D; };

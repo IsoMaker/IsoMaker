@@ -30,7 +30,7 @@ namespace objects
             void updateAnimation();
 
             void draw() { AEntity::draw(); };
-            void draw(Vector2D tileSize);
+            void draw(Rectangle renderArea, std::shared_ptr<Render::Camera> camera);
             void draw(Vector3D tmp);
         protected:
             int _totalFrames = 1;

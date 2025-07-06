@@ -50,10 +50,10 @@ void MapEditor::update(input::IHandlerBase &inputHandler)
         }
     }
     if (inputHandler.isReleased(input::Generic::SELECT2)) {
-        if (!_objects3D.empty() && _closestObject.has_value() && _blocSelect) {
+        if (!_objects3D.empty() && _closestObject.has_value()) {
             removeCube(_closestObject.value());
             notifySceneChanged();
-        } else if (!_objects2D.empty() &&  _closestSprite.has_value() && !_blocSelect) {
+        } else if (!_objects2D.empty() &&  _closestSprite.has_value()) {
             removePlayer(_closestSprite.value());
             notifySceneChanged();
         }
@@ -100,18 +100,12 @@ void MapEditor::update(input::IHandlerBase &inputHandler)
     // }
 }
 
-void MapEditor::draw2DElements()
+void MapEditor::draw2DElements(Rectangle mainViewArea, std::shared_ptr<Render::Camera> camera)
 {
     for (auto i = _objects2D.begin(); i != _objects2D.end(); i++) {
-        i->get()->draw({0, 0});
+        i->get()->draw(mainViewArea, camera);
     }
     Vector2 aligned = { _alignedPosition.convert().x, _alignedPosition.convert().y };
-
-    if (_currentTool == 4) {
-        Vector2 size = { _currentSpriteType.getWidth(), _currentSpriteType.getHeight() };
-        Color color = (Color){ 255, 255, 0, 128 }; // Yellow with 50% opacity
-        DrawRectangleV(aligned, size, color); // Draw preview cube
-    }
 }
 
 void MapEditor::draw3DElements()
@@ -128,7 +122,7 @@ void MapEditor::draw3DElements()
     }
 }
 
-void MapEditor::draw(Rectangle mainViewArea)
+void MapEditor::draw(Rectangle mainViewArea, std::shared_ptr<Render::Camera> camera)
 {
     // Draw 3D elements
     BeginScissorMode(mainViewArea.x, mainViewArea.y, mainViewArea.width, mainViewArea.height);
@@ -136,9 +130,8 @@ void MapEditor::draw(Rectangle mainViewArea)
     draw3DElements();
     _camera->end3D();
     EndScissorMode();
-
     // Draw 2D elements
-    draw2DElements();
+    draw2DElements(mainViewArea, camera);
 }
 
 void MapEditor::changeCubeType(Asset3D newAsset)
@@ -158,12 +151,19 @@ void MapEditor::changeSpriteType(Asset2D newAsset)
 
 void MapEditor::addCube(Vector3D position)
 {
+    for (auto i = _objects2D.begin(); i != _objects2D.end(); i++) {
+        if (i->get()->getBoxPosition() == position) {
+            return;
+        }
+    }
     for (auto i = _objects3D.begin(); i != _objects3D.end(); i++) {
         if (i->get()->getBoxPosition() == position) {
             return;
         }
     }
+
     std::shared_ptr<MapElement> newCube = std::make_shared<MapElement>(_currentCubeType, position, Vector3D(_cubeHeight, _cubeHeight, _cubeHeight));
+    std::cout << "ADD NEW CUBE POS: " << position.x << " " << position.y << " " << position.z << std::endl;
     _objects3D.push_back(newCube);
     updateCursor();
 }
@@ -175,11 +175,19 @@ void MapEditor::addPlayer(Vector3D position)
             return;
         }
     }
+    for (auto i = _objects3D.begin(); i != _objects3D.end(); i++) {
+        if (i->get()->getBoxPosition() == position) {
+            return;
+        }
+    }
 
-    std::shared_ptr<Character> newCharacter = std::make_shared<Character>(_currentSpriteType, position);
+    std::shared_ptr<Character> newCharacter = std::make_shared<Character>(_currentSpriteType);
     newCharacter->setBox3DPosition(position);
+    std::cout << "ADD NEW PLAYER POS: " << position << std::endl;
+    std::cout << "[SCALE NEW PLAYER]: " << _currentSpriteType.getScale() << std::endl;
     newCharacter->setBox2DSize({_currentSpriteType.getWidth(), _currentSpriteType.getHeight()});
     newCharacter->setBox2DScale(_currentSpriteType.getScale());
+    _spriteSize = {_currentSpriteType.getWidth(), _currentSpriteType.getHeight()};
     _objects2D.push_back(newCharacter);
 }
 
@@ -226,6 +234,7 @@ void MapEditor::updateCursor()
     RayCollision closestHit = { false, std::numeric_limits<float>::max(), { 0, 0, 0 }, { 0, 0, 0 } };
 
     _closestObject = std::nullopt;
+    _closestSprite = std::nullopt;
 
     // check if we are over an object
     for (auto i = _objects3D.begin(); i != _objects3D.end(); i++) {
@@ -233,6 +242,14 @@ void MapEditor::updateCursor()
         if (collision.hit && collision.distance < closestHit.distance) {
             closestHit = collision;
             _closestObject = i;
+        }
+    }
+
+    for (auto i = _objects2D.begin(); i != _objects2D.end(); i++) {
+        RayCollision collision = GetRayCollisionBox(ray, i->get()->getBox3D().convert());
+        if (collision.hit && collision.distance < closestHit.distance) {
+            closestHit = collision;
+            _closestSprite = i;
         }
     }
 
@@ -256,6 +273,7 @@ void MapEditor::saveMap(const std::string& filename)
     }
 
     Vector3D pos3D = Vector3D();
+    Vector3D pos2D = Vector3D();
 
     file << "MAP\n";
     file << _objects3D.size() << "\n";
@@ -264,10 +282,11 @@ void MapEditor::saveMap(const std::string& filename)
         file << pos3D.x << " " << pos3D.y << " " << pos3D.z << " " << obj->getAsset3D().getFileName() << " " << obj->getAsset3D().getScale() << "\n";
     }
 
-    if (!_objects2D.empty()) {
-        pos3D = _objects2D[0]->getBox3D().getPosition();
-        file << "PLAYER\n";
-        file << pos3D.x << " " << pos3D.y << " " << pos3D.z << "\n";
+    file << "PLAYER\n";
+    file << _objects2D.size() << "\n";
+    for (auto& obj : _objects2D) {
+        pos2D = obj->getBox3D().getPosition();
+        file << pos2D.x << " " << pos2D.y << " " << pos2D.z << " " << obj->getAsset2D().getFileName() << " " << obj->getBox2D().getSize().x << " " << obj->getBox2D().getSize().y << " " << obj->getAsset2D().getScale() << "\n";
     }
 
     file.close();
@@ -304,11 +323,30 @@ void MapEditor::loadMap(const std::string& filename)
         }
     }
 
+    int count2 = 0;
     file >> header;
     if (header == "PLAYER") {
-        Vector3D playerPos = {0, 0, 0};
-        file >> playerPos.x >> playerPos.y >> playerPos.z;
-        addPlayer(playerPos);
+        file >> count2;
+        _objects2D.clear();
+        Vector3D position = {0, 0, 0};
+        Vector2 size;
+        std::string filePath;
+        float scale;
+        for (int i = 0; i < count2; ++i) {
+            file >> position.x >> position.y >> position.z >> filePath >> size.x >> size.y >> scale;
+            std::cout << "FILENAME " << filePath << "\n";
+            std::cout << "POSITION: " << position << "\n";
+            std::cout << "SIZE: " << size << "\n";
+            std::cout << "SCALE: " << scale << "\n";
+            Asset2D tmpAsset(filePath);
+            tmpAsset.loadFile();
+            tmpAsset.setScale(scale);
+            tmpAsset.setWidth(size.x);
+            tmpAsset.setHeight(size.y);
+            changeSpriteType(tmpAsset);
+            addPlayer(position);
+            std::cout << "ADD NEW PLAYER : " << i << "\n";
+        }
     }
     file.close();
     std::cout << "Map loaded.\n";
@@ -440,12 +478,10 @@ void MapEditor::handleAssetSelected(std::shared_ptr<AAsset> asset)
     Asset2D *asset2D = dynamic_cast<Asset2D*>(asset.get());
 
     if (asset3D != nullptr) {
-        std::cout << "ASSET 3D SIZE PLZ HANDLE ASSET FUN: " << asset3D->getScale() << std::endl;
         _blocSelect = true;
         changeCubeType(*asset3D);
         std::cout << "Asset selected 3D" << std::endl;
     } else if (asset2D != nullptr) {
-        std::cout << "ASSET 2D SIZE PLZ HANDLE ASSET FUN: " << asset2D->getWidth() << " " << asset2D->getHeight() << std::endl;
         _blocSelect = false;
         changeSpriteType(*asset2D);
         std::cout << "Asset selected 2D" << std::endl;

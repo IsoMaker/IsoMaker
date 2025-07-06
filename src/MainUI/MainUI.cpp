@@ -65,7 +65,7 @@ void MainUI::draw() {
     _window.get()->clearBackground(UI::BACKGROUND);
 
     // Draw Map Editor 3D and 2D elements
-    _3DMapEditor.draw(mainViewArea);
+    _3DMapEditor.draw(mainViewArea, _camera);
     // Draw Map Editor UI elements
     _uiManager.draw(_3DMapEditor);
     

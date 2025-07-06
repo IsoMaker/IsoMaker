@@ -111,7 +111,7 @@ void unloadData(AssetType type, std::shared_ptr<objects::Character> character, M
 void drawImagePreview(std::shared_ptr<objects::Character> character, Rectangle viewport, float scale)
 {
     character->updateAnimation();
-    character->draw({0,0,0});
+    character->draw(viewport, 0);
 }
 
 void drawRectanglePreview(bool dataLoaded, Model& model, Rectangle previewRect, std::shared_ptr<objects::Character> character, float scale, std::string selectedFilePath, AssetType type)

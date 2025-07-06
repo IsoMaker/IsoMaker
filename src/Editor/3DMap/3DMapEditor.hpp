@@ -120,7 +120,7 @@ class MapEditor : public UI::ISceneProvider {
          * 
          * Renders 2D overlay elements like cursor information and HUD elements.
          */
-        void draw2DElements();
+        void draw2DElements(Rectangle renderArea, std::shared_ptr<Render::Camera>);
 
         /**
          * @brief Draw 3D scene elements
@@ -136,7 +136,7 @@ class MapEditor : public UI::ISceneProvider {
          * 
          * @param mainViewArea Rectangle representing view area of map editor
          */
-        void draw(Rectangle mainViewArea);
+        void draw(Rectangle mainViewArea, std::shared_ptr<Render::Camera>);
 
         /**
          * @brief Change the current cube type for placement
@@ -398,7 +398,7 @@ class MapEditor : public UI::ISceneProvider {
         // Current assets
         Asset2D _currentTextureType;                         ///< Currently selected texture for 3D asset placement;
         Asset3D _currentCubeType;                            ///< Currently selected 3D asset for placement
-        Asset2D _currentSpriteType;                          ///< Currently selected 2D asset for placement
+        Asset2D _currentSpriteType;               ///< Currently selected 2D asset for placement
         bool _blocSelect;
 
         // Assets Loaded
@@ -415,12 +415,13 @@ class MapEditor : public UI::ISceneProvider {
         bool _placePlayer;                                   ///< Flag for player placement mode
         bool _drawWireframe = false;                         ///< Wireframe rendering mode
         float _cubeHeight;                                   ///< Height for cube placement
+        Vector2D _spriteSize;                                   ///< Height for cube placement
 
         // Interactive elements
         Vector2D _cursorPosition;
         Vector3D _alignedPosition;                           ///< Current grid-aligned cursor position
         std::optional<std::vector<std::shared_ptr<MapElement>>::iterator> _closestObject; ///< Closest object to cursor
-        std::optional<std::vector<std::shared_ptr<Character>>::iterator> _closestSprite; ///< Closest object to cursor
+        std::optional<std::vector<std::shared_ptr<Character>>::iterator> _closestSprite; ///< Closest sprite to cursor
         
         // Current tool and selection state
         int _currentTool = 0;                                ///< Current tool index (default: SELECT)

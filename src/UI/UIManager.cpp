@@ -478,7 +478,6 @@ void UIManager::drawBottomAssets2D(int barY)
         if (AssetTile(assetBounds, asset, i == _selectedAssetIndex2D, {x, y})) {
             _selectedAssetIndex2D = i;
             std::shared_ptr<Asset2D> assetBasic = std::make_shared<Asset2D>(assetTiles2D[i]);
-            std::cout << "ASSET 2D SIZE PLZ: " << assetBasic->getWidth() << " " << assetBasic->getHeight() << std::endl;
             Events::assetSelected(assetBasic);
         }
 
@@ -490,7 +489,6 @@ void UIManager::drawBottomAssets2D(int barY)
         if (CheckCollisionPointRec(GetMousePosition(), tileBounds) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             _selectedAssetIndex2D = i;
             std::shared_ptr<Asset2D> assetBasic = std::make_shared<Asset2D>(assetTiles2D[i]);
-            std::cout << "ASSET 2D SIZE PLZ: " << assetBasic->getWidth() << " " << assetBasic->getHeight() << std::endl;
             Events::assetSelected(assetBasic);
         }
     }
@@ -544,7 +542,6 @@ void UIManager::drawBottomAssets3D(int barY)
         if (AssetTile(assetBounds, assetTiles3D[i].getModel(), assetTiles3D[i].getDisplayName().c_str(), i == _selectedAssetIndex3D)) {
             _selectedAssetIndex3D = i;
             std::shared_ptr<Asset3D> assetBasic = std::make_shared<Asset3D>(assetTiles3D[i]);
-            std::cout << "ASSET 3D SIZE PLZ: " << assetBasic->getScale() << std::endl;
             Events::assetSelected(assetBasic);
         }
 
@@ -553,7 +550,6 @@ void UIManager::drawBottomAssets3D(int barY)
         if (CheckCollisionPointRec(GetMousePosition(), tileBounds) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             _selectedAssetIndex3D = i;
             std::shared_ptr<Asset3D> assetBasic = std::make_shared<Asset3D>(assetTiles3D[i]);
-            std::cout << "ASSET 3D SIZE PLZ: " << assetBasic->getScale() << std::endl;
             Events::assetSelected(assetBasic);
         }
     }

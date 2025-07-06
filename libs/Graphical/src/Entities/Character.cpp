@@ -56,31 +56,22 @@ void Character::updateAnimation()
     }
 }
 
-void Character::draw(Vector2D tileSize)
+void Character::draw(Rectangle renderArea, std::shared_ptr<Render::Camera> camera)
 {
     Rectangle source = _box2D.getRectangle();
     Vector3D pos = _box3D.getPosition();
     const float tileWidth = 64.0f;
     const float tileHeight = 32.0f;
     float isoX = (pos.x - pos.z) * tileWidth / 2.0f;
-    float isoY = (pos.x + pos.z) * tileHeight / 2.0f - pos.y * tileHeight;
+    float isoY = (pos.x + pos.z) * tileHeight / 2.0f - (pos.y * tileHeight);
     Vector2 position = {
-        (isoX + SCREENWIDTH / 2) - source.width,
-        ((isoY + SCREENHEIGHT / 2) - source.height) - 48
-    };
+            (isoX + renderArea.x + renderArea.width / 2.0f) + (source.width / 2.0f),
+            (isoY + renderArea.y + renderArea.height / 2.0f) + (source.height / 2.0f)
+        };
+    if (camera != nullptr)
+        position = GetWorldToScreen((Vector3){ pos.x, pos.y, pos.z }, camera->getRaylibCam());
 
     DrawTextureRec(_asset2D.getTexture(), source, position, WHITE);
-    // Vector3D forward = Vector3D(camera->getTarget() - camera->getPosition());
-    // Vector3D up = Vector3D(0.0f, 1.0f, 0.0f);
-    // up = forward * (up * forward);
-    // up = Vector3D(Vector3Normalize(up.convert()));
-    // Texture2D texture = _asset2D.getTexture();
-    // Rectangle source = _box2D.getRectangle();
-    // Vector3D position = {0, 3, 0};
-    // Vector2D size = _box2D.getSize();
-    // Vector2D origin = size * _box2D.getScale();
-
-    // DrawBillboardPro(camera->getRaylibCam(), texture, source, position.convert(), up.convert(), size.convert(), origin.convert(), 0.0f, WHITE);
 }
 
 void Character::draw(Vector3D tmp)
