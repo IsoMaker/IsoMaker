@@ -1068,10 +1068,10 @@ void ScriptingEditor::drawProfessionalBlock(const ScriptBlock& block, Vector2 of
     Rectangle bodyRect = {drawPos.x, drawPos.y + block.size.y * 0.4f, block.size.x, block.size.y * 0.6f};
     
     drawBlockHeader(block, headerRect, offset);
-    drawBlockBody(block, bodyRect, offset);
-    
-    // Draw connection ports
-    drawBlockPorts(block, offset);
+    if (block.isOnCanvas) {
+        drawBlockBody(block, bodyRect, offset);
+        drawBlockPorts(block, offset);
+    }
     
     // Draw selection highlight if selected using enhanced theme
     if (block.isSelected) {
