@@ -197,31 +197,84 @@ bool ToolButton(Rectangle bounds, Texture2D icon, const char* tooltip, bool isSe
 
 bool AssetTile(Rectangle bounds, Asset2D asset, bool isSelected, Vector2 position) {
     bool clicked = false;
-    Color bgColor = isSelected ? ACCENT_TERTIARY : UI_SECONDARY;
-    Texture2D texture = asset.getTexture();
+    bool isHovered = CheckCollisionPointRec(GetMousePosition(), bounds);
+
+    // Draw shadow for depth
+    Rectangle shadowBounds = {bounds.x + 2, bounds.y + 2, bounds.width, bounds.height};
+    DrawRectangleRounded(shadowBounds, 0.12f, 8, SHADOW_LIGHT);
+
+    // Draw main card background with modern styling
+    Color bgColor = isSelected ? ACCENT_PRIMARY : (isHovered ? HOVER_BACKGROUND : PANEL_BACKGROUND);
+    Color bgColorTop = isSelected ? ACCENT_SECONDARY : (isHovered ? UI_TERTIARY : UI_SECONDARY);
     
-    DrawRectangleRec(bounds, bgColor);
+    DrawRectangleRounded(bounds, 0.12f, 8, bgColor);
+    
+    // Add subtle gradient effect at the top
+    Rectangle gradientRect = {bounds.x, bounds.y, bounds.width, bounds.height * 0.25f};
+    DrawRectangleGradientV(gradientRect.x, gradientRect.y, gradientRect.width, gradientRect.height, bgColorTop, bgColor);
+
+    // Draw border with hover/selection states
+    Color borderColor = isSelected ? ACCENT_TERTIARY : (isHovered ? ACCENT_PRIMARY : PANEL_BORDER);
+    float borderWidth = isSelected ? 3.0f : (isHovered ? 2.0f : 1.0f);
+    DrawRectangleLinesEx(bounds, borderWidth, borderColor);
+
+    // Content area for texture (with padding)
+    Rectangle contentArea = {bounds.x + 6, bounds.y + 6, bounds.width - 12, bounds.height - 28};
+    
     if (asset.isLoaded()) {
+        Texture2D texture = asset.getTexture();
         int texW = asset.getWidth();
         int texH = asset.getHeight();
-        Rectangle source = {
-            0.5f, 0.5f,
-            (float)texW, (float)texH
-        };
-    
-        Rectangle dest = {
-            bounds.x, bounds.y,
-            texW * 1.5, texH * 1.5
-        };
-    
-        Vector2 origin = { 0.0f, 0.0f };
-        DrawTexturePro(texture, source, dest, origin, 0.0f, WHITE);
+        
+        // Calculate centered and properly scaled texture positioning
+        float aspectRatio = (float)texW / (float)texH;
+        float contentAspect = contentArea.width / contentArea.height;
+        
+        Rectangle textureRect;
+        if (aspectRatio > contentAspect) {
+            // Fit to width
+            textureRect.width = contentArea.width;
+            textureRect.height = contentArea.width / aspectRatio;
+            textureRect.x = contentArea.x;
+            textureRect.y = contentArea.y + (contentArea.height - textureRect.height) / 2;
+        } else {
+            // Fit to height
+            textureRect.height = contentArea.height;
+            textureRect.width = contentArea.height * aspectRatio;
+            textureRect.x = contentArea.x + (contentArea.width - textureRect.width) / 2;
+            textureRect.y = contentArea.y;
+        }
+        
+        Rectangle source = {0, 0, (float)texW, (float)texH};
+        DrawTexturePro(texture, source, textureRect, {0, 0}, 0.0f, WHITE);
+        
+        // Add glow effect when selected
+        if (isSelected) {
+            DrawRectangleLinesEx(textureRect, 2, GLOW_ACCENT);
+        }
     } else {
-        DrawRectangle(bounds.x + 5, bounds.y + 5, bounds.width - 10, bounds.height - 25, UI_TEXT_SECONDARY);
+        // Enhanced loading placeholder
+        DrawRectangleRounded(contentArea, 0.1f, 6, UI_TERTIARY);
+        DrawRectangleLinesEx(contentArea, 1, UI_PRIMARY);
+        
+        // Loading indicator with better styling
+        const char* loadingText = "Loading...";
+        int loadingWidth = MeasureText(loadingText, 8);
+        DrawText(loadingText, contentArea.x + (contentArea.width - loadingWidth) / 2, 
+                contentArea.y + contentArea.height / 2 - 4, 8, UI_TEXT_SECONDARY);
     }
 
-    int textWidth = MeasureText(asset.getDisplayName().c_str(), 9);
-    DrawText(asset.getDisplayName().c_str(), bounds.x + (bounds.width - textWidth) / 2, bounds.y + bounds.height - 15, 9, UI_TEXT_PRIMARY);
+    // Enhanced asset name display
+    const char* name = asset.getDisplayName().c_str();
+    int textWidth = MeasureText(name, 10);
+    Color textColor = isSelected ? WHITE : UI_TEXT_PRIMARY;
+    
+    // Semi-transparent background for text readability
+    Rectangle textBg = {bounds.x + 2, bounds.y + bounds.height - 20, bounds.width - 4, 16};
+    Color textBgColor = {0, 0, 0, 120};
+    DrawRectangleRounded(textBg, 0.3f, 4, textBgColor);
+    
+    DrawText(name, bounds.x + (bounds.width - textWidth) / 2, bounds.y + bounds.height - 16, 10, textColor);
 
     if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(GetMousePosition(), bounds)) {
         clicked = true;
@@ -232,18 +285,48 @@ bool AssetTile(Rectangle bounds, Asset2D asset, bool isSelected, Vector2 positio
 
 bool AssetTile(Rectangle bounds, Model model, const char* name, bool isSelected) {
     bool clicked = false;
+    bool isHovered = CheckCollisionPointRec(GetMousePosition(), bounds);
 
-    // Draw tile background
-    Color bgColor = isSelected ? ACCENT_TERTIARY : UI_SECONDARY;
-    DrawRectangleRec(bounds, bgColor);
+    // Draw shadow for depth
+    Rectangle shadowBounds = {bounds.x + 2, bounds.y + 2, bounds.width, bounds.height};
+    DrawRectangleRounded(shadowBounds, 0.12f, 8, SHADOW_LIGHT);
 
-    // Placeholder when no texture
-    DrawRectangle(bounds.x + 5, bounds.y + 5, bounds.width - 10, bounds.height - 25, UI_TEXT_SECONDARY);
+    // Draw main card background with modern styling
+    Color bgColor = isSelected ? ACCENT_PRIMARY : (isHovered ? HOVER_BACKGROUND : PANEL_BACKGROUND);
+    Color bgColorTop = isSelected ? ACCENT_SECONDARY : (isHovered ? UI_TERTIARY : UI_SECONDARY);
+    
+    DrawRectangleRounded(bounds, 0.12f, 8, bgColor);
+    
+    // Add subtle gradient effect at the top
+    Rectangle gradientRect = {bounds.x, bounds.y, bounds.width, bounds.height * 0.25f};
+    DrawRectangleGradientV(gradientRect.x, gradientRect.y, gradientRect.width, gradientRect.height, bgColorTop, bgColor);
 
+    // Draw border with hover/selection states
+    Color borderColor = isSelected ? ACCENT_TERTIARY : (isHovered ? ACCENT_PRIMARY : PANEL_BORDER);
+    float borderWidth = isSelected ? 3.0f : (isHovered ? 2.0f : 1.0f);
+    DrawRectangleLinesEx(bounds, borderWidth, borderColor);
 
-    // Draw asset name at bottom
-    int textWidth = MeasureText(name, 9);
-    DrawText(name, bounds.x + (bounds.width - textWidth) / 2, bounds.y + bounds.height - 15, 9, UI_TEXT_PRIMARY);
+    // 3D preview area with enhanced styling
+    Rectangle previewArea = {bounds.x + 6, bounds.y + 6, bounds.width - 12, bounds.height - 28};
+    
+    // Draw inner preview frame
+    Color previewBgColor = isSelected ? (Color){20, 25, 35, 255} : (Color){25, 30, 40, 255};
+    DrawRectangleRounded(previewArea, 0.1f, 6, previewBgColor);
+    
+    // Subtle inner border for 3D preview area
+    Color previewBorderColor = isSelected ? GLOW_ACCENT : UI_PRIMARY;
+    DrawRectangleLinesEx(previewArea, 1, previewBorderColor);
+
+    // Enhanced asset name display
+    int textWidth = MeasureText(name, 10);
+    Color textColor = isSelected ? WHITE : UI_TEXT_PRIMARY;
+    
+    // Semi-transparent background for text readability
+    Rectangle textBg = {bounds.x + 2, bounds.y + bounds.height - 20, bounds.width - 4, 16};
+    Color textBgColor = {0, 0, 0, 120};
+    DrawRectangleRounded(textBg, 0.3f, 4, textBgColor);
+    
+    DrawText(name, bounds.x + (bounds.width - textWidth) / 2, bounds.y + bounds.height - 16, 10, textColor);
 
     // Check for click
     if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(GetMousePosition(), bounds)) {
