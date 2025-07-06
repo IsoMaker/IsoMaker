@@ -312,6 +312,15 @@ public:
      */
     void handleHelpMenuAction(int selectedItem);
     
+    /**
+     * @brief Handle Editor menu actions
+     * 
+     * Processes Editor menu selections and dispatches appropriate events.
+     * 
+     * @param selectedItem Index of the selected menu item
+     */
+    void handleEditorMenuAction(int selectedItem);
+    
     // Editor state queries
     /**
      * @brief Get the number of selected objects
@@ -373,6 +382,7 @@ private:
     bool _editMenuOpen;                    ///< Edit menu open state
     bool _renderMenuOpen;                  ///< Render menu open state
     bool _helpMenuOpen;                    ///< Help menu open state
+    bool _editorMenuOpen;                  ///< Editor menu open state
     
     // Tool icons
     std::vector<Texture2D> _toolIcons;     ///< Tool icon textures
