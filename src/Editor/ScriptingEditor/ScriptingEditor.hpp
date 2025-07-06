@@ -32,27 +32,22 @@ enum class BlockCategory {
  * @brief Block types for visual scripting
  */
 enum class BlockType {
-    // Special
     INVALID,      ///< Invalid/not found marker
     
-    // Events
     ON_START,
     ON_CLICK,
     ON_UPDATE,
     ON_KEY_PRESS,
     
-    // Actions
     MOVE,
     ROTATE,
     CHANGE_COLOR,
     HIDE,
     SHOW,
     
-    // Conditions
     IF,
     LOOP,
     
-    // Miscellaneous
     TRUE,
     FALSE,
     VALUE,
@@ -118,7 +113,6 @@ struct BlockConnection {
           fromPortIndex(fromIdx), toPortIndex(toIdx), fromPoint(fromPos), toPoint(toPos),
           connectionColor(color), isValid(true) {}
     
-    // Legacy constructor for compatibility
     BlockConnection(int from, int to, Vector2 fromPos, Vector2 toPos)
         : fromBlockId(from), toBlockId(to), fromPortType(ConnectionPortType::EXECUTION_OUT),
           toPortType(ConnectionPortType::EXECUTION_IN), fromPortIndex(0), toPortIndex(0),
@@ -138,8 +132,6 @@ struct ScriptBlock {
     Color headerColor;         ///< Header section color
     std::string title;         ///< Block title (main label)
     std::string subtitle;      ///< Subtitle or parameter summary
-    
-    // Legacy compatibility fields
     std::string label;         ///< Legacy label field (for compatibility)
     Color color;               ///< Legacy color field (for compatibility)
     bool isDragging;           ///< Currently being dragged
@@ -149,10 +141,6 @@ struct ScriptBlock {
     int canvasOrder;          ///< Order of block on canvas for layering
     bool isSelected;          ///< Whether block is currently selected
     bool isHovered;           ///< Whether mouse is hovering over block
-    
-    // Professional styling properties (managed by UI theme system)
-    
-    // Connection ports
     std::vector<ConnectionPoint> inputPorts;   ///< Input connection ports
     std::vector<ConnectionPoint> outputPorts;  ///< Output connection ports
     bool hasExecutionFlow;     ///< Whether block participates in execution flow
@@ -163,26 +151,24 @@ struct ScriptBlock {
           isDragging(false), dragOffset({0, 0}), isOnCanvas(false), canvasOrder(0),
           isSelected(false), isHovered(false),
           hasExecutionFlow(true), canHaveBranches(false) {
-        // Set default colors and labels based on type
         setProfessionalBlockProperties();
         setDefaultConfig();
         setupConnectionPorts();
     }
     
-    void setBlockProperties();                  ///< Legacy method (kept for compatibility)
-    void setProfessionalBlockProperties();      ///< Set modern professional styling
+    void setBlockProperties();
+    void setProfessionalBlockProperties();
     void setDefaultConfig();
-    void setupConnectionPorts();               ///< Setup input/output ports based on block type
-    std::string getDisplayLabel() const;        ///< Get label with configuration parameters
-    std::string getParameterSummary() const;   ///< Get formatted parameter summary for subtitle
+    void setupConnectionPorts();
+    std::string getDisplayLabel() const;
+    std::string getParameterSummary() const;
     
-    // Connection point helpers
-    Vector2 getInputConnectionPoint() const;   ///< Get input connection point (top center)
-    Vector2 getOutputConnectionPoint() const;  ///< Get output connection point (bottom center)
-    Rectangle getConnectionBounds() const;     ///< Get bounds for connection detection
-    Rectangle getHeaderBounds() const;         ///< Get header section bounds
-    Rectangle getBodyBounds() const;           ///< Get body section bounds
-    bool isPointInHeader(Vector2 point) const; ///< Check if point is in header area
+    Vector2 getInputConnectionPoint() const;
+    Vector2 getOutputConnectionPoint() const;
+    Rectangle getConnectionBounds() const;
+    Rectangle getHeaderBounds() const;
+    Rectangle getBodyBounds() const;
+    bool isPointInHeader(Vector2 point) const;
 };
 
 /**
@@ -226,253 +212,131 @@ struct VisualScript {
     std::string name;                       ///< Script name
     bool enabled;                           ///< Whether script is active
     
-    // Default constructor for std::unordered_map
     VisualScript() : objectId(-1), name("New Script"), enabled(true) {}
     
     VisualScript(int objId, const std::string& scriptName = "New Script")
         : objectId(objId), name(scriptName), enabled(true) {}
     
-    // Compilation methods
-    CompiledScript compileToExecutionFlow() const;     ///< Compile visual script to execution flow
-    bool validateConnections(std::string& errors) const; ///< Validate all connections
+    CompiledScript compileToExecutionFlow() const;
+    bool validateConnections(std::string& errors) const;
 };
 
 /**
- * @brief Scripting Editor class
- * 
- * The ScriptingEditor class provides a low-code scripting interface for the IsoMaker
- * game engine editor. It allows users to create and attach scripts to scene objects
- * through a visual interface.
- * 
- * Key features:
- * - Visual scripting interface (planned)
- * - Script attachment to scene objects (planned)  
- * - Event-driven communication with UI components
- * - Integration with existing editor architecture
- * 
- * Current state: Basic placeholder implementation with scaffolding for future development.
- * 
- * @see UI::EditorEvents For event communication
- * @see UI::ISceneProvider For scene data interface
+ * @brief Visual scripting editor for the IsoMaker game engine
  */
 class ScriptingEditor : public UI::ISceneProvider {
 public:
-    /**
-     * @brief Construct a new ScriptingEditor object
-     */
     ScriptingEditor();
-
-    /**
-     * @brief Destroy the ScriptingEditor object
-     * 
-     * Cleanup is handled automatically by member destructors.
-     */
     ~ScriptingEditor();
 
     /**
-     * @brief Initialize the scripting editor
-     * 
-     * Initializes the scripting editor with camera and window references.
-     * Sets up the event system and default editor state.
-     * 
      * @param window Reference to the application window
      * @param camera Reference to the rendering camera
      */
     void init(std::shared_ptr<Render::Window> window, std::shared_ptr<Render::Camera> camera);
 
     /**
-     * @brief Update the editor state
-     * 
-     * Updates the editor based on input and processes scripting-specific functionality.
-     * Called once per frame.
-     * 
      * @param inputHandler Reference to the input handler
      */
     void update(input::IHandlerBase &inputHandler);
 
     /**
-     * @brief Draw all scripting editor elements
-     * 
-     * Renders the scripting editor interface within the specified view area.
-     * 
      * @param mainViewArea Rectangle representing view area of scripting editor
      */
     void draw(Rectangle mainViewArea);
 
-    // Event handling
-    /**
-     * @brief Set up event handlers for UI communication
-     * 
-     * Registers event handlers with the global event dispatcher for
-     * receiving UI events like tool changes, file operations, etc.
-     */
     void setupEventHandlers();
 
     /**
-     * @brief Handle tool change events
-     * 
-     * Responds to tool change events from the UI and updates editor behavior.
-     * 
      * @param toolIndex Index of the newly selected tool
      */
     void handleToolChanged(int toolIndex);
 
     /**
-     * @brief Handle file operation events
-     * 
-     * Processes file-related events like save, load, new, etc.
-     * 
      * @param actionType Type of file action to perform
      * @param filepath Optional file path for the operation
      */
     void handleFileAction(UI::EditorEventType actionType, const std::string& filepath = "");
 
-    // State queries for UI
-    /**
-     * @brief Get the total number of scripts in the project
-     * 
-     * @return int Total count of scripts
-     */
     int getScriptCount() const;
-
-    /**
-     * @brief Get the ID of the currently selected script
-     * 
-     * @return int ID of selected script, or -1 if none selected
-     */
     int getSelectedObjectId() const override;
-
-    /**
-     * @brief Get the name of the currently selected script
-     * 
-     * @return std::string Name of the selected script, or empty if none
-     */
     std::string getSelectedScriptName() const;
     
     /**
-     * @brief Set the scene provider for object listing
-     * 
      * @param provider Pointer to the scene provider
      */
     void setSceneProvider(UI::ISceneProvider* provider);
 
-    // ISceneProvider interface implementation
-    /**
-     * @brief Get all scene objects for UI display
-     * 
-     * @return std::vector<UI::SceneObjectInfo> List of scene objects (empty for now)
-     */
     std::vector<UI::SceneObjectInfo> getSceneObjects() const override;
-
-    /**
-     * @brief Get information about a specific object
-     * 
-     * @param objectId ID of the object to query
-     * @return UI::SceneObjectInfo Object information structure
-     */
     UI::SceneObjectInfo getObjectInfo(int objectId) const override;
-
-    /**
-     * @brief Select an object by ID
-     * 
-     * @param objectId ID of the object to select
-     * @return true if selection successful, false otherwise
-     */
     bool selectObject(int objectId) override;
-
-    /**
-     * @brief Delete an object by ID
-     * 
-     * @param objectId ID of the object to delete
-     * @return true if deletion successful, false otherwise
-     */
     bool deleteObject(int objectId) override;
 
 private:
-    // Core references
-    std::shared_ptr<Render::Window> _window;             ///< Reference to the application window
-    std::shared_ptr<Render::Camera> _camera;             ///< Reference to the 3D camera
+    std::shared_ptr<Render::Window> _window;
+    std::shared_ptr<Render::Camera> _camera;
 
-    // Editor state
-    int _currentTool = 0;                                ///< Current tool index
-    int _selectedScriptId = -1;                          ///< ID of currently selected script
-    int _selectedObjectId = -1;                          ///< Currently selected scene object
+    int _currentTool = 0;
+    int _selectedScriptId = -1;
+    int _selectedObjectId = -1;
     
-    // UI state
-    bool _initialized = false;                           ///< Initialization state flag
-    UI::ISceneProvider* _currentSceneProvider = nullptr; ///< Current scene provider for object list
+    bool _initialized = false;
+    UI::ISceneProvider* _currentSceneProvider = nullptr;
     
-    // Visual scripting data
-    std::unordered_map<int, VisualScript> _objectScripts; ///< Visual scripts per object ID
-    int _nextBlockId = 1;                               ///< Next available block ID
-    int _nextCanvasOrder = 0;                           ///< Next available canvas order
+    std::unordered_map<int, VisualScript> _objectScripts;
+    int _nextBlockId = 1;
+    int _nextCanvasOrder = 0;
     
-    // UI layout constants
-    const float _leftPanelWidth = 250.0f;              ///< Width of left block palette panel
-    const float _rightPanelWidth = 250.0f;             ///< Width of right scene objects panel
-    const float _panelPadding = 10.0f;                 ///< Padding for panels
+    const float _leftPanelWidth = 250.0f;
+    const float _rightPanelWidth = 250.0f;
+    const float _panelPadding = 10.0f;
     
-    // Block palette data
-    std::vector<std::pair<BlockCategory, std::vector<BlockType>>> _blockPalette; ///< Organized block palette
+    std::vector<std::pair<BlockCategory, std::vector<BlockType>>> _blockPalette;
     
-    // Canvas state
-    Vector2 _canvasOffset = {0, 0};                     ///< Canvas pan offset
-    float _canvasZoom = 1.0f;                           ///< Canvas zoom level
-    Rectangle _canvasBounds = {0, 0, 0, 0};            ///< Current canvas bounds
+    Vector2 _canvasOffset = {0, 0};
+    float _canvasZoom = 1.0f;
+    Rectangle _canvasBounds = {0, 0, 0, 0};
     
-    // Drag and drop state
-    bool _isMouseDragging = false;                      ///< Mouse drag state
-    bool _isDraggingFromPalette = false;                ///< Dragging from palette vs canvas
-    bool _isDraggingCanvasBlock = false;                ///< Dragging existing canvas block
-    BlockType _draggedBlockType = BlockType::ON_START;  ///< Type of block being dragged from palette
-    ScriptBlock* _draggedCanvasBlock = nullptr;         ///< Canvas block being dragged
-    Vector2 _dragStartPos = {0, 0};                     ///< Initial drag position
-    Vector2 _dragOffset = {0, 0};                       ///< Offset from mouse to block origin
+    bool _isMouseDragging = false;
+    bool _isDraggingFromPalette = false;
+    bool _isDraggingCanvasBlock = false;
+    BlockType _draggedBlockType = BlockType::ON_START;
+    ScriptBlock* _draggedCanvasBlock = nullptr;
+    Vector2 _dragStartPos = {0, 0};
+    Vector2 _dragOffset = {0, 0};
     
+    Vector2 _lastMousePos = {0, 0};
+    Vector2 _currentMousePos = {0, 0};
+    bool _leftMousePressed = false;
+    bool _leftMouseReleased = false;
+    bool _rightClickHandled = false;
     
-    // Mouse state
-    Vector2 _lastMousePos = {0, 0};                     ///< Last mouse position
-    Vector2 _currentMousePos = {0, 0};                  ///< Current mouse position
-    bool _leftMousePressed = false;                     ///< Left mouse button state
-    bool _leftMouseReleased = false;                    ///< Left mouse release state
-    bool _rightClickHandled = false;                    ///< Right click handled this frame
+    bool _showConfigDialog = false;
+    ScriptBlock* _configuredBlock = nullptr;
     
-    // Configuration dialog state
-    bool _showConfigDialog = false;                     ///< Whether config dialog is open
-    ScriptBlock* _configuredBlock = nullptr;            ///< Block being configured
+    ScriptBlock* _selectedBlock = nullptr;
+    ScriptBlock* _hoveredBlock = nullptr;
     
-    
-    // Block selection and interaction
-    ScriptBlock* _selectedBlock = nullptr;              ///< Currently selected block
-    ScriptBlock* _hoveredBlock = nullptr;               ///< Currently hovered block
-    
-    // Modern Context Menu System
-    /**
-     * @brief Context menu item definition
-     */
     struct ContextMenuItem {
-        std::string id;              ///< Unique identifier for the action
-        std::string label;           ///< Display text
-        Color textColor;             ///< Text color
-        Color hoverColor;            ///< Background color when hovered
-        bool enabled;                ///< Whether the item is clickable
+        std::string id;
+        std::string label;
+        Color textColor;
+        Color hoverColor;
+        bool enabled;
         
         ContextMenuItem(const std::string& itemId, const std::string& itemLabel, 
                        Color text = WHITE, Color hover = GRAY, bool isEnabled = true)
             : id(itemId), label(itemLabel), textColor(text), hoverColor(hover), enabled(isEnabled) {}
     };
     
-    /**
-     * @brief Context menu state and management
-     */
     struct ContextMenuState {
-        bool isVisible = false;                          ///< Whether menu is currently shown
-        Vector2 position = {0, 0};                       ///< Menu position on screen
-        ScriptBlock* targetBlock = nullptr;              ///< Block the menu is associated with
-        std::vector<ContextMenuItem> items;              ///< Menu items to display
-        float width = 140.0f;                            ///< Menu width
-        float itemHeight = 32.0f;                        ///< Height of each menu item
-        int hoveredItemIndex = -1;                       ///< Index of currently hovered item
+        bool isVisible = false;
+        Vector2 position = {0, 0};
+        ScriptBlock* targetBlock = nullptr;
+        std::vector<ContextMenuItem> items;
+        float width = 140.0f;
+        float itemHeight = 32.0f;
+        int hoveredItemIndex = -1;
         
         void clear() {
             isVisible = false;
@@ -482,22 +346,18 @@ private:
         }
         
         float getMenuHeight() const {
-            return items.size() * itemHeight + 16.0f; // 2 * 8px padding
+            return items.size() * itemHeight + 16.0f;
         }
     } _contextMenu;
     
-    // Modern Connection System
-    /**
-     * @brief Connection drag state for creating new connections
-     */
     struct ConnectionDragState {
-        bool isDragging = false;                         ///< Whether actively dragging to create connection
-        ScriptBlock* sourceBlock = nullptr;             ///< Block where drag started
-        int sourcePortIndex = -1;                       ///< Index of source port
-        ConnectionPortType sourcePortType;              ///< Type of source port
-        Vector2 dragStartPosition = {0, 0};             ///< World position where drag started
-        Vector2 currentMousePosition = {0, 0};          ///< Current mouse position for preview
-        Color previewColor = WHITE;                     ///< Color for connection preview
+        bool isDragging = false;
+        ScriptBlock* sourceBlock = nullptr;
+        int sourcePortIndex = -1;
+        ConnectionPortType sourcePortType;
+        Vector2 dragStartPosition = {0, 0};
+        Vector2 currentMousePosition = {0, 0};
+        Color previewColor = WHITE;
         
         void clear() {
             isDragging = false;
@@ -512,98 +372,86 @@ private:
         }
     } _connectionDrag;
     
-    // Canvas layout
-    const float _blockSpacing = 10.0f;                 ///< Spacing between blocks on canvas
-    const float _canvasMargin = 20.0f;                 ///< Margin from canvas edges
+    const float _blockSpacing = 10.0f;
+    const float _canvasMargin = 20.0f;
     
-    // UI helper methods
-    void drawBlockPalette(Rectangle bounds);            ///< Draw left block palette panel
-    void drawScriptCanvas(Rectangle bounds);            ///< Draw central script canvas
-    void drawSceneObjectPanel(Rectangle bounds);        ///< Draw right scene objects panel
-    void drawCanvasGrid(Rectangle bounds);              ///< Draw grid background on canvas
-    void drawCanvasOverlay(Rectangle bounds);           ///< Draw overlay when no object selected
-    void drawProfessionalBlock(const ScriptBlock& block, Vector2 offset = {0, 0}); ///< Draw modern styled block
-    void drawBlockHeader(const ScriptBlock& block, Rectangle headerRect, Vector2 offset = {0, 0}); ///< Draw block header
-    void drawBlockBody(const ScriptBlock& block, Rectangle bodyRect, Vector2 offset = {0, 0}); ///< Draw block body with parameters
-    void drawBlockPorts(const ScriptBlock& block, Vector2 offset = {0, 0}); ///< Draw connection ports
+    void drawBlockPalette(Rectangle bounds);
+    void drawScriptCanvas(Rectangle bounds);
+    void drawSceneObjectPanel(Rectangle bounds);
+    void drawCanvasGrid(Rectangle bounds);
+    void drawCanvasOverlay(Rectangle bounds);
+    void drawProfessionalBlock(const ScriptBlock& block, Vector2 offset = {0, 0});
+    void drawBlockHeader(const ScriptBlock& block, Rectangle headerRect, Vector2 offset = {0, 0});
+    void drawBlockBody(const ScriptBlock& block, Rectangle bodyRect, Vector2 offset = {0, 0});
+    void drawBlockPorts(const ScriptBlock& block, Vector2 offset = {0, 0});
     void drawPaletteCategory(const std::string& title, const std::vector<BlockType>& blocks, 
-                           Rectangle bounds, float& yOffset); ///< Draw palette category
-    void drawConfigDialog();                            ///< Draw block configuration dialog
+                           Rectangle bounds, float& yOffset);
+    void drawConfigDialog();
     
-    // Block management
-    void initializeBlockPalette();                      ///< Initialize the block palette
-    ScriptBlock createBlockFromType(BlockType type, Vector2 position); ///< Create block from type
-    void addBlockToCanvas(BlockType type, Vector2 position); ///< Add block to current script
-    void removeBlockFromCanvas(int blockId);            ///< Remove block from current script
-    VisualScript& getCurrentScript();                   ///< Get current object's script
-    std::string getBlockLabel(BlockType type) const;    ///< Get display label for block type
-    Color getBlockColor(BlockType type) const;          ///< Get color for block type
-    Vector2 getNextCanvasPosition();                    ///< Get next position for new canvas block
-    void reorderCanvasBlocks();                         ///< Reorder and snap canvas blocks to grid
+    void initializeBlockPalette();
+    ScriptBlock createBlockFromType(BlockType type, Vector2 position);
+    void addBlockToCanvas(BlockType type, Vector2 position);
+    void removeBlockFromCanvas(int blockId);
+    VisualScript& getCurrentScript();
+    std::string getBlockLabel(BlockType type) const;
+    Color getBlockColor(BlockType type) const;
+    Vector2 getNextCanvasPosition();
+    void reorderCanvasBlocks();
     
-    
-    // Mouse and drag handling
     void handleMouseInput(Vector2 mousePos, bool mousePressed, bool mouseReleased, bool rightClick);
-    void startDragOperation(Vector2 mousePos);          ///< Start drag operation
-    void updateDragOperation(Vector2 mousePos);         ///< Update ongoing drag operation
-    void endDragOperation(Vector2 mousePos);            ///< End drag operation
-    void resetDragState();                              ///< Reset all drag state variables
+    void startDragOperation(Vector2 mousePos);
+    void updateDragOperation(Vector2 mousePos);
+    void endDragOperation(Vector2 mousePos);
+    void resetDragState();
     
-    // Position and collision detection
-    ScriptBlock* getCanvasBlockAtPosition(Vector2 pos); ///< Get canvas block at position
-    BlockType getPaletteBlockTypeAtPosition(Vector2 pos); ///< Get palette block type at position
+    ScriptBlock* getCanvasBlockAtPosition(Vector2 pos);
+    BlockType getPaletteBlockTypeAtPosition(Vector2 pos);
     bool isPointInBlock(Vector2 point, const ScriptBlock& block, Vector2 offset = {0, 0});
-    bool isPositionInCanvas(Vector2 pos);               ///< Check if position is in canvas
-    bool isPositionInPalette(Vector2 pos);              ///< Check if position is in palette
-    Rectangle getPaletteBounds();                       ///< Get palette area bounds
-    void updateCanvasBounds(Rectangle mainViewArea);    ///< Update canvas bounds
+    bool isPositionInCanvas(Vector2 pos);
+    bool isPositionInPalette(Vector2 pos);
+    Rectangle getPaletteBounds();
+    void updateCanvasBounds(Rectangle mainViewArea);
     
-    // Configuration
-    void openConfigDialog(ScriptBlock* block);          ///< Open configuration dialog for block
-    void closeConfigDialog();                           ///< Close configuration dialog
-    void applyBlockConfiguration();                     ///< Apply configuration changes
+    void openConfigDialog(ScriptBlock* block);
+    void closeConfigDialog();
+    void applyBlockConfiguration();
     
-    void duplicateBlock(ScriptBlock* block);            ///< Duplicate a block with same parameters
-    void deleteBlock(ScriptBlock* block);               ///< Delete a block and its connections
-    void editBlock(ScriptBlock* block);                 ///< Open edit dialog for block
+    void duplicateBlock(ScriptBlock* block);
+    void deleteBlock(ScriptBlock* block);
+    void editBlock(ScriptBlock* block);
     
-    // Modern Context Menu System Methods
-    void showContextMenu(ScriptBlock* block, Vector2 mousePosition); ///< Show context menu for a block
-    void hideContextMenu();                             ///< Hide the context menu
-    void drawContextMenu();                             ///< Render the context menu
-    void updateContextMenu(Vector2 mousePosition);     ///< Update context menu state and handle interactions
-    void handleContextMenuAction(const std::string& actionId); ///< Execute context menu action
-    Vector2 calculateContextMenuPosition(Vector2 requestedPos, float menuWidth, float menuHeight); ///< Calculate optimal menu position
-    void createContextMenuItems(ScriptBlock* block);   ///< Create appropriate menu items for the block
-    void handleRightClick(Vector2 mousePosition);      ///< Handle right-click events
+    void showContextMenu(ScriptBlock* block, Vector2 mousePosition);
+    void hideContextMenu();
+    void drawContextMenu();
+    void updateContextMenu(Vector2 mousePosition);
+    void handleContextMenuAction(const std::string& actionId);
+    Vector2 calculateContextMenuPosition(Vector2 requestedPos, float menuWidth, float menuHeight);
+    void createContextMenuItems(ScriptBlock* block);
+    void handleRightClick(Vector2 mousePosition);
     
-    // Modern Connection System Methods
-    void updateConnectionSystem(Vector2 mousePosition, bool mousePressed, bool mouseReleased); ///< Update connection drag system
-    void startConnectionDrag(ScriptBlock* block, int portIndex, ConnectionPortType portType, Vector2 startPos); ///< Start connection creation
-    void updateConnectionDrag(Vector2 mousePosition);  ///< Update connection drag preview
-    void endConnectionDrag(Vector2 mousePosition);     ///< Finish connection creation
-    bool createConnection(ScriptBlock* fromBlock, int fromPortIndex, ScriptBlock* toBlock, int toPortIndex); ///< Create new connection
-    void removeConnection(int fromBlockId, int toBlockId, int fromPortIndex = -1, int toPortIndex = -1); ///< Remove specific connection
-    void removeAllConnectionsForBlock(int blockId);    ///< Remove all connections involving a block
-    void drawConnections(const VisualScript& script);  ///< Draw all connections in script
-    void drawConnectionLine(Vector2 start, Vector2 end, Color color, float thickness = 3.0f); ///< Draw connection line with curve
-    void drawConnectionPreview();                      ///< Draw connection drag preview
-    bool isConnectionValid(ScriptBlock* fromBlock, int fromPortIndex, ScriptBlock* toBlock, int toPortIndex); ///< Validate connection
-    ConnectionPoint* getConnectionPointAt(Vector2 position, ScriptBlock** outBlock, int* outPortIndex); ///< Get connection point at position
-    Color getConnectionColor(ConnectionPortType fromType, ConnectionPortType toType); ///< Get connection visual color
-    void updateConnectionPositions(VisualScript& script); ///< Update cached connection positions
+    void updateConnectionSystem(Vector2 mousePosition, bool mousePressed, bool mouseReleased);
+    void startConnectionDrag(ScriptBlock* block, int portIndex, ConnectionPortType portType, Vector2 startPos);
+    void updateConnectionDrag(Vector2 mousePosition);
+    void endConnectionDrag(Vector2 mousePosition);
+    bool createConnection(ScriptBlock* fromBlock, int fromPortIndex, ScriptBlock* toBlock, int toPortIndex);
+    void removeConnection(int fromBlockId, int toBlockId, int fromPortIndex = -1, int toPortIndex = -1);
+    void removeAllConnectionsForBlock(int blockId);
+    void drawConnections(const VisualScript& script);
+    void drawConnectionLine(Vector2 start, Vector2 end, Color color, float thickness = 3.0f);
+    void drawConnectionPreview();
+    bool isConnectionValid(ScriptBlock* fromBlock, int fromPortIndex, ScriptBlock* toBlock, int toPortIndex);
+    ConnectionPoint* getConnectionPointAt(Vector2 position, ScriptBlock** outBlock, int* outPortIndex);
+    Color getConnectionColor(ConnectionPortType fromType, ConnectionPortType toType);
+    void updateConnectionPositions(VisualScript& script);
     
-    // Script Compilation System
-    CompiledScript compileScript(int objectId);           ///< Compile visual script to execution flow
-    bool validateScript(int objectId, std::string& errors); ///< Validate script connections and structure
-    void exportCompiledScripts(const std::string& filePath); ///< Export all compiled scripts to file
+    CompiledScript compileScript(int objectId);
+    bool validateScript(int objectId, std::string& errors);
+    void exportCompiledScripts(const std::string& filePath);
     
-    // Block selection and interaction
-    void selectBlock(ScriptBlock* block);               ///< Select a block
-    void deselectAllBlocks();                           ///< Deselect all blocks
-    void updateBlockHover(Vector2 mousePos);            ///< Update block hover states
-    ScriptBlock* getBlockAtPosition(Vector2 pos);       ///< Get block at mouse position
+    void selectBlock(ScriptBlock* block);
+    void deselectAllBlocks();
+    void updateBlockHover(Vector2 mousePos);
+    ScriptBlock* getBlockAtPosition(Vector2 pos);
     
-    // UI interaction
     void handleObjectSelection(int objectId);
 };

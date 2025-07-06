@@ -35,23 +35,18 @@ void ScriptingEditor::update(input::IHandlerBase &inputHandler) {
         return;
     }
     
-    // Get mouse state
     Vector2D mousePosD = inputHandler.getCursorCoords();
     Vector2 mousePos = {(float)mousePosD.x, (float)mousePosD.y};
     bool mousePressed = IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
     bool mouseReleased = IsMouseButtonReleased(MOUSE_BUTTON_LEFT);
     bool rightClick = IsMouseButtonPressed(MOUSE_BUTTON_RIGHT);
     
-    // Update mouse state
     _lastMousePos = _currentMousePos;
     _currentMousePos = mousePos;
     _leftMousePressed = mousePressed;
     _leftMouseReleased = mouseReleased;
     
-    // Update block hover states
     updateBlockHover(mousePos);
-    
-    // Handle mouse input for drag and drop
     handleMouseInput(mousePos, mousePressed, mouseReleased, rightClick);
 }
 
@@ -60,13 +55,8 @@ void ScriptingEditor::draw(Rectangle mainViewArea) {
         return;
     }
     
-    // Update canvas bounds for mouse collision detection
     updateCanvasBounds(mainViewArea);
-    
-    // Clear the main view area with background
     DrawRectangleRec(mainViewArea, UI::BACKGROUND);
-    
-    // Calculate panel layouts with right panel for scene objects
     Rectangle leftPanel = {
         mainViewArea.x,
         mainViewArea.y,
@@ -88,39 +78,32 @@ void ScriptingEditor::draw(Rectangle mainViewArea) {
         mainViewArea.height
     };
     
-    // Draw panels
     drawBlockPalette(leftPanel);
     drawScriptCanvas(canvasPanel);
     drawSceneObjectPanel(rightPanel);
     
-    // Draw drag preview if dragging from palette
     if (_isDraggingFromPalette) {
         ScriptBlock previewBlock(0, _draggedBlockType, _currentMousePos);
-        previewBlock.primaryColor.a = 150; // Semi-transparent
+        previewBlock.primaryColor.a = 150;
         drawProfessionalBlock(previewBlock, {-previewBlock.size.x/2, -previewBlock.size.y/2});
     }
     
-    // Draw configuration dialog on top if open
     if (_showConfigDialog) {
         drawConfigDialog();
     }
     
-    // Draw connection preview if dragging
     if (_connectionDrag.isDragging) {
         drawConnectionPreview();
     }
     
-    // Draw context menu on top if visible
     if (_contextMenu.isVisible) {
         drawContextMenu();
     }
     
-    // Draw border around the main area
     DrawRectangleLinesEx(mainViewArea, 1, UI::UI_PRIMARY);
 }
 
 void ScriptingEditor::setupEventHandlers() {
-    // Subscribe to relevant events from the UI
     UI::g_eventDispatcher.subscribe(UI::EditorEventType::TOOL_CHANGED, 
         [this](const UI::EditorEvent& event) {
             if (std::holds_alternative<int>(event.data)) {
