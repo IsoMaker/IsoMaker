@@ -454,4 +454,11 @@ private:
     ScriptBlock* getBlockAtPosition(Vector2 pos);
     
     void handleObjectSelection(int objectId);
+    
+    void saveCurrentScript();
+    void saveScriptToFile(const VisualScript& script, const std::string& filepath);
+    void loadScriptFromFile(const std::string& filepath);
+    void clearAllScripts();
+    std::string scriptToJson(const VisualScript& script);
+    VisualScript jsonToScript(const std::string& jsonContent);
 };
