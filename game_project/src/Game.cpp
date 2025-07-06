@@ -208,7 +208,12 @@ void Game::handleInput(input::IHandlerBase &inputHandler)
     } else {
         _player->setMoving(false);
     }
-
+    if (!inputHandler.isNotPressed(input::Generic::ATTACK) && !_isJumping) {
+        std::cout << "JUMP !\n";
+        _isJumping = true;
+        _jumpVelocity = 0.15f;
+        oldPosY = playerPos.y;
+    }
 }
 
 bool Game::handleCollision(Utilities::Vector3D newPos)
@@ -227,7 +232,7 @@ bool Game::handleCollision(Utilities::Vector3D newPos)
         }
         if (newPos.x >= posTmp.x && newPos.x <= posTmp.x + 1 &&
             newPos.z >= posTmp.z && newPos.z <= posTmp.z + 1) {
-                if (posTmp.y + 1.0f == newPos.y) {
+                if (std::abs((posTmp.y + 1.0f) - newPos.y) < 0.05f) {
                     blocBelow = true;
                 }
         }
@@ -243,8 +248,24 @@ Utilities::Vector3D Game::getEntitieBlockPos(Utilities::Vector3D pos)
 void Game::update(input::IHandlerBase &inputHandler)
 {
     handleInput(inputHandler);
+
+    if (_isJumping) {
+        Vector3D playerPos = _player->getBoxPosition();
+        _jumpVelocity += _gravity;
+        playerPos.y += _jumpVelocity;
+
+        if (_jumpVelocity <= 0 && handleCollision({playerPos.x, playerPos.y - 0.01f, playerPos.z})) {
+            _isJumping = false;
+            _jumpVelocity = 0;
+            playerPos.y -= 0.01f;
+        }
+
+        _player->setBox3DPosition(playerPos);
+    }
+
     _player->updateAnimation();
 }
+
 
 void drawVerticalGradient(Rectangle rect, Color top, Color bottom) {
     for (int y = 0; y < rect.height; y++) {

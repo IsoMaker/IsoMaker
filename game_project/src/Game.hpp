@@ -54,4 +54,8 @@ class Game {
         std::shared_ptr<objects::Character> _player;
 
         float _cubeHeight;
+        bool _isJumping = false;
+        float _jumpVelocity = 0.0f;
+        float _gravity = -0.01f;
+        float oldPosY;
 };
