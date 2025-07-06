@@ -71,11 +71,34 @@ void UIManager::update(input::IHandlerBase &inputHandler)
     
     // Check for clicks outside menus to close them
     if (inputHandler.isPressed(input::Generic::SELECT1)) {
-        // Close menus if clicked outside
-        if (_fileMenuOpen && mousePos.y > 30) _fileMenuOpen = false;
-        if (_editMenuOpen && mousePos.y > 30) _editMenuOpen = false;
-        if (_renderMenuOpen && mousePos.y > 30) _renderMenuOpen = false;
-        if (_helpMenuOpen && mousePos.y > 30) _helpMenuOpen = false;
+        // Close menus if clicked outside - but not if clicking on submenu items
+        bool clickedOnMenu = false;
+        
+        // Check if clicking on any submenu area
+        if (_fileMenuOpen) {
+            Rectangle fileSubmenuArea = {10.0f, 30.0f, 120.0f, 125.0f};
+            if (CheckCollisionPointRec(mousePos, fileSubmenuArea)) clickedOnMenu = true;
+        }
+        if (_editMenuOpen) {
+            Rectangle editSubmenuArea = {90.0f, 30.0f, 120.0f, 150.0f};
+            if (CheckCollisionPointRec(mousePos, editSubmenuArea)) clickedOnMenu = true;
+        }
+        if (_renderMenuOpen) {
+            Rectangle renderSubmenuArea = {170.0f, 30.0f, 120.0f, 100.0f};
+            if (CheckCollisionPointRec(mousePos, renderSubmenuArea)) clickedOnMenu = true;
+        }
+        if (_helpMenuOpen) {
+            Rectangle helpSubmenuArea = {250.0f, 30.0f, 120.0f, 75.0f};
+            if (CheckCollisionPointRec(mousePos, helpSubmenuArea)) clickedOnMenu = true;
+        }
+        
+        // Only close menus if not clicking on submenu items
+        if (!clickedOnMenu && mousePos.y > 30) {
+            _fileMenuOpen = false;
+            _editMenuOpen = false;
+            _renderMenuOpen = false;
+            _helpMenuOpen = false;
+        }
     }
     
     // Check tool selection in left toolbar

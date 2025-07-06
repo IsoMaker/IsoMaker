@@ -1,3 +1,4 @@
+#pragma once
 /**
  * @file UIManager.hpp
  * @brief User interface management system for the IsoMaker game engine editor
