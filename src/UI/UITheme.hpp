@@ -13,8 +13,8 @@ namespace UI {
     
     // Text colors for dark theme
     const Color UI_TEXT_PRIMARY = {255, 255, 255, 255};   // #FFFFFF - White text
-    const Color UI_TEXT_SECONDARY = {200, 205, 210, 255}; // #C8CDD2 - Light gray text
-    const Color UI_TEXT_TERTIARY = {160, 165, 170, 255};  // #A0A5AA - Dimmed light text
+    const Color UI_TEXT_SECONDARY = {235, 235, 235, 255}; // #C8CDD2 - Light gray text
+    const Color UI_TEXT_TERTIARY = {215, 215, 215, 255};  // #A0A5AA - Dimmed light text
     
     // Accent colors
     const Color ACCENT_PRIMARY = {88, 101, 242, 255};     // #5865F2 - Discord blurple
@@ -42,18 +42,19 @@ namespace UI {
     const Color GLOW_ACCENT = {88, 101, 242, 100};  // Accent glow
     
     // Scripting block colors - harmonized with main theme
-    const Color BLOCK_EVENT = {237, 66, 69, 255};      // #ED4245 - Event blocks (red)
-    const Color BLOCK_ACTION = {88, 101, 242, 255};    // #5865F2 - Action blocks (blue)
-    const Color BLOCK_CONDITION = {87, 242, 135, 255}; // #57F287 - Condition blocks (green)
-    const Color BLOCK_VALUE = {254, 231, 92, 255};     // #FEE75C - Value blocks (yellow)
-    const Color BLOCK_MISC = {181, 186, 193, 255};     // #B5BAC1 - Misc blocks (gray)
+    const Color BLOCK_EVENT     = {168, 38, 41, 255};   // Darker red
+    const Color BLOCK_ACTION    = {55, 63, 153, 255};   // Darker blue
+    const Color BLOCK_CONDITION = {36, 160, 81, 255};   // Darker green
+    const Color BLOCK_VALUE     = {180, 160, 40, 255};  // Darker yellow
+    const Color BLOCK_MISC      = {110, 115, 122, 255}; // Darker gray
     
     // Block secondary colors (lighter versions for body sections)
-    const Color BLOCK_EVENT_SECONDARY = {237, 66, 69, 180};
-    const Color BLOCK_ACTION_SECONDARY = {88, 101, 242, 180};
-    const Color BLOCK_CONDITION_SECONDARY = {87, 242, 135, 180};
-    const Color BLOCK_VALUE_SECONDARY = {254, 231, 92, 180};
-    const Color BLOCK_MISC_SECONDARY = {181, 186, 193, 180};
+    const Color BLOCK_EVENT_SECONDARY     = {188, 48, 51, 180};   // Slightly brighter red
+    const Color BLOCK_ACTION_SECONDARY    = {65, 75, 175, 180};   // Slightly brighter blue
+    const Color BLOCK_CONDITION_SECONDARY = {46, 180, 96, 180};   // Slightly brighter green
+    const Color BLOCK_VALUE_SECONDARY     = {200, 180, 55, 180};  // Slightly brighter yellow
+    const Color BLOCK_MISC_SECONDARY      = {125, 130, 138, 180}; // Slightly brighter gray
+
     
     // UI dimensions and spacing
     const float UI_PADDING_SMALL = 4.0f;
