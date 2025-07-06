@@ -213,20 +213,26 @@ void Game::handleInput(input::IHandlerBase &inputHandler)
 
 bool Game::handleCollision(Utilities::Vector3D newPos)
 {
-    Utilities::Vector3D posTmp = {0.0f, 0.0f, 0.0f};
-    bool thereIsACube = false;
+    bool blocBelow = false;
+    int blocWidth = 1;
+    int blocHeight = 1;
 
     for (auto i = _objects3D.begin(); i != _objects3D.end(); i++) {
-        posTmp = i->get()->getBoxPosition();
-        if ((newPos.x == posTmp.x && newPos.z == posTmp.z)) {
-            if (newPos.y + 1 == posTmp.y || newPos.y - 1 == posTmp.y) {
-                return false;
-            }
+        Utilities::Vector3D posTmp = i->get()->getBoxPosition();
+
+        if (newPos.x >= posTmp.x && newPos.x <= posTmp.x + 1 &&
+            newPos.z >= posTmp.z && newPos.z <= posTmp.z + 1 &&
+            newPos.y >= posTmp.y && newPos.y < posTmp.y + 1) {
+            return false;
         }
-        if (newPos == posTmp)
-            thereIsACube = true;
+        if (newPos.x >= posTmp.x && newPos.x <= posTmp.x + 1 &&
+            newPos.z >= posTmp.z && newPos.z <= posTmp.z + 1) {
+                if (posTmp.y + 1.0f == newPos.y) {
+                    blocBelow = true;
+                }
+        }
     }
-    return false;
+    return blocBelow;
 }
 
 Utilities::Vector3D Game::getEntitieBlockPos(Utilities::Vector3D pos)
