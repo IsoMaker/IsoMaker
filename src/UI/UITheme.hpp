@@ -4,20 +4,73 @@
 
 // Define UI colors with a safer naming to avoid conflicts with raygui enums
 namespace UI {
-    // Custom color palette
-    const Color UI_PRIMARY = {30, 27, 46, 255};        // #1E1B2E
-    const Color UI_SECONDARY = {40, 36, 60, 255};      // #28243C
-    const Color BACKGROUND = {248, 244, 255, 255};  // #F8F4FF
-    const Color UI_TEXT_PRIMARY = {253, 251, 255, 255};// #FDFBFF
-    const Color UI_TEXT_SECONDARY = {176, 174, 184, 255}; // #B0AEB8
-    const Color ACCENT_PRIMARY = {248, 143, 112, 255};  // #F88F70
-    const Color ACCENT_SECONDARY = {255, 210, 101, 255}; // #FFD265
-    const Color ACCENT_TERTIARY = {154, 227, 210, 255};  // #9AE3D2
-    const Color SUCCESS = {86, 194, 136, 255};     // #56C288
-    const Color ERROR = {235, 107, 107, 255};      // #EB6B6B
-    const Color WARNING = {249, 178, 110, 255};    // #F9B26E
-
-    // Panel and selection colors for editors
-    const Color PANEL_BACKGROUND = {245, 245, 250, 255};   // Light panel background
-    const Color SELECTED_BACKGROUND = {200, 220, 255, 255}; // Selection highlight
+    // Dark theme with proper visibility
+    const Color UI_PRIMARY = {32, 35, 42, 255};        // #20232A - Dark primary
+    const Color UI_SECONDARY = {44, 47, 56, 255};      // #2C2F38 - Secondary dark
+    const Color UI_TERTIARY = {56, 60, 70, 255};       // #383C46 - Lighter dark
+    const Color BACKGROUND = {24, 26, 31, 255};        // #181A1F - Main background
+    const Color CANVAS_BACKGROUND = {40, 44, 52, 255}; // #282C34 - Canvas background
+    
+    // Text colors for dark theme
+    const Color UI_TEXT_PRIMARY = {255, 255, 255, 255};   // #FFFFFF - White text
+    const Color UI_TEXT_SECONDARY = {200, 205, 210, 255}; // #C8CDD2 - Light gray text
+    const Color UI_TEXT_TERTIARY = {160, 165, 170, 255};  // #A0A5AA - Dimmed light text
+    
+    // Accent colors
+    const Color ACCENT_PRIMARY = {88, 101, 242, 255};     // #5865F2 - Discord blurple
+    const Color ACCENT_SECONDARY = {87, 242, 135, 255};   // #57F287 - Green accent
+    const Color ACCENT_TERTIARY = {254, 231, 92, 255};    // #FEE75C - Yellow accent
+    const Color ACCENT_DANGER = {237, 66, 69, 255};       // #ED4245 - Red accent
+    
+    // Status colors
+    const Color SUCCESS = {87, 242, 135, 255};     // #57F287 - Success green
+    const Color ERROR = {237, 66, 69, 255};        // #ED4245 - Error red
+    const Color WARNING = {254, 231, 92, 255};     // #FEE75C - Warning yellow
+    const Color INFO = {88, 101, 242, 255};        // #5865F2 - Info blue
+    
+    // Dark theme panel colors
+    const Color PANEL_BACKGROUND = {44, 47, 56, 255};     // #2C2F38 - Dark panel background
+    const Color PANEL_HEADER = {32, 35, 42, 255};         // #20232A - Darker header
+    const Color PANEL_BORDER = {64, 68, 75, 255};         // #40444B - Dark border
+    const Color SELECTED_BACKGROUND = {88, 101, 242, 60}; // Semi-transparent accent
+    const Color HOVER_BACKGROUND = {56, 60, 70, 180};     // Dark gray hover
+    
+    // Shadow and depth
+    const Color SHADOW_LIGHT = {0, 0, 0, 40};       // Light shadow
+    const Color SHADOW_MEDIUM = {0, 0, 0, 80};      // Medium shadow  
+    const Color SHADOW_HEAVY = {0, 0, 0, 120};      // Heavy shadow
+    const Color GLOW_ACCENT = {88, 101, 242, 100};  // Accent glow
+    
+    // Scripting block colors - harmonized with main theme
+    const Color BLOCK_EVENT = {237, 66, 69, 255};      // #ED4245 - Event blocks (red)
+    const Color BLOCK_ACTION = {88, 101, 242, 255};    // #5865F2 - Action blocks (blue)
+    const Color BLOCK_CONDITION = {87, 242, 135, 255}; // #57F287 - Condition blocks (green)
+    const Color BLOCK_VALUE = {254, 231, 92, 255};     // #FEE75C - Value blocks (yellow)
+    const Color BLOCK_MISC = {181, 186, 193, 255};     // #B5BAC1 - Misc blocks (gray)
+    
+    // Block secondary colors (lighter versions for body sections)
+    const Color BLOCK_EVENT_SECONDARY = {237, 66, 69, 180};
+    const Color BLOCK_ACTION_SECONDARY = {88, 101, 242, 180};
+    const Color BLOCK_CONDITION_SECONDARY = {87, 242, 135, 180};
+    const Color BLOCK_VALUE_SECONDARY = {254, 231, 92, 180};
+    const Color BLOCK_MISC_SECONDARY = {181, 186, 193, 180};
+    
+    // UI dimensions and spacing
+    const float UI_PADDING_SMALL = 4.0f;
+    const float UI_PADDING_MEDIUM = 8.0f;
+    const float UI_PADDING_LARGE = 16.0f;
+    const float UI_PADDING_XLARGE = 24.0f;
+    
+    const float UI_BORDER_RADIUS_SMALL = 4.0f;
+    const float UI_BORDER_RADIUS_MEDIUM = 6.0f;
+    const float UI_BORDER_RADIUS_LARGE = 8.0f;
+    
+    const float UI_SHADOW_OFFSET_SMALL = 2.0f;
+    const float UI_SHADOW_OFFSET_MEDIUM = 4.0f;
+    const float UI_SHADOW_OFFSET_LARGE = 6.0f;
+    
+    const int UI_FONT_SIZE_SMALL = 10;
+    const int UI_FONT_SIZE_MEDIUM = 12;
+    const int UI_FONT_SIZE_LARGE = 14;
+    const int UI_FONT_SIZE_XLARGE = 16;
 } // namespace UI
