@@ -28,6 +28,7 @@ void ScriptingEditor::init(std::shared_ptr<Render::Window> window, std::shared_p
     
     setupEventHandlers();
     initializeBlockPalette();
+    initializeBlockConfigTemplates();
     _initialized = true;
     
     std::cout << "[ScriptingEditor] Initialized successfully" << std::endl;
@@ -1482,30 +1483,51 @@ void ScriptingEditor::reorderCanvasBlocks() {
 void ScriptingEditor::openConfigDialog(ScriptBlock* block) {
     _showConfigDialog = true;
     _configuredBlock = block;
-    std::cout << "[ScriptingEditor] Config dialog opened, showConfigDialog=" << _showConfigDialog << std::endl;
+    
+    // Load current block configuration into field states
+    loadFieldStatesFromBlock(block);
+    
+    std::cout << "[ScriptingEditor] Config dialog opened for block type " 
+              << static_cast<int>(block->type) << std::endl;
 }
 
 void ScriptingEditor::closeConfigDialog() {
     _showConfigDialog = false;
     _configuredBlock = nullptr;
+    resetFieldStates();
 }
 
 void ScriptingEditor::applyBlockConfiguration() {
-    // Configuration is applied in real-time in the dialog
+    if (_configuredBlock) {
+        // Apply field states to the block
+        applyFieldStatesToBlock(_configuredBlock);
+        std::cout << "[ScriptingEditor] Configuration applied to block " << _configuredBlock->id << std::endl;
+    }
     closeConfigDialog();
 }
 
 void ScriptingEditor::drawConfigDialog() {
     if (!_configuredBlock) return;
     
+    // Get configuration template for this block type
+    BlockConfigTemplate& configTemplate = getConfigTemplate(_configuredBlock->type);
+    
     // Draw dark overlay over entire screen
     float screenWidth = GetScreenWidth();
     float screenHeight = GetScreenHeight();
     DrawRectangle(0, 0, screenWidth, screenHeight, Color{0, 0, 0, 150});
     
+    // Use template dialog size or default
+    float dialogWidth = configTemplate.dialogWidth;
+    float dialogHeight = configTemplate.dialogHeight;
+    
+    // Adjust height based on number of fields
+    if (!configTemplate.fields.empty()) {
+        float estimatedHeight = 120 + (configTemplate.fields.size() * 60); // Base + field estimate
+        dialogHeight = std::max(dialogHeight, estimatedHeight);
+    }
+    
     // Center the dialog on screen
-    float dialogWidth = 400;
-    float dialogHeight = 350;
     Rectangle dialogBounds = {
         (screenWidth - dialogWidth) / 2,
         (screenHeight - dialogHeight) / 2,
@@ -1513,117 +1535,58 @@ void ScriptingEditor::drawConfigDialog() {
         dialogHeight
     };
     
-    // Draw dialog background with shadow
-    Rectangle shadowRect = {dialogBounds.x + 5, dialogBounds.y + 5, dialogBounds.width, dialogBounds.height};
-    DrawRectangleRec(shadowRect, Color{0, 0, 0, 100});
+    // Draw dialog background with enhanced styling
+    Rectangle shadowRect = {dialogBounds.x + 3, dialogBounds.y + 3, dialogBounds.width, dialogBounds.height};
+    DrawRectangleRec(shadowRect, UI::SHADOW_MEDIUM);
     
-    // Draw dialog background
-    DrawRectangleRec(dialogBounds, Color{255, 255, 255, 255});
-    DrawRectangleLinesEx(dialogBounds, 3, UI::UI_PRIMARY);
+    DrawRectangleRec(dialogBounds, UI::PANEL_BACKGROUND);
+    DrawRectangleLinesEx(dialogBounds, 2, UI::PANEL_BORDER);
     
-    // Title
-    Rectangle titleArea = {dialogBounds.x + 10, dialogBounds.y + 10, dialogBounds.width - 20, 25};
-    std::string title = "Configure: " + _configuredBlock->label;
+    // Title bar with accent color
+    Rectangle titleBar = {dialogBounds.x, dialogBounds.y, dialogBounds.width, 35};
+    DrawRectangleRec(titleBar, UI::ACCENT_PRIMARY);
+    
+    Rectangle titleArea = {dialogBounds.x + 10, dialogBounds.y + 8, dialogBounds.width - 20, 20};
+    std::string title = configTemplate.title.empty() ? 
+        ("Configure: " + _configuredBlock->title) : configTemplate.title;
     GuiLabel(titleArea, title.c_str());
     
-    // Configuration fields based on block type
+    // Content area
     float yOffset = 50;
     
-    switch (_configuredBlock->type) {
-        case BlockType::ON_KEY_PRESS: {
-            Rectangle keyLabel = {dialogBounds.x + 10, dialogBounds.y + yOffset, dialogBounds.width - 20, 20};
-            GuiLabel(keyLabel, "Key:");
-            
-            Rectangle keyField = {dialogBounds.x + 10, dialogBounds.y + yOffset + 20, dialogBounds.width - 20, 25};
-            static int keyIndex = 0;
-            const char* keys[] = {"Space", "A", "W", "S", "D", "Up", "Down", "Left", "Right", "Enter"};
-            keyIndex = GuiComboBox(keyField, "Space;A;W;S;D;Up;Down;Left;Right;Enter", &keyIndex);
-            _configuredBlock->config.stringParams["key"] = keys[keyIndex];
-            break;
+    // Draw fields using modular system
+    if (configTemplate.fields.empty()) {
+        // No configuration fields
+        Rectangle noConfigLabel = {dialogBounds.x + 10, dialogBounds.y + yOffset, dialogBounds.width - 20, 20};
+        GuiLabel(noConfigLabel, "No configuration options for this block.");
+        yOffset += 30;
+    } else {
+        // Draw each field
+        for (const auto& field : configTemplate.fields) {
+            auto stateIt = _fieldStates.find(field.key);
+            if (stateIt != _fieldStates.end()) {
+                yOffset = drawConfigField(field, stateIt->second, dialogBounds, yOffset);
+                yOffset += 10; // Spacing between fields
+            }
         }
-        
-        case BlockType::MOVE: {
-            Rectangle speedLabel = {dialogBounds.x + 10, dialogBounds.y + yOffset, dialogBounds.width - 20, 20};
-            GuiLabel(speedLabel, "Speed:");
-            
-            Rectangle speedField = {dialogBounds.x + 10, dialogBounds.y + yOffset + 20, dialogBounds.width - 20, 25};
-            static char speedText[32] = "1.0";
-            GuiTextBox(speedField, speedText, 32, true);
-            _configuredBlock->config.floatParams["speed"] = std::stof(speedText);
-            
-            yOffset += 50;
-            
-            Rectangle dirLabel = {dialogBounds.x + 10, dialogBounds.y + yOffset, dialogBounds.width - 20, 20};
-            GuiLabel(dirLabel, "Direction (X, Y, Z):");
-            
-            static char xText[16] = "1.0", yText[16] = "0.0", zText[16] = "0.0";
-            float fieldWidth = (dialogBounds.width - 40) / 3;
-            
-            Rectangle xField = {dialogBounds.x + 10, dialogBounds.y + yOffset + 20, fieldWidth, 25};
-            Rectangle yField = {dialogBounds.x + 15 + fieldWidth, dialogBounds.y + yOffset + 20, fieldWidth, 25};
-            Rectangle zField = {dialogBounds.x + 20 + 2*fieldWidth, dialogBounds.y + yOffset + 20, fieldWidth, 25};
-            
-            GuiTextBox(xField, xText, 16, true);
-            GuiTextBox(yField, yText, 16, true);
-            GuiTextBox(zField, zText, 16, true);
-            
-            _configuredBlock->config.vectorParams["direction"] = {std::stof(xText), std::stof(yText), std::stof(zText)};
-            break;
-        }
-        
-        case BlockType::ROTATE: {
-            Rectangle speedLabel = {dialogBounds.x + 10, dialogBounds.y + yOffset, dialogBounds.width - 20, 20};
-            GuiLabel(speedLabel, "Speed (degrees/second):");
-            
-            Rectangle speedField = {dialogBounds.x + 10, dialogBounds.y + yOffset + 20, dialogBounds.width - 20, 25};
-            static char rotSpeedText[32] = "90.0";
-            GuiTextBox(speedField, rotSpeedText, 32, true);
-            _configuredBlock->config.floatParams["speed"] = std::stof(rotSpeedText);
-            break;
-        }
-        
-        case BlockType::DELAY: {
-            Rectangle durationLabel = {dialogBounds.x + 10, dialogBounds.y + yOffset, dialogBounds.width - 20, 20};
-            GuiLabel(durationLabel, "Duration (seconds):");
-            
-            Rectangle durationField = {dialogBounds.x + 10, dialogBounds.y + yOffset + 20, dialogBounds.width - 20, 25};
-            static char durationText[32] = "1.0";
-            GuiTextBox(durationField, durationText, 32, true);
-            _configuredBlock->config.floatParams["duration"] = std::stof(durationText);
-            break;
-        }
-        
-        case BlockType::LOG: {
-            Rectangle messageLabel = {dialogBounds.x + 10, dialogBounds.y + yOffset, dialogBounds.width - 20, 20};
-            GuiLabel(messageLabel, "Message:");
-            
-            Rectangle messageField = {dialogBounds.x + 10, dialogBounds.y + yOffset + 20, dialogBounds.width - 20, 25};
-            static char messageText[128] = "Debug message";
-            GuiTextBox(messageField, messageText, 128, true);
-            _configuredBlock->config.stringParams["message"] = messageText;
-            break;
-        }
-        
-        case BlockType::LOOP: {
-            Rectangle iterLabel = {dialogBounds.x + 10, dialogBounds.y + yOffset, dialogBounds.width - 20, 20};
-            GuiLabel(iterLabel, "Number of iterations:");
-            
-            Rectangle iterField = {dialogBounds.x + 10, dialogBounds.y + yOffset + 20, dialogBounds.width - 20, 25};
-            static char iterText[32] = "5";
-            GuiTextBox(iterField, iterText, 32, true);
-            _configuredBlock->config.floatParams["iterations"] = std::stof(iterText);
-            break;
-        }
-        
-        default:
-            Rectangle noConfigLabel = {dialogBounds.x + 10, dialogBounds.y + yOffset, dialogBounds.width - 20, 20};
-            GuiLabel(noConfigLabel, "No configuration options for this block.");
-            break;
     }
     
-    // Buttons
-    Rectangle applyButton = {dialogBounds.x + dialogBounds.width - 180, dialogBounds.y + dialogBounds.height - 40, 80, 30};
-    Rectangle cancelButton = {dialogBounds.x + dialogBounds.width - 90, dialogBounds.y + dialogBounds.height - 40, 80, 30};
+    // Buttons at bottom
+    float buttonY = dialogBounds.y + dialogBounds.height - 45;
+    Rectangle applyButton = {dialogBounds.x + dialogBounds.width - 180, buttonY, 80, 35};
+    Rectangle cancelButton = {dialogBounds.x + dialogBounds.width - 90, buttonY, 80, 35};
+    
+    // Enhanced button styling
+    bool applyHovered = CheckCollisionPointRec(GetMousePosition(), applyButton);
+    bool cancelHovered = CheckCollisionPointRec(GetMousePosition(), cancelButton);
+    
+    Color applyColor = applyHovered ? UI::ACCENT_SECONDARY : UI::ACCENT_PRIMARY;
+    Color cancelColor = cancelHovered ? UI::UI_TERTIARY : UI::UI_SECONDARY;
+    
+    DrawRectangleRec(applyButton, applyColor);
+    DrawRectangleRec(cancelButton, cancelColor);
+    DrawRectangleLinesEx(applyButton, 1, UI::PANEL_BORDER);
+    DrawRectangleLinesEx(cancelButton, 1, UI::PANEL_BORDER);
     
     if (GuiButton(applyButton, "Apply")) {
         applyBlockConfiguration();
@@ -2801,5 +2764,467 @@ bool ScriptingEditor::createDirectoryIfNotExists(const std::string& path) {
 
 std::string ScriptingEditor::getScriptsDirectory() {
     return "game_project/assets/scripts";
+}
+
+// FieldState implementation
+void FieldState::setFromString(const std::string& value) {
+    stringValue = value;
+    strncpy(textBuffer, value.c_str(), sizeof(textBuffer) - 1);
+    textBuffer[sizeof(textBuffer) - 1] = '\0';
+    isDirty = true;
+}
+
+void FieldState::setFromFloat(float value) {
+    floatValue = value;
+    stringValue = std::to_string(value);
+    strncpy(textBuffer, stringValue.c_str(), sizeof(textBuffer) - 1);
+    textBuffer[sizeof(textBuffer) - 1] = '\0';
+    isDirty = true;
+}
+
+void FieldState::setFromBool(bool value) {
+    boolValue = value;
+    isDirty = true;
+}
+
+void FieldState::setFromVector3(const Vector3& value) {
+    vectorValue = value;
+    isDirty = true;
+}
+
+void FieldState::setFromInt(int value) {
+    intValue = value;
+    floatValue = static_cast<float>(value);
+    stringValue = std::to_string(value);
+    strncpy(textBuffer, stringValue.c_str(), sizeof(textBuffer) - 1);
+    textBuffer[sizeof(textBuffer) - 1] = '\0';
+    isDirty = true;
+}
+
+// Modular configuration system implementation
+void ScriptingEditor::initializeBlockConfigTemplates() {
+    // ON_KEY_PRESS block configuration
+    _blockConfigTemplates[BlockType::ON_KEY_PRESS] = BlockConfigTemplate("Key Press Event")
+        .addField(FieldDefinition("key", "Key", FieldType::COMBO, "Space")
+            .withOptions({"Space", "A", "W", "S", "D", "Up", "Down", "Left", "Right", "Enter"})
+            .withDescription("The key that triggers this event"));
+    
+    // MOVE block configuration
+    _blockConfigTemplates[BlockType::MOVE] = BlockConfigTemplate("Move Action")
+        .addField(FieldDefinition("speed", "Speed", FieldType::FLOAT, "1.0")
+            .withRange(0.1f, 50.0f)
+            .withDescription("Movement speed in units per second"))
+        .addField(FieldDefinition("direction", "Direction", FieldType::VECTOR3, "1.0,0.0,0.0")
+            .withDescription("Direction vector (X, Y, Z)"))
+        .withSize(450, 400);
+    
+    // ROTATE block configuration
+    _blockConfigTemplates[BlockType::ROTATE] = BlockConfigTemplate("Rotate Action")
+        .addField(FieldDefinition("speed", "Speed (deg/sec)", FieldType::FLOAT, "90.0")
+            .withRange(0.1f, 360.0f)
+            .withDescription("Rotation speed in degrees per second"));
+    
+    // DELAY block configuration
+    _blockConfigTemplates[BlockType::DELAY] = BlockConfigTemplate("Delay Action")
+        .addField(FieldDefinition("duration", "Duration (seconds)", FieldType::FLOAT, "1.0")
+            .withRange(0.1f, 60.0f)
+            .withDescription("How long to wait in seconds"));
+    
+    // LOG block configuration
+    _blockConfigTemplates[BlockType::LOG] = BlockConfigTemplate("Log Action")
+        .addField(FieldDefinition("message", "Message", FieldType::STRING, "Debug message")
+            .withDescription("Text to display in the console"))
+        .withSize(450, 350);
+    
+    // LOOP block configuration
+    _blockConfigTemplates[BlockType::LOOP] = BlockConfigTemplate("Loop Action")
+        .addField(FieldDefinition("iterations", "Iterations", FieldType::INTEGER, "5")
+            .withRange(1, 1000)
+            .withDescription("Number of times to repeat"));
+    
+    // CHANGE_COLOR block configuration
+    _blockConfigTemplates[BlockType::CHANGE_COLOR] = BlockConfigTemplate("Change Color Action")
+        .addField(FieldDefinition("color", "Color", FieldType::VECTOR3, "1.0,0.0,0.0")
+            .withDescription("RGB color values (0.0 to 1.0)"))
+        .addField(FieldDefinition("duration", "Duration", FieldType::FLOAT, "0.5")
+            .withRange(0.1f, 10.0f)
+            .withDescription("Color transition duration"));
+    
+    // HIDE/SHOW blocks
+    _blockConfigTemplates[BlockType::HIDE] = BlockConfigTemplate("Hide Action");
+    _blockConfigTemplates[BlockType::SHOW] = BlockConfigTemplate("Show Action");
+    
+    // Value blocks
+    _blockConfigTemplates[BlockType::VALUE] = BlockConfigTemplate("Value")
+        .addField(FieldDefinition("value", "Value", FieldType::FLOAT, "0.0")
+            .withDescription("Numeric value"));
+    
+    _blockConfigTemplates[BlockType::TRUE] = BlockConfigTemplate("True Value");
+    _blockConfigTemplates[BlockType::FALSE] = BlockConfigTemplate("False Value");
+    
+    std::cout << "[ScriptingEditor] Initialized " << _blockConfigTemplates.size() << " block configuration templates" << std::endl;
+}
+
+BlockConfigTemplate& ScriptingEditor::getConfigTemplate(BlockType blockType) {
+    auto it = _blockConfigTemplates.find(blockType);
+    if (it != _blockConfigTemplates.end()) {
+        return it->second;
+    }
+    
+    // Return a default empty template for blocks without configuration
+    static BlockConfigTemplate defaultTemplate("No Configuration");
+    return defaultTemplate;
+}
+
+void ScriptingEditor::loadFieldStatesFromBlock(ScriptBlock* block) {
+    if (!block) return;
+    
+    resetFieldStates();
+    
+    BlockConfigTemplate& configTemplate = getConfigTemplate(block->type);
+    
+    for (const auto& field : configTemplate.fields) {
+        FieldState& state = _fieldStates[field.key];
+        
+        switch (field.type) {
+            case FieldType::FLOAT: {
+                auto it = block->config.floatParams.find(field.key);
+                if (it != block->config.floatParams.end()) {
+                    state.setFromFloat(it->second);
+                } else {
+                    state.setFromFloat(std::stof(field.defaultValue));
+                }
+                break;
+            }
+            case FieldType::STRING:
+            case FieldType::COMBO: {
+                auto it = block->config.stringParams.find(field.key);
+                if (it != block->config.stringParams.end()) {
+                    state.setFromString(it->second);
+                } else {
+                    state.setFromString(field.defaultValue);
+                }
+                
+                // Set combo index for combo fields
+                if (field.type == FieldType::COMBO) {
+                    auto optIt = std::find(field.options.begin(), field.options.end(), state.stringValue);
+                    state.comboIndex = (optIt != field.options.end()) ? 
+                        std::distance(field.options.begin(), optIt) : 0;
+                }
+                break;
+            }
+            case FieldType::BOOL: {
+                auto it = block->config.boolParams.find(field.key);
+                if (it != block->config.boolParams.end()) {
+                    state.setFromBool(it->second);
+                } else {
+                    state.setFromBool(field.defaultValue == "true");
+                }
+                break;
+            }
+            case FieldType::VECTOR3: {
+                auto it = block->config.vectorParams.find(field.key);
+                if (it != block->config.vectorParams.end()) {
+                    state.setFromVector3(it->second);
+                } else {
+                    // Parse default value "x,y,z"
+                    Vector3 defaultVec = {1.0f, 0.0f, 0.0f};
+                    if (!field.defaultValue.empty()) {
+                        std::istringstream ss(field.defaultValue);
+                        std::string token;
+                        int component = 0;
+                        while (std::getline(ss, token, ',') && component < 3) {
+                            float value = std::stof(token);
+                            if (component == 0) defaultVec.x = value;
+                            else if (component == 1) defaultVec.y = value;
+                            else if (component == 2) defaultVec.z = value;
+                            component++;
+                        }
+                    }
+                    state.setFromVector3(defaultVec);
+                }
+                break;
+            }
+            case FieldType::INTEGER: {
+                auto it = block->config.floatParams.find(field.key);
+                if (it != block->config.floatParams.end()) {
+                    state.setFromInt(static_cast<int>(it->second));
+                } else {
+                    state.setFromInt(std::stoi(field.defaultValue));
+                }
+                break;
+            }
+        }
+    }
+}
+
+void ScriptingEditor::applyFieldStatesToBlock(ScriptBlock* block) {
+    if (!block) return;
+    
+    BlockConfigTemplate& configTemplate = getConfigTemplate(block->type);
+    
+    for (const auto& field : configTemplate.fields) {
+        auto stateIt = _fieldStates.find(field.key);
+        if (stateIt == _fieldStates.end()) continue;
+        
+        const FieldState& state = stateIt->second;
+        
+        switch (field.type) {
+            case FieldType::FLOAT:
+                block->config.floatParams[field.key] = state.floatValue;
+                break;
+            case FieldType::STRING:
+                block->config.stringParams[field.key] = state.stringValue;
+                break;
+            case FieldType::COMBO:
+                if (state.comboIndex >= 0 && state.comboIndex < field.options.size()) {
+                    block->config.stringParams[field.key] = field.options[state.comboIndex];
+                }
+                break;
+            case FieldType::BOOL:
+                block->config.boolParams[field.key] = state.boolValue;
+                break;
+            case FieldType::VECTOR3:
+                block->config.vectorParams[field.key] = state.vectorValue;
+                break;
+            case FieldType::INTEGER:
+                block->config.floatParams[field.key] = static_cast<float>(state.intValue);
+                break;
+        }
+    }
+    
+    // Update block subtitle with parameter summary
+    block->subtitle = block->getParameterSummary();
+}
+
+void ScriptingEditor::resetFieldStates() {
+    _fieldStates.clear();
+}
+
+// UI field rendering methods
+float ScriptingEditor::drawConfigField(const FieldDefinition& field, FieldState& state, Rectangle dialogBounds, float yOffset) {
+    switch (field.type) {
+        case FieldType::FLOAT:
+            return drawFloatField(field, state, dialogBounds, yOffset);
+        case FieldType::STRING:
+            return drawStringField(field, state, dialogBounds, yOffset);
+        case FieldType::BOOL:
+            return drawBoolField(field, state, dialogBounds, yOffset);
+        case FieldType::VECTOR3:
+            return drawVector3Field(field, state, dialogBounds, yOffset);
+        case FieldType::COMBO:
+            return drawComboField(field, state, dialogBounds, yOffset);
+        case FieldType::INTEGER:
+            return drawIntegerField(field, state, dialogBounds, yOffset);
+        default:
+            return yOffset;
+    }
+}
+
+float ScriptingEditor::drawFloatField(const FieldDefinition& field, FieldState& state, Rectangle dialogBounds, float yOffset) {
+    const float fieldHeight = 50.0f;
+    const float padding = 10.0f;
+    
+    // Draw label
+    Rectangle labelRect = {dialogBounds.x + padding, dialogBounds.y + yOffset, dialogBounds.width - 2*padding, 20};
+    GuiLabel(labelRect, field.label.c_str());
+    
+    // Draw input field
+    Rectangle inputRect = {dialogBounds.x + padding, dialogBounds.y + yOffset + 25, dialogBounds.width - 2*padding, 25};
+    
+    // Update text buffer if value changed externally
+    if (std::fabs(state.floatValue - std::stof(state.stringValue)) > 0.001f) {
+        state.setFromFloat(state.floatValue);
+    }
+    
+    if (GuiTextBox(inputRect, state.textBuffer, sizeof(state.textBuffer), true)) {
+        try {
+            state.floatValue = std::stof(state.textBuffer);
+            state.stringValue = state.textBuffer;
+            
+            // Clamp to range if specified
+            if (field.minValue != field.maxValue) {
+                state.floatValue = std::max(field.minValue, std::min(field.maxValue, state.floatValue));
+                state.setFromFloat(state.floatValue);
+            }
+            
+            state.isDirty = true;
+        } catch (const std::exception&) {
+            // Invalid input, revert to previous value
+            state.setFromFloat(state.floatValue);
+        }
+    }
+    
+    // Show range info if specified
+    if (field.minValue != field.maxValue) {
+        Rectangle rangeRect = {dialogBounds.x + padding, dialogBounds.y + yOffset + 52, dialogBounds.width - 2*padding, 15};
+        std::string rangeText = "Range: " + std::to_string(field.minValue) + " - " + std::to_string(field.maxValue);
+        GuiLabel(rangeRect, rangeText.c_str());
+        return yOffset + fieldHeight + 20;
+    }
+    
+    return yOffset + fieldHeight;
+}
+
+float ScriptingEditor::drawStringField(const FieldDefinition& field, FieldState& state, Rectangle dialogBounds, float yOffset) {
+    const float fieldHeight = 50.0f;
+    const float padding = 10.0f;
+    
+    // Draw label
+    Rectangle labelRect = {dialogBounds.x + padding, dialogBounds.y + yOffset, dialogBounds.width - 2*padding, 20};
+    GuiLabel(labelRect, field.label.c_str());
+    
+    // Draw input field
+    Rectangle inputRect = {dialogBounds.x + padding, dialogBounds.y + yOffset + 25, dialogBounds.width - 2*padding, 25};
+    
+    if (GuiTextBox(inputRect, state.textBuffer, sizeof(state.textBuffer), true)) {
+        state.stringValue = state.textBuffer;
+        state.isDirty = true;
+    }
+    
+    return yOffset + fieldHeight;
+}
+
+float ScriptingEditor::drawBoolField(const FieldDefinition& field, FieldState& state, Rectangle dialogBounds, float yOffset) {
+    const float fieldHeight = 35.0f;
+    const float padding = 10.0f;
+    
+    // Draw checkbox with label
+    Rectangle checkRect = {dialogBounds.x + padding, dialogBounds.y + yOffset + 5, 20, 20};
+    Rectangle labelRect = {dialogBounds.x + padding + 30, dialogBounds.y + yOffset + 8, dialogBounds.width - 2*padding - 30, 20};
+    
+    if (GuiCheckBox(checkRect, "", &state.boolValue)) {
+        state.isDirty = true;
+    }
+    
+    GuiLabel(labelRect, field.label.c_str());
+    
+    return yOffset + fieldHeight;
+}
+
+float ScriptingEditor::drawVector3Field(const FieldDefinition& field, FieldState& state, Rectangle dialogBounds, float yOffset) {
+    const float fieldHeight = 75.0f;
+    const float padding = 10.0f;
+    const float componentWidth = (dialogBounds.width - 4*padding) / 3;
+    
+    // Draw label
+    Rectangle labelRect = {dialogBounds.x + padding, dialogBounds.y + yOffset, dialogBounds.width - 2*padding, 20};
+    GuiLabel(labelRect, field.label.c_str());
+    
+    // Draw X, Y, Z input fields
+    static char xBuffer[32], yBuffer[32], zBuffer[32];
+    snprintf(xBuffer, sizeof(xBuffer), "%.3f", state.vectorValue.x);
+    snprintf(yBuffer, sizeof(yBuffer), "%.3f", state.vectorValue.y);
+    snprintf(zBuffer, sizeof(zBuffer), "%.3f", state.vectorValue.z);
+    
+    Rectangle xRect = {dialogBounds.x + padding, dialogBounds.y + yOffset + 25, componentWidth, 25};
+    Rectangle yRect = {dialogBounds.x + padding + componentWidth + padding, dialogBounds.y + yOffset + 25, componentWidth, 25};
+    Rectangle zRect = {dialogBounds.x + padding + 2*(componentWidth + padding), dialogBounds.y + yOffset + 25, componentWidth, 25};
+    
+    // X component
+    GuiLabel({xRect.x, xRect.y - 18, componentWidth, 15}, "X");
+    if (GuiTextBox(xRect, xBuffer, sizeof(xBuffer), true)) {
+        try {
+            state.vectorValue.x = std::stof(xBuffer);
+            state.isDirty = true;
+        } catch (const std::exception&) {}
+    }
+    
+    // Y component
+    GuiLabel({yRect.x, yRect.y - 18, componentWidth, 15}, "Y");
+    if (GuiTextBox(yRect, yBuffer, sizeof(yBuffer), true)) {
+        try {
+            state.vectorValue.y = std::stof(yBuffer);
+            state.isDirty = true;
+        } catch (const std::exception&) {}
+    }
+    
+    // Z component
+    GuiLabel({zRect.x, zRect.y - 18, componentWidth, 15}, "Z");
+    if (GuiTextBox(zRect, zBuffer, sizeof(zBuffer), true)) {
+        try {
+            state.vectorValue.z = std::stof(zBuffer);
+            state.isDirty = true;
+        } catch (const std::exception&) {}
+    }
+    
+    return yOffset + fieldHeight;
+}
+
+float ScriptingEditor::drawComboField(const FieldDefinition& field, FieldState& state, Rectangle dialogBounds, float yOffset) {
+    const float fieldHeight = 50.0f;
+    const float padding = 10.0f;
+    
+    // Draw label
+    Rectangle labelRect = {dialogBounds.x + padding, dialogBounds.y + yOffset, dialogBounds.width - 2*padding, 20};
+    GuiLabel(labelRect, field.label.c_str());
+    
+    // Build options string for GuiComboBox
+    std::string optionsStr = "";
+    for (size_t i = 0; i < field.options.size(); ++i) {
+        if (i > 0) optionsStr += ";";
+        optionsStr += field.options[i];
+    }
+    
+    // Draw combo box
+    Rectangle comboRect = {dialogBounds.x + padding, dialogBounds.y + yOffset + 25, dialogBounds.width - 2*padding, 25};
+    int newIndex = GuiComboBox(comboRect, optionsStr.c_str(), &state.comboIndex);
+    
+    if (newIndex != state.comboIndex) {
+        state.comboIndex = newIndex;
+        if (state.comboIndex >= 0 && state.comboIndex < field.options.size()) {
+            state.setFromString(field.options[state.comboIndex]);
+        }
+    }
+    
+    return yOffset + fieldHeight;
+}
+
+float ScriptingEditor::drawIntegerField(const FieldDefinition& field, FieldState& state, Rectangle dialogBounds, float yOffset) {
+    const float fieldHeight = 50.0f;
+    const float padding = 10.0f;
+    
+    // Draw label
+    Rectangle labelRect = {dialogBounds.x + padding, dialogBounds.y + yOffset, dialogBounds.width - 2*padding, 20};
+    GuiLabel(labelRect, field.label.c_str());
+    
+    // Draw input field
+    Rectangle inputRect = {dialogBounds.x + padding, dialogBounds.y + yOffset + 25, dialogBounds.width - 2*padding, 25};
+    
+    // Update text buffer if value changed externally
+    if (state.intValue != static_cast<int>(std::stof(state.stringValue))) {
+        state.setFromInt(state.intValue);
+    }
+    
+    if (GuiTextBox(inputRect, state.textBuffer, sizeof(state.textBuffer), true)) {
+        try {
+            state.intValue = std::stoi(state.textBuffer);
+            state.floatValue = static_cast<float>(state.intValue);
+            state.stringValue = state.textBuffer;
+            
+            // Clamp to range if specified
+            if (field.minValue != field.maxValue) {
+                state.intValue = std::max(static_cast<int>(field.minValue), 
+                                        std::min(static_cast<int>(field.maxValue), state.intValue));
+                state.setFromInt(state.intValue);
+            }
+            
+            state.isDirty = true;
+        } catch (const std::exception&) {
+            // Invalid input, revert to previous value
+            state.setFromInt(state.intValue);
+        }
+    }
+    
+    // Show range info if specified
+    if (field.minValue != field.maxValue) {
+        Rectangle rangeRect = {dialogBounds.x + padding, dialogBounds.y + yOffset + 52, dialogBounds.width - 2*padding, 15};
+        std::string rangeText = "Range: " + std::to_string(static_cast<int>(field.minValue)) + 
+                               " - " + std::to_string(static_cast<int>(field.maxValue));
+        GuiLabel(rangeRect, rangeText.c_str());
+        return yOffset + fieldHeight + 20;
+    }
+    
+    return yOffset + fieldHeight;
 }
 
