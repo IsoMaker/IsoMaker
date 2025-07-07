@@ -1001,7 +1001,7 @@ void ScriptingEditor::drawProfessionalBlock(const ScriptBlock& block, Vector2 of
     } else if (block.isDragging) {
         borderColor = UI::ACCENT_TERTIARY; // Use accent tertiary for dragging
     }
-    DrawRectangleRoundedLinesEx(blockRect, UI::UI_BORDER_RADIUS_LARGE / block.size.x, 8, 2.0f, borderColor);
+    DrawRectangleRoundedLines(blockRect, UI::UI_BORDER_RADIUS_LARGE / block.size.x, 8, 2.0f, borderColor);
     
     // Draw header and body sections with consistent spacing
     Rectangle headerRect = {drawPos.x, drawPos.y, block.size.x, block.size.y * 0.4f};
@@ -1017,7 +1017,7 @@ void ScriptingEditor::drawProfessionalBlock(const ScriptBlock& block, Vector2 of
     if (block.isSelected) {
         Rectangle highlightRect = {drawPos.x - UI::UI_PADDING_SMALL, drawPos.y - UI::UI_PADDING_SMALL, 
                                   block.size.x + UI::UI_PADDING_MEDIUM, block.size.y + UI::UI_PADDING_MEDIUM};
-        DrawRectangleRoundedLinesEx(highlightRect, UI::UI_BORDER_RADIUS_LARGE / block.size.x, 8, 3.0f, UI::GLOW_ACCENT);
+        DrawRectangleRoundedLines(highlightRect, UI::UI_BORDER_RADIUS_LARGE / block.size.x, 8, 3.0f, UI::GLOW_ACCENT);
     }
 }
 
@@ -1851,7 +1851,7 @@ void ScriptingEditor::drawContextMenu() {
     
     // Draw menu background
     DrawRectangleRounded(menuBounds, borderRadius / menuWidth, 8, UI::PANEL_BACKGROUND);
-    DrawRectangleRoundedLinesEx(menuBounds, borderRadius / menuWidth, 8, 1.0f, UI::PANEL_BORDER);
+    DrawRectangleRoundedLines(menuBounds, borderRadius / menuWidth, 8, 1.0f, UI::PANEL_BORDER);
     
     // Draw menu items
     for (size_t i = 0; i < _contextMenu.items.size(); ++i) {
