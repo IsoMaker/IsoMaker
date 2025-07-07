@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['sceneobjectinfo_0',['SceneObjectInfo',['../structUI_1_1SceneObjectInfo.html',1,'UI']]]
+  ['fielddefinition_0',['FieldDefinition',['../structFieldDefinition.html',1,'']]],
+  ['fieldstate_1',['FieldState',['../structFieldState.html',1,'']]]
 ];

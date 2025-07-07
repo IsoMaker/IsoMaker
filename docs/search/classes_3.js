@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['mainui_0',['MainUI',['../classMainUI.html',1,'']]],
-  ['mapeditor_1',['MapEditor',['../classMapEditor.html',1,'']]],
-  ['mapgrid_2',['MapGrid',['../classmap_1_1MapGrid.html',1,'map']]]
+  ['editor_0',['Editor',['../classpaint_1_1Editor.html',1,'paint']]],
+  ['editorevent_1',['EditorEvent',['../structUI_1_1EditorEvent.html',1,'UI']]],
+  ['eventdispatcher_2',['EventDispatcher',['../classUI_1_1EventDispatcher.html',1,'UI']]]
 ];

@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['editoreventtype_0',['EditorEventType',['../namespaceUI.html#a212ce8ff3e61dff309d5fe8157d568db',1,'UI']]],
-  ['editortype_1',['EditorType',['../MainUI_8hpp.html#a73cc7416abdce947608adf880c7900af',1,'MainUI.hpp']]]
+  ['connectionporttype_0',['ConnectionPortType',['../ScriptingEditor_8hpp.html#a3c41b62e9bdd6b19cf9b90c75e1f9346',1,'ScriptingEditor.hpp']]]
 ];

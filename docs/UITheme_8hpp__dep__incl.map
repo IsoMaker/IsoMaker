@@ -1,18 +1,20 @@
 <map id="src/UI/UITheme.hpp" name="src/UI/UITheme.hpp">
-<area shape="rect" id="Node000001" title=" " alt="" coords="157,5,307,31"/>
-<area shape="rect" id="Node000002" href="$UIComponents_8hpp.html" title=" " alt="" coords="73,79,260,104"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="214,43,179,80,175,77,210,39"/>
-<area shape="rect" id="Node000004" href="$UIManager_8hpp.html" title="User interface management system for the IsoMaker game engine editor." alt="" coords="217,152,378,177"/>
-<area shape="poly" id="edge8_Node000001_Node000004" title=" " alt="" coords="252,40,274,78,289,118,298,151,292,153,284,119,270,80,247,43"/>
-<area shape="rect" id="Node000003" href="$UIComponents_8cpp.html" title=" " alt="" coords="5,152,192,177"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="148,116,112,154,108,150,144,112"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="201,108,277,149,275,154,199,113"/>
-<area shape="rect" id="Node000005" href="$MainUI_8hpp.html" title="Main application UI controller for the IsoMaker game engine editor." alt="" coords="118,225,287,251"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="273,188,220,227,217,223,270,183"/>
-<area shape="rect" id="Node000008" href="$UIManager_8cpp.html" title=" " alt="" coords="312,225,472,251"/>
-<area shape="poly" id="edge7_Node000004_Node000008" title=" " alt="" coords="325,183,378,223,375,227,322,188"/>
-<area shape="rect" id="Node000006" href="$MainUI_8cpp.html" title=" " alt="" coords="39,299,207,324"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="182,262,138,300,134,296,178,258"/>
-<area shape="rect" id="Node000007" href="$main_8cpp.html" title=" " alt="" coords="231,299,337,324"/>
-<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="228,258,272,296,269,300,224,262"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="231,5,381,31"/>
+<area shape="rect" id="Node000002" href="$ScriptingEditor_8cpp.html" title="Implementation of the ScriptingEditor class with visual block&#45;based scripting." alt="" coords="5,79,188,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="264,38,148,81,146,76,262,33"/>
+<area shape="rect" id="Node000003" href="$UIComponents_8hpp.html" title=" " alt="" coords="213,86,399,111"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="309,44,309,86,303,86,303,44"/>
+<area shape="rect" id="Node000005" href="$UIManager_8hpp.html" title="User interface management system for the IsoMaker game engine editor." alt="" coords="356,167,517,192"/>
+<area shape="poly" id="edge9_Node000001_Node000005" title=" " alt="" coords="355,34,386,52,413,77,426,100,434,124,439,166,434,167,429,126,421,102,409,80,383,56,352,38"/>
+<area shape="rect" id="Node000004" href="$UIComponents_8cpp.html" title=" " alt="" coords="145,167,331,192"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="289,123,250,168,246,165,285,120"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="338,116,419,164,416,169,336,121"/>
+<area shape="rect" id="Node000006" href="$MainUI_8hpp.html" title="Main application UI controller for the IsoMaker game engine editor." alt="" coords="257,240,427,265"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="412,202,359,242,356,238,409,198"/>
+<area shape="rect" id="Node000009" href="$UIManager_8cpp.html" title=" " alt="" coords="451,240,611,265"/>
+<area shape="poly" id="edge8_Node000005_Node000009" title=" " alt="" coords="464,198,517,238,514,242,461,202"/>
+<area shape="rect" id="Node000007" href="$MainUI_8cpp.html" title=" " alt="" coords="178,313,346,339"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="321,276,277,315,273,311,317,272"/>
+<area shape="rect" id="Node000008" href="$main_8cpp.html" title=" " alt="" coords="371,313,476,339"/>
+<area shape="poly" id="edge7_Node000006_Node000008" title=" " alt="" coords="367,272,412,311,408,315,364,276"/>
 </map>

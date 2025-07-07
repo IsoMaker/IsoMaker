@@ -1,0 +1,11 @@
+<map id="src/Editor/ScriptingEditor/ScriptingEditor.hpp" name="src/Editor/ScriptingEditor/ScriptingEditor.hpp">
+<area shape="rect" id="Node000001" title="Scripting editor component for the IsoMaker game engine." alt="" coords="105,5,288,45"/>
+<area shape="rect" id="Node000002" href="$ScriptingEditor_8cpp.html" title="Implementation of the ScriptingEditor class with visual block&#45;based scripting." alt="" coords="5,93,188,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="166,56,121,95,117,91,162,52"/>
+<area shape="rect" id="Node000003" href="$MainUI_8hpp.html" title="Main application UI controller for the IsoMaker game engine editor." alt="" coords="212,101,381,126"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="231,52,285,98,281,102,227,56"/>
+<area shape="rect" id="Node000004" href="$MainUI_8cpp.html" title=" " alt="" coords="131,181,299,207"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="277,137,229,183,226,179,273,134"/>
+<area shape="rect" id="Node000005" href="$main_8cpp.html" title=" " alt="" coords="324,181,429,207"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="320,134,367,179,363,183,317,138"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$classUI_1_1ISceneProvider.html" title=" " alt="" coords="5,31,147,56"/>
+<area shape="rect" id="Node000001" href="$classMapEditor.html" title="3D Map Editor class" alt="" coords="209,5,297,31"/>
+<area shape="poly" id="edge1_Node000000_Node000001" title=" " alt="" coords="160,29,208,22,209,27,161,34"/>
+<area shape="rect" id="Node000002" href="$classScriptingEditor.html" title="Visual scripting editor for the IsoMaker game engine." alt="" coords="195,55,312,80"/>
+<area shape="poly" id="edge2_Node000000_Node000002" title=" " alt="" coords="161,52,195,57,194,62,160,57"/>
+</map>

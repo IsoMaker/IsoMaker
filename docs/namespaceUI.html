@@ -104,9 +104,9 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a7ad697f186daa8f6d69a89bd2282af81" id="r_a7ad697f186daa8f6d69a89bd2282af81"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a7ad697f186daa8f6d69a89bd2282af81">EventData</a> = std::variant&lt; int, float, std::string, Vector3, Vector2, bool &gt;</td></tr>
-<tr class="memdesc:a7ad697f186daa8f6d69a89bd2282af81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Event data variant type.  <br /></td></tr>
-<tr class="separator:a7ad697f186daa8f6d69a89bd2282af81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad493a8954e33d9cfda6936998c746863" id="r_ad493a8954e33d9cfda6936998c746863"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#ad493a8954e33d9cfda6936998c746863">EventData</a> = std::variant&lt; int, float, std::string, Vector3, Vector2, bool, std::shared_ptr&lt; AAsset &gt; &gt;</td></tr>
+<tr class="memdesc:ad493a8954e33d9cfda6936998c746863"><td class="mdescLeft">&#160;</td><td class="mdescRight">Event data variant type.  <br /></td></tr>
+<tr class="separator:ad493a8954e33d9cfda6936998c746863"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9bc435d04f571dd79ef00b24286e4c9f" id="r_a9bc435d04f571dd79ef00b24286e4c9f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a9bc435d04f571dd79ef00b24286e4c9f">EventHandler</a> = std::function&lt; void(const <a class="el" href="structUI_1_1EditorEvent.html">EditorEvent</a> &amp;)&gt;</td></tr>
 <tr class="memdesc:a9bc435d04f571dd79ef00b24286e4c9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Event handler function type.  <br /></td></tr>
 <tr class="separator:a9bc435d04f571dd79ef00b24286e4c9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -184,8 +184,10 @@ Functions</h2></td></tr>
 <tr class="separator:a2d76f3f39b7237260a56a016d916c827"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a28a386d0f5cad26c179f4eb6b514ab7a" id="r_a28a386d0f5cad26c179f4eb6b514ab7a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a28a386d0f5cad26c179f4eb6b514ab7a">ToolButton</a> (Rectangle bounds, Texture2D icon, const char *tooltip, bool isSelected)</td></tr>
 <tr class="separator:a28a386d0f5cad26c179f4eb6b514ab7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3f3283dffddb2d9819789ba976b0ce49" id="r_a3f3283dffddb2d9819789ba976b0ce49"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a3f3283dffddb2d9819789ba976b0ce49">AssetTile</a> (Rectangle bounds, Texture2D texture, const char *name, bool isSelected)</td></tr>
-<tr class="separator:a3f3283dffddb2d9819789ba976b0ce49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae97ecb4fd6bbee3505bee36a1bb5fe11" id="r_ae97ecb4fd6bbee3505bee36a1bb5fe11"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#ae97ecb4fd6bbee3505bee36a1bb5fe11">AssetTile</a> (Rectangle bounds, Asset2D asset, bool isSelected, Vector2 position)</td></tr>
+<tr class="separator:ae97ecb4fd6bbee3505bee36a1bb5fe11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f0bd9f3cfe8952e12b3f161a9da9b4a" id="r_a0f0bd9f3cfe8952e12b3f161a9da9b4a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a0f0bd9f3cfe8952e12b3f161a9da9b4a">AssetTile</a> (Rectangle bounds, Model model, const char *name, bool isSelected)</td></tr>
+<tr class="separator:a0f0bd9f3cfe8952e12b3f161a9da9b4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad654b694b92c75570e6e78f38d8e4a27" id="r_ad654b694b92c75570e6e78f38d8e4a27"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#ad654b694b92c75570e6e78f38d8e4a27">MenuItem</a> (Rectangle bounds, const char *text, bool *showSubmenu)</td></tr>
 <tr class="separator:ad654b694b92c75570e6e78f38d8e4a27"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac7de53a8cb4bcf7c96f006de00856346" id="r_ac7de53a8cb4bcf7c96f006de00856346"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#ac7de53a8cb4bcf7c96f006de00856346">Submenu</a> (Rectangle bounds, const char **items, int count)</td></tr>
@@ -194,6 +196,16 @@ Functions</h2></td></tr>
 <tr class="separator:a08095e544ce3d8ae3a964d56cd0e8b03"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4e9483402f8ea34a3f01ec412c701965" id="r_a4e9483402f8ea34a3f01ec412c701965"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a4e9483402f8ea34a3f01ec412c701965">CustomDropdown</a> (Rectangle bounds, const char *text, int active, const char **items, int count, bool *editMode)</td></tr>
 <tr class="separator:a4e9483402f8ea34a3f01ec412c701965"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeca3e8e4bd7e7b09f5827dbb9a9ec94c" id="r_aeca3e8e4bd7e7b09f5827dbb9a9ec94c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#aeca3e8e4bd7e7b09f5827dbb9a9ec94c">DrawRectangleRounded</a> (Rectangle rec, float radius, Color color)</td></tr>
+<tr class="separator:aeca3e8e4bd7e7b09f5827dbb9a9ec94c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adfac88798146570cbd941bba8fc8afe0" id="r_adfac88798146570cbd941bba8fc8afe0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#adfac88798146570cbd941bba8fc8afe0">DrawRectangleRoundedWithShadow</a> (Rectangle rec, float radius, Color color, float shadowOffset, Color shadowColor)</td></tr>
+<tr class="separator:adfac88798146570cbd941bba8fc8afe0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e9e9fcbbafd718533e811cef5d5831c" id="r_a7e9e9fcbbafd718533e811cef5d5831c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a7e9e9fcbbafd718533e811cef5d5831c">DrawPanel</a> (Rectangle bounds, const char *title, Color headerColor, Color bodyColor, bool drawShadow)</td></tr>
+<tr class="separator:a7e9e9fcbbafd718533e811cef5d5831c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71c76cefd950e4d434be2bf3fc6c28a1" id="r_a71c76cefd950e4d434be2bf3fc6c28a1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a71c76cefd950e4d434be2bf3fc6c28a1">DrawButton</a> (Rectangle bounds, const char *text, Color baseColor, bool isHovered, bool isPressed)</td></tr>
+<tr class="separator:a71c76cefd950e4d434be2bf3fc6c28a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ef2cecb2d63e0c3ac1cdb06835dddc1" id="r_a7ef2cecb2d63e0c3ac1cdb06835dddc1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a7ef2cecb2d63e0c3ac1cdb06835dddc1">DrawInputField</a> (Rectangle bounds, const char *text, bool isActive, bool isHovered)</td></tr>
+<tr class="separator:a7ef2cecb2d63e0c3ac1cdb06835dddc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a577314481898262b784eb473b8c8ba7e" id="r_a577314481898262b784eb473b8c8ba7e"><td class="memItemLeft" align="right" valign="top">Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a577314481898262b784eb473b8c8ba7e">CustomColorPicker</a> (Rectangle bounds, const char *label, Color color)</td></tr>
 <tr class="separator:a577314481898262b784eb473b8c8ba7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -202,38 +214,114 @@ Variables</h2></td></tr>
 <tr class="memitem:a74a6dc6648d6cac5841d5c7372343eaa" id="r_a74a6dc6648d6cac5841d5c7372343eaa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classUI_1_1EventDispatcher.html">EventDispatcher</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a74a6dc6648d6cac5841d5c7372343eaa">g_eventDispatcher</a></td></tr>
 <tr class="memdesc:a74a6dc6648d6cac5841d5c7372343eaa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Global event dispatcher instance.  <br /></td></tr>
 <tr class="separator:a74a6dc6648d6cac5841d5c7372343eaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a48a43c8bf1a43c75f619dbc711be7b91" id="r_a48a43c8bf1a43c75f619dbc711be7b91"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a48a43c8bf1a43c75f619dbc711be7b91">UI_PRIMARY</a> = {30, 27, 46, 255}</td></tr>
+<tr class="memitem:a48a43c8bf1a43c75f619dbc711be7b91" id="r_a48a43c8bf1a43c75f619dbc711be7b91"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a48a43c8bf1a43c75f619dbc711be7b91">UI_PRIMARY</a> = {32, 35, 42, 255}</td></tr>
 <tr class="separator:a48a43c8bf1a43c75f619dbc711be7b91"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5095312218a860850e90990b663b5698" id="r_a5095312218a860850e90990b663b5698"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a5095312218a860850e90990b663b5698">UI_SECONDARY</a> = {40, 36, 60, 255}</td></tr>
+<tr class="memitem:a5095312218a860850e90990b663b5698" id="r_a5095312218a860850e90990b663b5698"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a5095312218a860850e90990b663b5698">UI_SECONDARY</a> = {44, 47, 56, 255}</td></tr>
 <tr class="separator:a5095312218a860850e90990b663b5698"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2c8b380b0b5ae0703794e063eea53e11" id="r_a2c8b380b0b5ae0703794e063eea53e11"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a2c8b380b0b5ae0703794e063eea53e11">BACKGROUND</a> = {248, 244, 255, 255}</td></tr>
+<tr class="memitem:a16edc60390f2dd2c67f16cb535d5fd96" id="r_a16edc60390f2dd2c67f16cb535d5fd96"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a16edc60390f2dd2c67f16cb535d5fd96">UI_TERTIARY</a> = {56, 60, 70, 255}</td></tr>
+<tr class="separator:a16edc60390f2dd2c67f16cb535d5fd96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c8b380b0b5ae0703794e063eea53e11" id="r_a2c8b380b0b5ae0703794e063eea53e11"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a2c8b380b0b5ae0703794e063eea53e11">BACKGROUND</a> = {24, 26, 31, 255}</td></tr>
 <tr class="separator:a2c8b380b0b5ae0703794e063eea53e11"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a15a40615dc1d20a4f05744cea7634e69" id="r_a15a40615dc1d20a4f05744cea7634e69"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a15a40615dc1d20a4f05744cea7634e69">UI_TEXT_PRIMARY</a> = {253, 251, 255, 255}</td></tr>
+<tr class="memitem:a6ab27dce01284e6ef3739374e405d255" id="r_a6ab27dce01284e6ef3739374e405d255"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a6ab27dce01284e6ef3739374e405d255">CANVAS_BACKGROUND</a> = {40, 44, 52, 255}</td></tr>
+<tr class="separator:a6ab27dce01284e6ef3739374e405d255"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15a40615dc1d20a4f05744cea7634e69" id="r_a15a40615dc1d20a4f05744cea7634e69"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a15a40615dc1d20a4f05744cea7634e69">UI_TEXT_PRIMARY</a> = {255, 255, 255, 255}</td></tr>
 <tr class="separator:a15a40615dc1d20a4f05744cea7634e69"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6a496f129da71a5ac9146f662416ec15" id="r_a6a496f129da71a5ac9146f662416ec15"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a6a496f129da71a5ac9146f662416ec15">UI_TEXT_SECONDARY</a> = {176, 174, 184, 255}</td></tr>
+<tr class="memitem:a6a496f129da71a5ac9146f662416ec15" id="r_a6a496f129da71a5ac9146f662416ec15"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a6a496f129da71a5ac9146f662416ec15">UI_TEXT_SECONDARY</a> = {235, 235, 235, 255}</td></tr>
 <tr class="separator:a6a496f129da71a5ac9146f662416ec15"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae8b8211d8bdea753114adb3f4364b9a7" id="r_ae8b8211d8bdea753114adb3f4364b9a7"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#ae8b8211d8bdea753114adb3f4364b9a7">ACCENT_PRIMARY</a> = {248, 143, 112, 255}</td></tr>
+<tr class="memitem:a4d40e35aee70d2b01b0c53637980a93d" id="r_a4d40e35aee70d2b01b0c53637980a93d"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a4d40e35aee70d2b01b0c53637980a93d">UI_TEXT_TERTIARY</a> = {215, 215, 215, 255}</td></tr>
+<tr class="separator:a4d40e35aee70d2b01b0c53637980a93d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8b8211d8bdea753114adb3f4364b9a7" id="r_ae8b8211d8bdea753114adb3f4364b9a7"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#ae8b8211d8bdea753114adb3f4364b9a7">ACCENT_PRIMARY</a> = {88, 101, 242, 255}</td></tr>
 <tr class="separator:ae8b8211d8bdea753114adb3f4364b9a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a71d9a01ee0a15870b020efa0f3e9fa1a" id="r_a71d9a01ee0a15870b020efa0f3e9fa1a"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a71d9a01ee0a15870b020efa0f3e9fa1a">ACCENT_SECONDARY</a> = {255, 210, 101, 255}</td></tr>
+<tr class="memitem:a71d9a01ee0a15870b020efa0f3e9fa1a" id="r_a71d9a01ee0a15870b020efa0f3e9fa1a"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a71d9a01ee0a15870b020efa0f3e9fa1a">ACCENT_SECONDARY</a> = {87, 242, 135, 255}</td></tr>
 <tr class="separator:a71d9a01ee0a15870b020efa0f3e9fa1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9850d0ef349436eaed9e0105bb7cefd5" id="r_a9850d0ef349436eaed9e0105bb7cefd5"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a9850d0ef349436eaed9e0105bb7cefd5">ACCENT_TERTIARY</a> = {154, 227, 210, 255}</td></tr>
+<tr class="memitem:a9850d0ef349436eaed9e0105bb7cefd5" id="r_a9850d0ef349436eaed9e0105bb7cefd5"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a9850d0ef349436eaed9e0105bb7cefd5">ACCENT_TERTIARY</a> = {254, 231, 92, 255}</td></tr>
 <tr class="separator:a9850d0ef349436eaed9e0105bb7cefd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4b8aab4fb0271fe9ce715d48dda62527" id="r_a4b8aab4fb0271fe9ce715d48dda62527"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a4b8aab4fb0271fe9ce715d48dda62527">SUCCESS</a> = {86, 194, 136, 255}</td></tr>
+<tr class="memitem:a36a937e79f676f7352716d86bc046804" id="r_a36a937e79f676f7352716d86bc046804"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a36a937e79f676f7352716d86bc046804">ACCENT_DANGER</a> = {237, 66, 69, 255}</td></tr>
+<tr class="separator:a36a937e79f676f7352716d86bc046804"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b8aab4fb0271fe9ce715d48dda62527" id="r_a4b8aab4fb0271fe9ce715d48dda62527"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a4b8aab4fb0271fe9ce715d48dda62527">SUCCESS</a> = {87, 242, 135, 255}</td></tr>
 <tr class="separator:a4b8aab4fb0271fe9ce715d48dda62527"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a662ed09fdec08c20007685856b387d33" id="r_a662ed09fdec08c20007685856b387d33"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a662ed09fdec08c20007685856b387d33">ERROR</a> = {235, 107, 107, 255}</td></tr>
+<tr class="memitem:a662ed09fdec08c20007685856b387d33" id="r_a662ed09fdec08c20007685856b387d33"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a662ed09fdec08c20007685856b387d33">ERROR</a> = {237, 66, 69, 255}</td></tr>
 <tr class="separator:a662ed09fdec08c20007685856b387d33"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a63d829c40ac3b2348a545f27072dfed0" id="r_a63d829c40ac3b2348a545f27072dfed0"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a63d829c40ac3b2348a545f27072dfed0">WARNING</a> = {249, 178, 110, 255}</td></tr>
+<tr class="memitem:a63d829c40ac3b2348a545f27072dfed0" id="r_a63d829c40ac3b2348a545f27072dfed0"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a63d829c40ac3b2348a545f27072dfed0">WARNING</a> = {254, 231, 92, 255}</td></tr>
 <tr class="separator:a63d829c40ac3b2348a545f27072dfed0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af84bde1ffb4664a0ee3f8c0d79cc164a" id="r_af84bde1ffb4664a0ee3f8c0d79cc164a"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#af84bde1ffb4664a0ee3f8c0d79cc164a">INFO</a> = {88, 101, 242, 255}</td></tr>
+<tr class="separator:af84bde1ffb4664a0ee3f8c0d79cc164a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2792454611957fa5c1759864958d3586" id="r_a2792454611957fa5c1759864958d3586"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a2792454611957fa5c1759864958d3586">PANEL_BACKGROUND</a> = {44, 47, 56, 255}</td></tr>
+<tr class="separator:a2792454611957fa5c1759864958d3586"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3fc25bb67abfd728bcba1ed2c26cc1ee" id="r_a3fc25bb67abfd728bcba1ed2c26cc1ee"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a3fc25bb67abfd728bcba1ed2c26cc1ee">PANEL_HEADER</a> = {32, 35, 42, 255}</td></tr>
+<tr class="separator:a3fc25bb67abfd728bcba1ed2c26cc1ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c289b8147d48435299527efc0b873b4" id="r_a4c289b8147d48435299527efc0b873b4"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a4c289b8147d48435299527efc0b873b4">PANEL_BORDER</a> = {64, 68, 75, 255}</td></tr>
+<tr class="separator:a4c289b8147d48435299527efc0b873b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a477d59d355d9bb4d3a49ab56b83e61c4" id="r_a477d59d355d9bb4d3a49ab56b83e61c4"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a477d59d355d9bb4d3a49ab56b83e61c4">SELECTED_BACKGROUND</a> = {88, 101, 242, 60}</td></tr>
+<tr class="separator:a477d59d355d9bb4d3a49ab56b83e61c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d086bfa1db09e51ac642cdf06ec3887" id="r_a4d086bfa1db09e51ac642cdf06ec3887"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a4d086bfa1db09e51ac642cdf06ec3887">HOVER_BACKGROUND</a> = {56, 60, 70, 180}</td></tr>
+<tr class="separator:a4d086bfa1db09e51ac642cdf06ec3887"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7318866fc209693c60b18c8d8e32d0a5" id="r_a7318866fc209693c60b18c8d8e32d0a5"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a7318866fc209693c60b18c8d8e32d0a5">SHADOW_LIGHT</a> = {0, 0, 0, 40}</td></tr>
+<tr class="separator:a7318866fc209693c60b18c8d8e32d0a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8f9969882875f709af6f54d1c345b29" id="r_ae8f9969882875f709af6f54d1c345b29"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#ae8f9969882875f709af6f54d1c345b29">SHADOW_MEDIUM</a> = {0, 0, 0, 80}</td></tr>
+<tr class="separator:ae8f9969882875f709af6f54d1c345b29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7287dddd441d36b9090e053cdd76486d" id="r_a7287dddd441d36b9090e053cdd76486d"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a7287dddd441d36b9090e053cdd76486d">SHADOW_HEAVY</a> = {0, 0, 0, 120}</td></tr>
+<tr class="separator:a7287dddd441d36b9090e053cdd76486d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b8714d07470c17b220446c55900ba9a" id="r_a2b8714d07470c17b220446c55900ba9a"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a2b8714d07470c17b220446c55900ba9a">GLOW_ACCENT</a> = {88, 101, 242, 100}</td></tr>
+<tr class="separator:a2b8714d07470c17b220446c55900ba9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36a63c8490f214ec989ebf3f182f1a9a" id="r_a36a63c8490f214ec989ebf3f182f1a9a"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a36a63c8490f214ec989ebf3f182f1a9a">BLOCK_EVENT</a> = {168, 38, 41, 255}</td></tr>
+<tr class="separator:a36a63c8490f214ec989ebf3f182f1a9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa87e09d4eec3c0f7d51224d297688ef1" id="r_aa87e09d4eec3c0f7d51224d297688ef1"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#aa87e09d4eec3c0f7d51224d297688ef1">BLOCK_ACTION</a> = {55, 63, 153, 255}</td></tr>
+<tr class="separator:aa87e09d4eec3c0f7d51224d297688ef1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c37ece0db9e1805183fad525936afbd" id="r_a6c37ece0db9e1805183fad525936afbd"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a6c37ece0db9e1805183fad525936afbd">BLOCK_CONDITION</a> = {36, 160, 81, 255}</td></tr>
+<tr class="separator:a6c37ece0db9e1805183fad525936afbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7b911f1c854f1f8cac2c41ecf473d9c" id="r_ab7b911f1c854f1f8cac2c41ecf473d9c"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#ab7b911f1c854f1f8cac2c41ecf473d9c">BLOCK_VALUE</a> = {180, 160, 40, 255}</td></tr>
+<tr class="separator:ab7b911f1c854f1f8cac2c41ecf473d9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4badf34eb30796c2e0ed91c962bc761" id="r_aa4badf34eb30796c2e0ed91c962bc761"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#aa4badf34eb30796c2e0ed91c962bc761">BLOCK_MISC</a> = {110, 115, 122, 255}</td></tr>
+<tr class="separator:aa4badf34eb30796c2e0ed91c962bc761"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ad3b36d7be55035ae2417a8e8305c77" id="r_a4ad3b36d7be55035ae2417a8e8305c77"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a4ad3b36d7be55035ae2417a8e8305c77">BLOCK_EVENT_SECONDARY</a> = {188, 48, 51, 180}</td></tr>
+<tr class="separator:a4ad3b36d7be55035ae2417a8e8305c77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9789dcd0c6ec3f42b544c2f6be751f1" id="r_ae9789dcd0c6ec3f42b544c2f6be751f1"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#ae9789dcd0c6ec3f42b544c2f6be751f1">BLOCK_ACTION_SECONDARY</a> = {65, 75, 175, 180}</td></tr>
+<tr class="separator:ae9789dcd0c6ec3f42b544c2f6be751f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85b3723e653f6afdc9863d78d69bf213" id="r_a85b3723e653f6afdc9863d78d69bf213"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a85b3723e653f6afdc9863d78d69bf213">BLOCK_CONDITION_SECONDARY</a> = {46, 180, 96, 180}</td></tr>
+<tr class="separator:a85b3723e653f6afdc9863d78d69bf213"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44ced62a3a79aedaa6c410da10d044da" id="r_a44ced62a3a79aedaa6c410da10d044da"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a44ced62a3a79aedaa6c410da10d044da">BLOCK_VALUE_SECONDARY</a> = {200, 180, 55, 180}</td></tr>
+<tr class="separator:a44ced62a3a79aedaa6c410da10d044da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ca7d5baad2fa3474a5c4ec7133b946f" id="r_a3ca7d5baad2fa3474a5c4ec7133b946f"><td class="memItemLeft" align="right" valign="top">const Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a3ca7d5baad2fa3474a5c4ec7133b946f">BLOCK_MISC_SECONDARY</a> = {125, 130, 138, 180}</td></tr>
+<tr class="separator:a3ca7d5baad2fa3474a5c4ec7133b946f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78c7bfc6f6b7d123535992989d25c7d3" id="r_a78c7bfc6f6b7d123535992989d25c7d3"><td class="memItemLeft" align="right" valign="top">const float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a78c7bfc6f6b7d123535992989d25c7d3">UI_PADDING_SMALL</a> = 4.0f</td></tr>
+<tr class="separator:a78c7bfc6f6b7d123535992989d25c7d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac17757c75fa86899905133e828f4b6a5" id="r_ac17757c75fa86899905133e828f4b6a5"><td class="memItemLeft" align="right" valign="top">const float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#ac17757c75fa86899905133e828f4b6a5">UI_PADDING_MEDIUM</a> = 8.0f</td></tr>
+<tr class="separator:ac17757c75fa86899905133e828f4b6a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62896f43ef684e8cdec28e2217ca8868" id="r_a62896f43ef684e8cdec28e2217ca8868"><td class="memItemLeft" align="right" valign="top">const float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a62896f43ef684e8cdec28e2217ca8868">UI_PADDING_LARGE</a> = 16.0f</td></tr>
+<tr class="separator:a62896f43ef684e8cdec28e2217ca8868"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa4d78d9800b2a250958b5061bc0f004" id="r_afa4d78d9800b2a250958b5061bc0f004"><td class="memItemLeft" align="right" valign="top">const float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#afa4d78d9800b2a250958b5061bc0f004">UI_PADDING_XLARGE</a> = 24.0f</td></tr>
+<tr class="separator:afa4d78d9800b2a250958b5061bc0f004"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f9ee179a2f48df25092479fc23c0ac7" id="r_a2f9ee179a2f48df25092479fc23c0ac7"><td class="memItemLeft" align="right" valign="top">const float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a2f9ee179a2f48df25092479fc23c0ac7">UI_BORDER_RADIUS_SMALL</a> = 4.0f</td></tr>
+<tr class="separator:a2f9ee179a2f48df25092479fc23c0ac7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10e4c90ce4fc88201be8206f910cb125" id="r_a10e4c90ce4fc88201be8206f910cb125"><td class="memItemLeft" align="right" valign="top">const float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a10e4c90ce4fc88201be8206f910cb125">UI_BORDER_RADIUS_MEDIUM</a> = 6.0f</td></tr>
+<tr class="separator:a10e4c90ce4fc88201be8206f910cb125"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ae726ce337bd9aa916be17d35fea1a8" id="r_a5ae726ce337bd9aa916be17d35fea1a8"><td class="memItemLeft" align="right" valign="top">const float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a5ae726ce337bd9aa916be17d35fea1a8">UI_BORDER_RADIUS_LARGE</a> = 8.0f</td></tr>
+<tr class="separator:a5ae726ce337bd9aa916be17d35fea1a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29a8af954ab7f2d5a620817c292824b7" id="r_a29a8af954ab7f2d5a620817c292824b7"><td class="memItemLeft" align="right" valign="top">const float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a29a8af954ab7f2d5a620817c292824b7">UI_SHADOW_OFFSET_SMALL</a> = 2.0f</td></tr>
+<tr class="separator:a29a8af954ab7f2d5a620817c292824b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa34a9217ec1d4e15e0c07d449cb4fd5d" id="r_aa34a9217ec1d4e15e0c07d449cb4fd5d"><td class="memItemLeft" align="right" valign="top">const float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#aa34a9217ec1d4e15e0c07d449cb4fd5d">UI_SHADOW_OFFSET_MEDIUM</a> = 4.0f</td></tr>
+<tr class="separator:aa34a9217ec1d4e15e0c07d449cb4fd5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81c2c02951241f0eaafc6093969ad66a" id="r_a81c2c02951241f0eaafc6093969ad66a"><td class="memItemLeft" align="right" valign="top">const float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a81c2c02951241f0eaafc6093969ad66a">UI_SHADOW_OFFSET_LARGE</a> = 6.0f</td></tr>
+<tr class="separator:a81c2c02951241f0eaafc6093969ad66a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f81765e731ce0ecf8e546947299eaec" id="r_a5f81765e731ce0ecf8e546947299eaec"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a5f81765e731ce0ecf8e546947299eaec">UI_FONT_SIZE_SMALL</a> = 10</td></tr>
+<tr class="separator:a5f81765e731ce0ecf8e546947299eaec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0bd96890516bd535a482f8858a426d61" id="r_a0bd96890516bd535a482f8858a426d61"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a0bd96890516bd535a482f8858a426d61">UI_FONT_SIZE_MEDIUM</a> = 12</td></tr>
+<tr class="separator:a0bd96890516bd535a482f8858a426d61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf50ebced755a901cfc428b83dcdf7ef" id="r_adf50ebced755a901cfc428b83dcdf7ef"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#adf50ebced755a901cfc428b83dcdf7ef">UI_FONT_SIZE_LARGE</a> = 14</td></tr>
+<tr class="separator:adf50ebced755a901cfc428b83dcdf7ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1862268834481407989dc74ced5a343" id="r_ac1862268834481407989dc74ced5a343"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#ac1862268834481407989dc74ced5a343">UI_FONT_SIZE_XLARGE</a> = 16</td></tr>
+<tr class="separator:ac1862268834481407989dc74ced5a343"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Typedef Documentation</h2>
-<a id="a7ad697f186daa8f6d69a89bd2282af81" name="a7ad697f186daa8f6d69a89bd2282af81"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7ad697f186daa8f6d69a89bd2282af81">&#9670;&#160;</a></span>EventData</h2>
+<a id="ad493a8954e33d9cfda6936998c746863" name="ad493a8954e33d9cfda6936998c746863"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad493a8954e33d9cfda6936998c746863">&#9670;&#160;</a></span>EventData</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="namespaceUI.html#a7ad697f186daa8f6d69a89bd2282af81">UI::EventData</a> = typedef std::variant&lt; int, float, std::string, Vector3, Vector2, bool &gt;</td>
+          <td class="memname">using <a class="el" href="namespaceUI.html#ad493a8954e33d9cfda6936998c746863">UI::EventData</a> = typedef std::variant&lt; int, float, std::string, Vector3, Vector2, bool, std::shared_ptr&lt;AAsset&gt; &gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -330,7 +418,7 @@ Variables</h2></td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="a212ce8ff3e61dff309d5fe8157d568dba77f356fee61104220faf605fa91349e7" name="a212ce8ff3e61dff309d5fe8157d568dba77f356fee61104220faf605fa91349e7"></a>FILE_EXPORT&#160;</td><td class="fielddoc"><p>File export operation requested. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a212ce8ff3e61dff309d5fe8157d568dbac9607070fa2ed1f51c7fd191466d607d" name="a212ce8ff3e61dff309d5fe8157d568dbac9607070fa2ed1f51c7fd191466d607d"></a>EDITOR_MODE_CHANGED&#160;</td><td class="fielddoc"><p>Editor mode has changed (2D/3D) </p>
+<tr><td class="fieldname"><a id="a212ce8ff3e61dff309d5fe8157d568dbac9607070fa2ed1f51c7fd191466d607d" name="a212ce8ff3e61dff309d5fe8157d568dbac9607070fa2ed1f51c7fd191466d607d"></a>EDITOR_MODE_CHANGED&#160;</td><td class="fielddoc"><p>Editor mode has changed (MAP_EDITOR/SCRIPTING) </p>
 </td></tr>
 <tr><td class="fieldname"><a id="a212ce8ff3e61dff309d5fe8157d568dba5a0bf09cf7b0d4a5d525289363e08bda" name="a212ce8ff3e61dff309d5fe8157d568dba5a0bf09cf7b0d4a5d525289363e08bda"></a>ASSET_SELECTED&#160;</td><td class="fielddoc"><p>An asset has been selected in the browser. </p>
 </td></tr>
@@ -448,8 +536,8 @@ Variables</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a3f3283dffddb2d9819789ba976b0ce49" name="a3f3283dffddb2d9819789ba976b0ce49"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3f3283dffddb2d9819789ba976b0ce49">&#9670;&#160;</a></span>AssetTile()</h2>
+<a id="ae97ecb4fd6bbee3505bee36a1bb5fe11" name="ae97ecb4fd6bbee3505bee36a1bb5fe11"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae97ecb4fd6bbee3505bee36a1bb5fe11">&#9670;&#160;</a></span>AssetTile() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -463,8 +551,48 @@ Variables</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Texture2D&#160;</td>
-          <td class="paramname"><em>texture</em>, </td>
+          <td class="paramtype">Asset2D&#160;</td>
+          <td class="paramname"><em>asset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>isSelected</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Vector2&#160;</td>
+          <td class="paramname"><em>position</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0f0bd9f3cfe8952e12b3f161a9da9b4a" name="a0f0bd9f3cfe8952e12b3f161a9da9b4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f0bd9f3cfe8952e12b3f161a9da9b4a">&#9670;&#160;</a></span>AssetTile() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool UI::AssetTile </td>
+          <td>(</td>
+          <td class="paramtype">Rectangle&#160;</td>
+          <td class="paramname"><em>bounds</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Model&#160;</td>
+          <td class="paramname"><em>model</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -718,6 +846,218 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<a id="a71c76cefd950e4d434be2bf3fc6c28a1" name="a71c76cefd950e4d434be2bf3fc6c28a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71c76cefd950e4d434be2bf3fc6c28a1">&#9670;&#160;</a></span>DrawButton()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void UI::DrawButton </td>
+          <td>(</td>
+          <td class="paramtype">Rectangle&#160;</td>
+          <td class="paramname"><em>bounds</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>text</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Color&#160;</td>
+          <td class="paramname"><em>baseColor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>isHovered</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>isPressed</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7ef2cecb2d63e0c3ac1cdb06835dddc1" name="a7ef2cecb2d63e0c3ac1cdb06835dddc1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ef2cecb2d63e0c3ac1cdb06835dddc1">&#9670;&#160;</a></span>DrawInputField()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void UI::DrawInputField </td>
+          <td>(</td>
+          <td class="paramtype">Rectangle&#160;</td>
+          <td class="paramname"><em>bounds</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>text</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>isActive</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>isHovered</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7e9e9fcbbafd718533e811cef5d5831c" name="a7e9e9fcbbafd718533e811cef5d5831c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e9e9fcbbafd718533e811cef5d5831c">&#9670;&#160;</a></span>DrawPanel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void UI::DrawPanel </td>
+          <td>(</td>
+          <td class="paramtype">Rectangle&#160;</td>
+          <td class="paramname"><em>bounds</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>title</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Color&#160;</td>
+          <td class="paramname"><em>headerColor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Color&#160;</td>
+          <td class="paramname"><em>bodyColor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>drawShadow</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aeca3e8e4bd7e7b09f5827dbb9a9ec94c" name="aeca3e8e4bd7e7b09f5827dbb9a9ec94c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeca3e8e4bd7e7b09f5827dbb9a9ec94c">&#9670;&#160;</a></span>DrawRectangleRounded()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void UI::DrawRectangleRounded </td>
+          <td>(</td>
+          <td class="paramtype">Rectangle&#160;</td>
+          <td class="paramname"><em>rec</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Color&#160;</td>
+          <td class="paramname"><em>color</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adfac88798146570cbd941bba8fc8afe0" name="adfac88798146570cbd941bba8fc8afe0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adfac88798146570cbd941bba8fc8afe0">&#9670;&#160;</a></span>DrawRectangleRoundedWithShadow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void UI::DrawRectangleRoundedWithShadow </td>
+          <td>(</td>
+          <td class="paramtype">Rectangle&#160;</td>
+          <td class="paramname"><em>rec</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Color&#160;</td>
+          <td class="paramname"><em>color</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>shadowOffset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Color&#160;</td>
+          <td class="paramname"><em>shadowColor</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="ad654b694b92c75570e6e78f38d8e4a27" name="ad654b694b92c75570e6e78f38d8e4a27"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad654b694b92c75570e6e78f38d8e4a27">&#9670;&#160;</a></span>MenuItem()</h2>
 
@@ -941,6 +1281,20 @@ Variables</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Variable Documentation</h2>
+<a id="a36a937e79f676f7352716d86bc046804" name="a36a937e79f676f7352716d86bc046804"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36a937e79f676f7352716d86bc046804">&#9670;&#160;</a></span>ACCENT_DANGER</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Color UI::ACCENT_DANGER = {237, 66, 69, 255}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="ae8b8211d8bdea753114adb3f4364b9a7" name="ae8b8211d8bdea753114adb3f4364b9a7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae8b8211d8bdea753114adb3f4364b9a7">&#9670;&#160;</a></span>ACCENT_PRIMARY</h2>
 
@@ -948,7 +1302,7 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const Color UI::ACCENT_PRIMARY = {248, 143, 112, 255}</td>
+          <td class="memname">const Color UI::ACCENT_PRIMARY = {88, 101, 242, 255}</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -962,7 +1316,7 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const Color UI::ACCENT_SECONDARY = {255, 210, 101, 255}</td>
+          <td class="memname">const Color UI::ACCENT_SECONDARY = {87, 242, 135, 255}</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -976,7 +1330,7 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const Color UI::ACCENT_TERTIARY = {154, 227, 210, 255}</td>
+          <td class="memname">const Color UI::ACCENT_TERTIARY = {254, 231, 92, 255}</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -990,7 +1344,161 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const Color UI::BACKGROUND = {248, 244, 255, 255}</td>
+          <td class="memname">const Color UI::BACKGROUND = {24, 26, 31, 255}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa87e09d4eec3c0f7d51224d297688ef1" name="aa87e09d4eec3c0f7d51224d297688ef1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa87e09d4eec3c0f7d51224d297688ef1">&#9670;&#160;</a></span>BLOCK_ACTION</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Color UI::BLOCK_ACTION = {55, 63, 153, 255}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae9789dcd0c6ec3f42b544c2f6be751f1" name="ae9789dcd0c6ec3f42b544c2f6be751f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9789dcd0c6ec3f42b544c2f6be751f1">&#9670;&#160;</a></span>BLOCK_ACTION_SECONDARY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Color UI::BLOCK_ACTION_SECONDARY = {65, 75, 175, 180}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6c37ece0db9e1805183fad525936afbd" name="a6c37ece0db9e1805183fad525936afbd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c37ece0db9e1805183fad525936afbd">&#9670;&#160;</a></span>BLOCK_CONDITION</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Color UI::BLOCK_CONDITION = {36, 160, 81, 255}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a85b3723e653f6afdc9863d78d69bf213" name="a85b3723e653f6afdc9863d78d69bf213"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85b3723e653f6afdc9863d78d69bf213">&#9670;&#160;</a></span>BLOCK_CONDITION_SECONDARY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Color UI::BLOCK_CONDITION_SECONDARY = {46, 180, 96, 180}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a36a63c8490f214ec989ebf3f182f1a9a" name="a36a63c8490f214ec989ebf3f182f1a9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36a63c8490f214ec989ebf3f182f1a9a">&#9670;&#160;</a></span>BLOCK_EVENT</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Color UI::BLOCK_EVENT = {168, 38, 41, 255}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4ad3b36d7be55035ae2417a8e8305c77" name="a4ad3b36d7be55035ae2417a8e8305c77"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ad3b36d7be55035ae2417a8e8305c77">&#9670;&#160;</a></span>BLOCK_EVENT_SECONDARY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Color UI::BLOCK_EVENT_SECONDARY = {188, 48, 51, 180}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa4badf34eb30796c2e0ed91c962bc761" name="aa4badf34eb30796c2e0ed91c962bc761"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4badf34eb30796c2e0ed91c962bc761">&#9670;&#160;</a></span>BLOCK_MISC</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Color UI::BLOCK_MISC = {110, 115, 122, 255}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3ca7d5baad2fa3474a5c4ec7133b946f" name="a3ca7d5baad2fa3474a5c4ec7133b946f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ca7d5baad2fa3474a5c4ec7133b946f">&#9670;&#160;</a></span>BLOCK_MISC_SECONDARY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Color UI::BLOCK_MISC_SECONDARY = {125, 130, 138, 180}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab7b911f1c854f1f8cac2c41ecf473d9c" name="ab7b911f1c854f1f8cac2c41ecf473d9c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7b911f1c854f1f8cac2c41ecf473d9c">&#9670;&#160;</a></span>BLOCK_VALUE</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Color UI::BLOCK_VALUE = {180, 160, 40, 255}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a44ced62a3a79aedaa6c410da10d044da" name="a44ced62a3a79aedaa6c410da10d044da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44ced62a3a79aedaa6c410da10d044da">&#9670;&#160;</a></span>BLOCK_VALUE_SECONDARY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Color UI::BLOCK_VALUE_SECONDARY = {200, 180, 55, 180}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6ab27dce01284e6ef3739374e405d255" name="a6ab27dce01284e6ef3739374e405d255"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ab27dce01284e6ef3739374e405d255">&#9670;&#160;</a></span>CANVAS_BACKGROUND</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Color UI::CANVAS_BACKGROUND = {40, 44, 52, 255}</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1004,7 +1512,7 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const Color UI::ERROR = {235, 107, 107, 255}</td>
+          <td class="memname">const Color UI::ERROR = {237, 66, 69, 255}</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1029,6 +1537,146 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<a id="a2b8714d07470c17b220446c55900ba9a" name="a2b8714d07470c17b220446c55900ba9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b8714d07470c17b220446c55900ba9a">&#9670;&#160;</a></span>GLOW_ACCENT</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Color UI::GLOW_ACCENT = {88, 101, 242, 100}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4d086bfa1db09e51ac642cdf06ec3887" name="a4d086bfa1db09e51ac642cdf06ec3887"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d086bfa1db09e51ac642cdf06ec3887">&#9670;&#160;</a></span>HOVER_BACKGROUND</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Color UI::HOVER_BACKGROUND = {56, 60, 70, 180}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af84bde1ffb4664a0ee3f8c0d79cc164a" name="af84bde1ffb4664a0ee3f8c0d79cc164a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af84bde1ffb4664a0ee3f8c0d79cc164a">&#9670;&#160;</a></span>INFO</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Color UI::INFO = {88, 101, 242, 255}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2792454611957fa5c1759864958d3586" name="a2792454611957fa5c1759864958d3586"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2792454611957fa5c1759864958d3586">&#9670;&#160;</a></span>PANEL_BACKGROUND</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Color UI::PANEL_BACKGROUND = {44, 47, 56, 255}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4c289b8147d48435299527efc0b873b4" name="a4c289b8147d48435299527efc0b873b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c289b8147d48435299527efc0b873b4">&#9670;&#160;</a></span>PANEL_BORDER</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Color UI::PANEL_BORDER = {64, 68, 75, 255}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3fc25bb67abfd728bcba1ed2c26cc1ee" name="a3fc25bb67abfd728bcba1ed2c26cc1ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3fc25bb67abfd728bcba1ed2c26cc1ee">&#9670;&#160;</a></span>PANEL_HEADER</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Color UI::PANEL_HEADER = {32, 35, 42, 255}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a477d59d355d9bb4d3a49ab56b83e61c4" name="a477d59d355d9bb4d3a49ab56b83e61c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a477d59d355d9bb4d3a49ab56b83e61c4">&#9670;&#160;</a></span>SELECTED_BACKGROUND</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Color UI::SELECTED_BACKGROUND = {88, 101, 242, 60}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7287dddd441d36b9090e053cdd76486d" name="a7287dddd441d36b9090e053cdd76486d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7287dddd441d36b9090e053cdd76486d">&#9670;&#160;</a></span>SHADOW_HEAVY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Color UI::SHADOW_HEAVY = {0, 0, 0, 120}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7318866fc209693c60b18c8d8e32d0a5" name="a7318866fc209693c60b18c8d8e32d0a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7318866fc209693c60b18c8d8e32d0a5">&#9670;&#160;</a></span>SHADOW_LIGHT</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Color UI::SHADOW_LIGHT = {0, 0, 0, 40}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae8f9969882875f709af6f54d1c345b29" name="ae8f9969882875f709af6f54d1c345b29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8f9969882875f709af6f54d1c345b29">&#9670;&#160;</a></span>SHADOW_MEDIUM</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Color UI::SHADOW_MEDIUM = {0, 0, 0, 80}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a4b8aab4fb0271fe9ce715d48dda62527" name="a4b8aab4fb0271fe9ce715d48dda62527"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4b8aab4fb0271fe9ce715d48dda62527">&#9670;&#160;</a></span>SUCCESS</h2>
 
@@ -1036,7 +1684,161 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const Color UI::SUCCESS = {86, 194, 136, 255}</td>
+          <td class="memname">const Color UI::SUCCESS = {87, 242, 135, 255}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5ae726ce337bd9aa916be17d35fea1a8" name="a5ae726ce337bd9aa916be17d35fea1a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ae726ce337bd9aa916be17d35fea1a8">&#9670;&#160;</a></span>UI_BORDER_RADIUS_LARGE</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const float UI::UI_BORDER_RADIUS_LARGE = 8.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a10e4c90ce4fc88201be8206f910cb125" name="a10e4c90ce4fc88201be8206f910cb125"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a10e4c90ce4fc88201be8206f910cb125">&#9670;&#160;</a></span>UI_BORDER_RADIUS_MEDIUM</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const float UI::UI_BORDER_RADIUS_MEDIUM = 6.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2f9ee179a2f48df25092479fc23c0ac7" name="a2f9ee179a2f48df25092479fc23c0ac7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f9ee179a2f48df25092479fc23c0ac7">&#9670;&#160;</a></span>UI_BORDER_RADIUS_SMALL</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const float UI::UI_BORDER_RADIUS_SMALL = 4.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adf50ebced755a901cfc428b83dcdf7ef" name="adf50ebced755a901cfc428b83dcdf7ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf50ebced755a901cfc428b83dcdf7ef">&#9670;&#160;</a></span>UI_FONT_SIZE_LARGE</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const int UI::UI_FONT_SIZE_LARGE = 14</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0bd96890516bd535a482f8858a426d61" name="a0bd96890516bd535a482f8858a426d61"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0bd96890516bd535a482f8858a426d61">&#9670;&#160;</a></span>UI_FONT_SIZE_MEDIUM</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const int UI::UI_FONT_SIZE_MEDIUM = 12</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5f81765e731ce0ecf8e546947299eaec" name="a5f81765e731ce0ecf8e546947299eaec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f81765e731ce0ecf8e546947299eaec">&#9670;&#160;</a></span>UI_FONT_SIZE_SMALL</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const int UI::UI_FONT_SIZE_SMALL = 10</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac1862268834481407989dc74ced5a343" name="ac1862268834481407989dc74ced5a343"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1862268834481407989dc74ced5a343">&#9670;&#160;</a></span>UI_FONT_SIZE_XLARGE</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const int UI::UI_FONT_SIZE_XLARGE = 16</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a62896f43ef684e8cdec28e2217ca8868" name="a62896f43ef684e8cdec28e2217ca8868"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62896f43ef684e8cdec28e2217ca8868">&#9670;&#160;</a></span>UI_PADDING_LARGE</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const float UI::UI_PADDING_LARGE = 16.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac17757c75fa86899905133e828f4b6a5" name="ac17757c75fa86899905133e828f4b6a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac17757c75fa86899905133e828f4b6a5">&#9670;&#160;</a></span>UI_PADDING_MEDIUM</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const float UI::UI_PADDING_MEDIUM = 8.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a78c7bfc6f6b7d123535992989d25c7d3" name="a78c7bfc6f6b7d123535992989d25c7d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78c7bfc6f6b7d123535992989d25c7d3">&#9670;&#160;</a></span>UI_PADDING_SMALL</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const float UI::UI_PADDING_SMALL = 4.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afa4d78d9800b2a250958b5061bc0f004" name="afa4d78d9800b2a250958b5061bc0f004"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa4d78d9800b2a250958b5061bc0f004">&#9670;&#160;</a></span>UI_PADDING_XLARGE</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const float UI::UI_PADDING_XLARGE = 24.0f</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1050,7 +1852,7 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const Color UI::UI_PRIMARY = {30, 27, 46, 255}</td>
+          <td class="memname">const Color UI::UI_PRIMARY = {32, 35, 42, 255}</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1064,7 +1866,63 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const Color UI::UI_SECONDARY = {40, 36, 60, 255}</td>
+          <td class="memname">const Color UI::UI_SECONDARY = {44, 47, 56, 255}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a81c2c02951241f0eaafc6093969ad66a" name="a81c2c02951241f0eaafc6093969ad66a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81c2c02951241f0eaafc6093969ad66a">&#9670;&#160;</a></span>UI_SHADOW_OFFSET_LARGE</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const float UI::UI_SHADOW_OFFSET_LARGE = 6.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa34a9217ec1d4e15e0c07d449cb4fd5d" name="aa34a9217ec1d4e15e0c07d449cb4fd5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa34a9217ec1d4e15e0c07d449cb4fd5d">&#9670;&#160;</a></span>UI_SHADOW_OFFSET_MEDIUM</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const float UI::UI_SHADOW_OFFSET_MEDIUM = 4.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a29a8af954ab7f2d5a620817c292824b7" name="a29a8af954ab7f2d5a620817c292824b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29a8af954ab7f2d5a620817c292824b7">&#9670;&#160;</a></span>UI_SHADOW_OFFSET_SMALL</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const float UI::UI_SHADOW_OFFSET_SMALL = 2.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a16edc60390f2dd2c67f16cb535d5fd96" name="a16edc60390f2dd2c67f16cb535d5fd96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16edc60390f2dd2c67f16cb535d5fd96">&#9670;&#160;</a></span>UI_TERTIARY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Color UI::UI_TERTIARY = {56, 60, 70, 255}</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1078,7 +1936,7 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const Color UI::UI_TEXT_PRIMARY = {253, 251, 255, 255}</td>
+          <td class="memname">const Color UI::UI_TEXT_PRIMARY = {255, 255, 255, 255}</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1092,7 +1950,21 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const Color UI::UI_TEXT_SECONDARY = {176, 174, 184, 255}</td>
+          <td class="memname">const Color UI::UI_TEXT_SECONDARY = {235, 235, 235, 255}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4d40e35aee70d2b01b0c53637980a93d" name="a4d40e35aee70d2b01b0c53637980a93d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d40e35aee70d2b01b0c53637980a93d">&#9670;&#160;</a></span>UI_TEXT_TERTIARY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Color UI::UI_TEXT_TERTIARY = {215, 215, 215, 255}</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1106,7 +1978,7 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const Color UI::WARNING = {249, 178, 110, 255}</td>
+          <td class="memname">const Color UI::WARNING = {254, 231, 92, 255}</td>
         </tr>
       </table>
 </div><div class="memdoc">

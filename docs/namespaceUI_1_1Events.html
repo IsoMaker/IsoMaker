@@ -111,9 +111,9 @@ Functions</h2></td></tr>
 <tr class="memitem:acb13dda81e5fd8028e74dada499945f3" id="r_acb13dda81e5fd8028e74dada499945f3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI_1_1Events.html#acb13dda81e5fd8028e74dada499945f3">editorModeChanged</a> (int modeIndex)</td></tr>
 <tr class="memdesc:acb13dda81e5fd8028e74dada499945f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatch an editor mode changed event.  <br /></td></tr>
 <tr class="separator:acb13dda81e5fd8028e74dada499945f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9688c43e4a671ee6ab02b295e49aebd9" id="r_a9688c43e4a671ee6ab02b295e49aebd9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI_1_1Events.html#a9688c43e4a671ee6ab02b295e49aebd9">assetSelected</a> (int assetIndex)</td></tr>
-<tr class="memdesc:a9688c43e4a671ee6ab02b295e49aebd9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatch an asset selected event.  <br /></td></tr>
-<tr class="separator:a9688c43e4a671ee6ab02b295e49aebd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f10f6ae00806d698ef8865a18f63fb8" id="r_a0f10f6ae00806d698ef8865a18f63fb8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI_1_1Events.html#a0f10f6ae00806d698ef8865a18f63fb8">assetSelected</a> (std::shared_ptr&lt; AAsset &gt; asset)</td></tr>
+<tr class="memdesc:a0f10f6ae00806d698ef8865a18f63fb8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatch an asset selected event.  <br /></td></tr>
+<tr class="separator:a0f10f6ae00806d698ef8865a18f63fb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a59ba0b2839380fee02ff4966779f8eb5" id="r_a59ba0b2839380fee02ff4966779f8eb5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI_1_1Events.html#a59ba0b2839380fee02ff4966779f8eb5">sceneUpdated</a> ()</td></tr>
 <tr class="memdesc:a59ba0b2839380fee02ff4966779f8eb5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatch a scene updated event.  <br /></td></tr>
 <tr class="separator:a59ba0b2839380fee02ff4966779f8eb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -126,6 +126,9 @@ Functions</h2></td></tr>
 <tr class="memitem:aa3e46d3e4e0851e3829eb7caec93fd44" id="r_aa3e46d3e4e0851e3829eb7caec93fd44"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI_1_1Events.html#aa3e46d3e4e0851e3829eb7caec93fd44">sceneObjectRenamed</a> (int objectId, const std::string &amp;newName)</td></tr>
 <tr class="memdesc:aa3e46d3e4e0851e3829eb7caec93fd44"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatch a scene object renamed event.  <br /></td></tr>
 <tr class="separator:aa3e46d3e4e0851e3829eb7caec93fd44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aadfdfa00397636b8801b3cb32b952e75" id="r_aadfdfa00397636b8801b3cb32b952e75"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI_1_1Events.html#aadfdfa00397636b8801b3cb32b952e75">addAssetRequested</a> ()</td></tr>
+<tr class="memdesc:aadfdfa00397636b8801b3cb32b952e75"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatch a scene object renamed event.  <br /></td></tr>
+<tr class="separator:aadfdfa00397636b8801b3cb32b952e75"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Convenience functions for common events. </p>
@@ -141,14 +144,40 @@ Functions</h2></td></tr>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Use:</span></div>
 <div class="line"><a class="code hl_function" href="namespaceUI_1_1Events.html#a08488e9a6b32141c94d3770ed6730f50">UI::Events::toolChanged</a>(2);</div>
-<div class="ttc" id="aclassUI_1_1EventDispatcher_html_ae03f77490913da26bcc79c1de196e61a"><div class="ttname"><a href="classUI_1_1EventDispatcher.html#ae03f77490913da26bcc79c1de196e61a">UI::EventDispatcher::dispatch</a></div><div class="ttdeci">void dispatch(const EditorEvent &amp;event)</div><div class="ttdoc">Dispatch an event to all subscribers.</div><div class="ttdef"><b>Definition</b> EditorEvents.cpp:12</div></div>
-<div class="ttc" id="anamespaceUI_1_1Events_html_a08488e9a6b32141c94d3770ed6730f50"><div class="ttname"><a href="namespaceUI_1_1Events.html#a08488e9a6b32141c94d3770ed6730f50">UI::Events::toolChanged</a></div><div class="ttdeci">void toolChanged(int toolIndex)</div><div class="ttdoc">Dispatch a tool changed event.</div><div class="ttdef"><b>Definition</b> EditorEvents.cpp:31</div></div>
+<div class="ttc" id="aclassUI_1_1EventDispatcher_html_ae03f77490913da26bcc79c1de196e61a"><div class="ttname"><a href="classUI_1_1EventDispatcher.html#ae03f77490913da26bcc79c1de196e61a">UI::EventDispatcher::dispatch</a></div><div class="ttdeci">void dispatch(const EditorEvent &amp;event)</div><div class="ttdoc">Dispatch an event to all subscribers.</div><div class="ttdef"><b>Definition</b> EditorEvents.cpp:13</div></div>
+<div class="ttc" id="anamespaceUI_1_1Events_html_a08488e9a6b32141c94d3770ed6730f50"><div class="ttname"><a href="namespaceUI_1_1Events.html#a08488e9a6b32141c94d3770ed6730f50">UI::Events::toolChanged</a></div><div class="ttdeci">void toolChanged(int toolIndex)</div><div class="ttdoc">Dispatch a tool changed event.</div><div class="ttdef"><b>Definition</b> EditorEvents.cpp:32</div></div>
 <div class="ttc" id="anamespaceUI_html_a212ce8ff3e61dff309d5fe8157d568dba2105bd5742dc4fa8f72763ab253d778f"><div class="ttname"><a href="namespaceUI.html#a212ce8ff3e61dff309d5fe8157d568dba2105bd5742dc4fa8f72763ab253d778f">UI::EditorEventType::TOOL_CHANGED</a></div><div class="ttdeci">@ TOOL_CHANGED</div><div class="ttdoc">A new tool has been selected in the toolbar.</div></div>
-<div class="ttc" id="anamespaceUI_html_a74a6dc6648d6cac5841d5c7372343eaa"><div class="ttname"><a href="namespaceUI.html#a74a6dc6648d6cac5841d5c7372343eaa">UI::g_eventDispatcher</a></div><div class="ttdeci">EventDispatcher g_eventDispatcher</div><div class="ttdoc">Global event dispatcher instance.</div><div class="ttdef"><b>Definition</b> EditorEvents.cpp:6</div></div>
-<div class="ttc" id="astructUI_1_1EditorEvent_html"><div class="ttname"><a href="structUI_1_1EditorEvent.html">UI::EditorEvent</a></div><div class="ttdoc">Editor event structure.</div><div class="ttdef"><b>Definition</b> EditorEvents.hpp:106</div></div>
+<div class="ttc" id="anamespaceUI_html_a74a6dc6648d6cac5841d5c7372343eaa"><div class="ttname"><a href="namespaceUI.html#a74a6dc6648d6cac5841d5c7372343eaa">UI::g_eventDispatcher</a></div><div class="ttdeci">EventDispatcher g_eventDispatcher</div><div class="ttdoc">Global event dispatcher instance.</div><div class="ttdef"><b>Definition</b> EditorEvents.cpp:7</div></div>
+<div class="ttc" id="astructUI_1_1EditorEvent_html"><div class="ttname"><a href="structUI_1_1EditorEvent.html">UI::EditorEvent</a></div><div class="ttdoc">Editor event structure.</div><div class="ttdef"><b>Definition</b> EditorEvents.hpp:110</div></div>
 </div><!-- fragment --> </div><h2 class="groupheader">Function Documentation</h2>
-<a id="a9688c43e4a671ee6ab02b295e49aebd9" name="a9688c43e4a671ee6ab02b295e49aebd9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9688c43e4a671ee6ab02b295e49aebd9">&#9670;&#160;</a></span>assetSelected()</h2>
+<a id="aadfdfa00397636b8801b3cb32b952e75" name="aadfdfa00397636b8801b3cb32b952e75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aadfdfa00397636b8801b3cb32b952e75">&#9670;&#160;</a></span>addAssetRequested()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void UI::Events::addAssetRequested </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Dispatch a scene object renamed event. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">objectId</td><td>ID of the renamed scene object </td></tr>
+    <tr><td class="paramname">newName</td><td>New name for the object </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a0f10f6ae00806d698ef8865a18f63fb8" name="a0f10f6ae00806d698ef8865a18f63fb8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f10f6ae00806d698ef8865a18f63fb8">&#9670;&#160;</a></span>assetSelected()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -156,8 +185,8 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">void UI::Events::assetSelected </td>
           <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>assetIndex</em></td><td>)</td>
+          <td class="paramtype">std::shared_ptr&lt; AAsset &gt;&#160;</td>
+          <td class="paramname"><em>asset</em></td><td>)</td>
           <td></td>
         </tr>
       </table>

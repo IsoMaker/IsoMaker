@@ -84,23 +84,26 @@ $(function() {
 <code>#include &quot;<a class="el" href="UITheme_8hpp_source.html">UITheme.hpp</a>&quot;</code><br />
 <code>#include &lt;string&gt;</code><br />
 <code>#include &lt;functional&gt;</code><br />
+<code>#include &quot;Entities/MapElement.hpp&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for UIComponents.hpp:</div>
 <div class="dyncontent">
 <div class="center"><img src="UIComponents_8hpp__incl.png" border="0" usemap="#asrc_2UI_2UIComponents_8hpp" alt=""/></div>
 <map name="asrc_2UI_2UIComponents_8hpp" id="asrc_2UI_2UIComponents_8hpp">
-<area shape="rect" title=" " alt="" coords="83,5,270,31"/>
+<area shape="rect" title=" " alt="" coords="137,5,323,31"/>
 <area shape="rect" title=" " alt="" coords="45,152,116,177"/>
-<area shape="poly" title=" " alt="" coords="88,33,46,51,28,64,13,80,9,96,16,113,30,129,49,143,46,147,27,133,11,116,3,97,9,77,24,60,43,46,86,28"/>
+<area shape="poly" title=" " alt="" coords="150,33,67,53,34,65,13,80,9,96,15,113,30,128,49,142,46,147,27,132,11,115,3,96,9,77,31,61,65,47,149,28"/>
 <area shape="rect" title=" " alt="" coords="23,79,98,104"/>
-<area shape="poly" title=" " alt="" coords="159,33,92,74,89,69,156,28"/>
+<area shape="poly" title=" " alt="" coords="204,33,102,76,100,71,202,28"/>
 <area shape="rect" href="UITheme_8hpp.html" title=" " alt="" coords="122,79,231,104"/>
-<area shape="poly" title=" " alt="" coords="179,31,179,65,174,65,174,31"/>
+<area shape="poly" title=" " alt="" coords="223,33,195,69,191,66,219,29"/>
 <area shape="rect" title=" " alt="" coords="255,79,314,104"/>
-<area shape="poly" title=" " alt="" coords="195,28,257,69,254,73,192,33"/>
-<area shape="rect" title=" " alt="" coords="338,79,425,104"/>
-<area shape="poly" title=" " alt="" coords="210,28,336,72,335,77,208,33"/>
-<area shape="poly" title=" " alt="" coords="162,106,109,146,105,141,159,102"/>
+<area shape="poly" title=" " alt="" coords="241,29,270,66,265,69,237,33"/>
+<area shape="rect" title=" " alt="" coords="339,79,425,104"/>
+<area shape="poly" title=" " alt="" coords="256,28,346,70,344,75,253,33"/>
+<area shape="rect" title=" " alt="" coords="449,79,635,104"/>
+<area shape="poly" title=" " alt="" coords="281,28,479,73,478,78,280,33"/>
+<area shape="poly" title=" " alt="" coords="163,106,109,146,106,141,160,102"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -147,8 +150,10 @@ Functions</h2></td></tr>
 <tr class="separator:a7b724dbd4c7c1a9089a2dd621786456a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2d76f3f39b7237260a56a016d916c827" id="r_a2d76f3f39b7237260a56a016d916c827"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a2d76f3f39b7237260a56a016d916c827">UI::TabBar</a> (Rectangle bounds, const char **names, int count, int *active)</td></tr>
 <tr class="separator:a2d76f3f39b7237260a56a016d916c827"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3f3283dffddb2d9819789ba976b0ce49" id="r_a3f3283dffddb2d9819789ba976b0ce49"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a3f3283dffddb2d9819789ba976b0ce49">UI::AssetTile</a> (Rectangle bounds, Texture2D texture, const char *name, bool isSelected)</td></tr>
-<tr class="separator:a3f3283dffddb2d9819789ba976b0ce49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae97ecb4fd6bbee3505bee36a1bb5fe11" id="r_ae97ecb4fd6bbee3505bee36a1bb5fe11"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#ae97ecb4fd6bbee3505bee36a1bb5fe11">UI::AssetTile</a> (Rectangle bounds, Asset2D asset, bool isSelected, Vector2 position)</td></tr>
+<tr class="separator:ae97ecb4fd6bbee3505bee36a1bb5fe11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f0bd9f3cfe8952e12b3f161a9da9b4a" id="r_a0f0bd9f3cfe8952e12b3f161a9da9b4a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a0f0bd9f3cfe8952e12b3f161a9da9b4a">UI::AssetTile</a> (Rectangle bounds, Model model, const char *name, bool isSelected)</td></tr>
+<tr class="separator:a0f0bd9f3cfe8952e12b3f161a9da9b4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a28a386d0f5cad26c179f4eb6b514ab7a" id="r_a28a386d0f5cad26c179f4eb6b514ab7a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a28a386d0f5cad26c179f4eb6b514ab7a">UI::ToolButton</a> (Rectangle bounds, Texture2D icon, const char *tooltip, bool isSelected)</td></tr>
 <tr class="separator:a28a386d0f5cad26c179f4eb6b514ab7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad654b694b92c75570e6e78f38d8e4a27" id="r_ad654b694b92c75570e6e78f38d8e4a27"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#ad654b694b92c75570e6e78f38d8e4a27">UI::MenuItem</a> (Rectangle bounds, const char *text, bool *showSubmenu)</td></tr>
@@ -157,6 +162,16 @@ Functions</h2></td></tr>
 <tr class="separator:ac7de53a8cb4bcf7c96f006de00856346"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a08095e544ce3d8ae3a964d56cd0e8b03" id="r_a08095e544ce3d8ae3a964d56cd0e8b03"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a08095e544ce3d8ae3a964d56cd0e8b03">UI::SearchBar</a> (Rectangle bounds, char *text, int textSize, bool *active)</td></tr>
 <tr class="separator:a08095e544ce3d8ae3a964d56cd0e8b03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeca3e8e4bd7e7b09f5827dbb9a9ec94c" id="r_aeca3e8e4bd7e7b09f5827dbb9a9ec94c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#aeca3e8e4bd7e7b09f5827dbb9a9ec94c">UI::DrawRectangleRounded</a> (Rectangle rec, float radius, Color color)</td></tr>
+<tr class="separator:aeca3e8e4bd7e7b09f5827dbb9a9ec94c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adfac88798146570cbd941bba8fc8afe0" id="r_adfac88798146570cbd941bba8fc8afe0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#adfac88798146570cbd941bba8fc8afe0">UI::DrawRectangleRoundedWithShadow</a> (Rectangle rec, float radius, Color color, float shadowOffset, Color shadowColor)</td></tr>
+<tr class="separator:adfac88798146570cbd941bba8fc8afe0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e9e9fcbbafd718533e811cef5d5831c" id="r_a7e9e9fcbbafd718533e811cef5d5831c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a7e9e9fcbbafd718533e811cef5d5831c">UI::DrawPanel</a> (Rectangle bounds, const char *title, Color headerColor, Color bodyColor, bool drawShadow)</td></tr>
+<tr class="separator:a7e9e9fcbbafd718533e811cef5d5831c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71c76cefd950e4d434be2bf3fc6c28a1" id="r_a71c76cefd950e4d434be2bf3fc6c28a1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a71c76cefd950e4d434be2bf3fc6c28a1">UI::DrawButton</a> (Rectangle bounds, const char *text, Color baseColor, bool isHovered, bool isPressed)</td></tr>
+<tr class="separator:a71c76cefd950e4d434be2bf3fc6c28a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ef2cecb2d63e0c3ac1cdb06835dddc1" id="r_a7ef2cecb2d63e0c3ac1cdb06835dddc1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI.html#a7ef2cecb2d63e0c3ac1cdb06835dddc1">UI::DrawInputField</a> (Rectangle bounds, const char *text, bool isActive, bool isHovered)</td></tr>
+<tr class="separator:a7ef2cecb2d63e0c3ac1cdb06835dddc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

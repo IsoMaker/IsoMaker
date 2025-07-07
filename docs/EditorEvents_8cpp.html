@@ -81,26 +81,31 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="EditorEvents_8hpp_source.html">EditorEvents.hpp</a>&quot;</code><br />
+<code>#include &lt;iostream&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for EditorEvents.cpp:</div>
 <div class="dyncontent">
 <div class="center"><img src="EditorEvents_8cpp__incl.png" border="0" usemap="#asrc_2UI_2EditorEvents_8cpp" alt=""/></div>
 <map name="asrc_2UI_2EditorEvents_8cpp" id="asrc_2UI_2EditorEvents_8cpp">
-<area shape="rect" title=" " alt="" coords="252,5,424,31"/>
-<area shape="rect" href="EditorEvents_8hpp.html" title="Event&#45;driven communication system for IsoMaker editor components." alt="" coords="272,79,404,104"/>
-<area shape="poly" title=" " alt="" coords="341,31,341,65,335,65,335,31"/>
+<area shape="rect" title=" " alt="" coords="360,5,532,31"/>
+<area shape="rect" href="EditorEvents_8hpp.html" title="Event&#45;driven communication system for IsoMaker editor components." alt="" coords="315,79,447,104"/>
+<area shape="poly" title=" " alt="" coords="437,33,402,70,399,67,433,29"/>
+<area shape="rect" title=" " alt="" coords="471,79,551,104"/>
+<area shape="poly" title=" " alt="" coords="459,29,493,67,490,70,455,33"/>
 <area shape="rect" title=" " alt="" coords="5,152,92,177"/>
-<area shape="poly" title=" " alt="" coords="292,107,106,152,105,147,291,101"/>
+<area shape="poly" title=" " alt="" coords="328,107,106,154,105,149,327,101"/>
 <area shape="rect" title=" " alt="" coords="116,152,240,177"/>
-<area shape="poly" title=" " alt="" coords="313,106,218,149,216,144,311,102"/>
+<area shape="poly" title=" " alt="" coords="349,107,224,150,223,145,347,102"/>
 <area shape="rect" title=" " alt="" coords="264,152,327,177"/>
-<area shape="poly" title=" " alt="" coords="333,106,311,142,307,139,329,103"/>
+<area shape="poly" title=" " alt="" coords="369,106,321,145,318,141,365,102"/>
 <area shape="rect" title=" " alt="" coords="351,152,410,177"/>
-<area shape="poly" title=" " alt="" coords="347,103,369,139,365,142,343,106"/>
+<area shape="poly" title=" " alt="" coords="383,104,383,138,378,138,378,104"/>
 <area shape="rect" title=" " alt="" coords="435,152,503,177"/>
-<area shape="poly" title=" " alt="" coords="360,102,437,143,434,148,358,106"/>
+<area shape="poly" title=" " alt="" coords="396,102,445,141,442,145,393,106"/>
 <area shape="rect" title=" " alt="" coords="527,152,597,177"/>
-<area shape="poly" title=" " alt="" coords="375,101,514,145,513,151,373,107"/>
+<area shape="poly" title=" " alt="" coords="411,102,521,144,519,149,409,107"/>
+<area shape="rect" title=" " alt="" coords="621,152,764,177"/>
+<area shape="poly" title=" " alt="" coords="431,101,630,146,628,152,430,107"/>
 </map>
 </div>
 </div><table class="memberdecls">
@@ -141,9 +146,9 @@ Functions</h2></td></tr>
 <tr class="memitem:acb13dda81e5fd8028e74dada499945f3" id="r_acb13dda81e5fd8028e74dada499945f3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI_1_1Events.html#acb13dda81e5fd8028e74dada499945f3">UI::Events::editorModeChanged</a> (int modeIndex)</td></tr>
 <tr class="memdesc:acb13dda81e5fd8028e74dada499945f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatch an editor mode changed event.  <br /></td></tr>
 <tr class="separator:acb13dda81e5fd8028e74dada499945f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9688c43e4a671ee6ab02b295e49aebd9" id="r_a9688c43e4a671ee6ab02b295e49aebd9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI_1_1Events.html#a9688c43e4a671ee6ab02b295e49aebd9">UI::Events::assetSelected</a> (int assetIndex)</td></tr>
-<tr class="memdesc:a9688c43e4a671ee6ab02b295e49aebd9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatch an asset selected event.  <br /></td></tr>
-<tr class="separator:a9688c43e4a671ee6ab02b295e49aebd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f10f6ae00806d698ef8865a18f63fb8" id="r_a0f10f6ae00806d698ef8865a18f63fb8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI_1_1Events.html#a0f10f6ae00806d698ef8865a18f63fb8">UI::Events::assetSelected</a> (std::shared_ptr&lt; AAsset &gt; asset)</td></tr>
+<tr class="memdesc:a0f10f6ae00806d698ef8865a18f63fb8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatch an asset selected event.  <br /></td></tr>
+<tr class="separator:a0f10f6ae00806d698ef8865a18f63fb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a59ba0b2839380fee02ff4966779f8eb5" id="r_a59ba0b2839380fee02ff4966779f8eb5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI_1_1Events.html#a59ba0b2839380fee02ff4966779f8eb5">UI::Events::sceneUpdated</a> ()</td></tr>
 <tr class="memdesc:a59ba0b2839380fee02ff4966779f8eb5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatch a scene updated event.  <br /></td></tr>
 <tr class="separator:a59ba0b2839380fee02ff4966779f8eb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -156,6 +161,9 @@ Functions</h2></td></tr>
 <tr class="memitem:aa3e46d3e4e0851e3829eb7caec93fd44" id="r_aa3e46d3e4e0851e3829eb7caec93fd44"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI_1_1Events.html#aa3e46d3e4e0851e3829eb7caec93fd44">UI::Events::sceneObjectRenamed</a> (int objectId, const std::string &amp;newName)</td></tr>
 <tr class="memdesc:aa3e46d3e4e0851e3829eb7caec93fd44"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatch a scene object renamed event.  <br /></td></tr>
 <tr class="separator:aa3e46d3e4e0851e3829eb7caec93fd44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aadfdfa00397636b8801b3cb32b952e75" id="r_aadfdfa00397636b8801b3cb32b952e75"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceUI_1_1Events.html#aadfdfa00397636b8801b3cb32b952e75">UI::Events::addAssetRequested</a> ()</td></tr>
+<tr class="memdesc:aadfdfa00397636b8801b3cb32b952e75"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatch a scene object renamed event.  <br /></td></tr>
+<tr class="separator:aadfdfa00397636b8801b3cb32b952e75"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>

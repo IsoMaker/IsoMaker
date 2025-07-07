@@ -1,5 +1,7 @@
 <map id="UI::ISceneProvider" name="UI::ISceneProvider">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,5,147,31"/>
-<area shape="rect" id="Node000002" href="$classMapEditor.html" title="3D Map Editor class" alt="" coords="32,79,120,104"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="79,44,79,79,73,79,73,44"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="41,5,183,31"/>
+<area shape="rect" id="Node000002" href="$classMapEditor.html" title="3D Map Editor class" alt="" coords="5,79,93,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="95,43,61,80,57,77,91,39"/>
+<area shape="rect" id="Node000003" href="$classScriptingEditor.html" title="Visual scripting editor for the IsoMaker game engine." alt="" coords="117,79,235,104"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="134,39,168,77,164,80,130,43"/>
 </map>

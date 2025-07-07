@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['basicobject3d_0',['basicobject3d',['../classBasicObject3D.html#a34d8ce4b7a2078a03c29d8b85c2e84f7',1,'BasicObject3D::BasicObject3D()'],['../classBasicObject3D.html#af25f33d07f64de29e9d3d16e23c347ea',1,'BasicObject3D::BasicObject3D(Asset3D, Vector3D)'],['../classBasicObject3D.html#a8ec18f30775a67c29a76d77591c95d27',1,'BasicObject3D::BasicObject3D(Asset2D, Vector3D, Vector3D dimension3D)']]]
+  ['blockconfigtemplate_0',['BlockConfigTemplate',['../structBlockConfigTemplate.html#a0aeaf485ec19d41f58bb032bd10ff627',1,'BlockConfigTemplate']]],
+  ['blockconnection_1',['blockconnection',['../structBlockConnection.html#aaddc815aa6e24289cb479f8243a15bbc',1,'BlockConnection::BlockConnection(int from, int to, ConnectionPortType fromType, ConnectionPortType toType, int fromIdx, int toIdx, Vector2 fromPos, Vector2 toPos, Color color=WHITE)'],['../structBlockConnection.html#a4458e7dfecd204552136b3de77cbf1a3',1,'BlockConnection::BlockConnection(int from, int to, Vector2 fromPos, Vector2 toPos)']]]
 ];

@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['paneltype_0',['PanelType',['../namespaceUI.html#a533b50f8e5ddb8b491c8df0286f2ac03',1,'UI']]]
+  ['editoreventtype_0',['EditorEventType',['../namespaceUI.html#a212ce8ff3e61dff309d5fe8157d568db',1,'UI']]],
+  ['editortype_1',['EditorType',['../MainUI_8hpp.html#a73cc7416abdce947608adf880c7900af',1,'MainUI.hpp']]]
 ];
