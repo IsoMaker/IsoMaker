@@ -461,4 +461,6 @@ private:
     void clearAllScripts();
     std::string scriptToJson(const VisualScript& script);
     VisualScript jsonToScript(const std::string& jsonContent);
+    bool createDirectoryIfNotExists(const std::string& path);
+    std::string getScriptsDirectory();
 };

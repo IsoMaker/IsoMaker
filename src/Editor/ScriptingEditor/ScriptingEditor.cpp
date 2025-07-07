@@ -11,6 +11,8 @@
 #include <algorithm>
 #include <fstream>
 #include <sstream>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 ScriptingEditor::ScriptingEditor() {
     std::cout << "[ScriptingEditor] Constructor called" << std::endl;
@@ -2571,7 +2573,14 @@ void ScriptingEditor::saveCurrentScript() {
         return;
     }
     
-    std::string filename = "scripts/script_object_" + std::to_string(selectedObjId) + ".json";
+    // Ensure scripts directory exists
+    std::string scriptsDir = getScriptsDirectory();
+    if (!createDirectoryIfNotExists(scriptsDir)) {
+        std::cout << "[ScriptingEditor] Failed to create scripts directory: " << scriptsDir << std::endl;
+        return;
+    }
+    
+    std::string filename = scriptsDir + "/script_object_" + std::to_string(selectedObjId) + ".json";
     saveScriptToFile(it->second, filename);
 }
 
@@ -2752,5 +2761,45 @@ VisualScript ScriptingEditor::jsonToScript(const std::string& jsonContent) {
               << "integrate a proper JSON library like nlohmann/json" << std::endl;
     
     return script;
+}
+
+bool ScriptingEditor::createDirectoryIfNotExists(const std::string& path) {
+    struct stat info;
+    
+    // Check if directory already exists
+    if (stat(path.c_str(), &info) == 0 && (info.st_mode & S_IFDIR)) {
+        return true; // Directory exists
+    }
+    
+    // Try to create the directory
+    #ifdef _WIN32
+        if (mkdir(path.c_str()) == 0) {
+            return true;
+        }
+    #else
+        if (mkdir(path.c_str(), 0755) == 0) {
+            return true;
+        }
+    #endif
+    
+    // If mkdir failed, try to create parent directories recursively
+    size_t pos = path.find_last_of("/\\");
+    if (pos != std::string::npos) {
+        std::string parentDir = path.substr(0, pos);
+        if (createDirectoryIfNotExists(parentDir)) {
+            // Try to create the directory again after creating parent
+            #ifdef _WIN32
+                return mkdir(path.c_str()) == 0;
+            #else
+                return mkdir(path.c_str(), 0755) == 0;
+            #endif
+        }
+    }
+    
+    return false;
+}
+
+std::string ScriptingEditor::getScriptsDirectory() {
+    return "game_project/assets/scripts";
 }
 
