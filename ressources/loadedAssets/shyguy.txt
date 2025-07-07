@@ -1,0 +1,6 @@
+Type: 2D
+Name: shyguy
+File: /home/glea/Desktop/Nintendo 64 - Paper Mario - Shy Guy Red clear.png
+Scale: 0.5
+Size: 32 x 40
+Frames: 8

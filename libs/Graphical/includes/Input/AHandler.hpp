@@ -1,3 +1,4 @@
+#pragma once
 /*
 ** EPITECH PROJECT, 2024
 ** IsoMaker
@@ -67,6 +68,8 @@ namespace input
 
             Type getType() const { return _type; }
 
+            std::unordered_map<T, Generic> getBindings() const { return _inputBindings; }
+
             bool isNotPressed(Generic input) const { return _inputStates.at(input) == State::NOTPRESSED; }
             bool isPressed(Generic input) const { return _inputStates.at(input) == State::PRESSED; }
             bool isHeld(Generic input) const { return _inputStates.at(input) == State::HELD; }
@@ -122,6 +125,11 @@ namespace input
                 std::lock_guard<std::mutex> lock(_inputMutex);
                 std::cout << "Binding lock" << std::endl;
                 _inputBindings[binding] = input;
+            }
+            void clearBinding(T binding)
+            {
+                std::lock_guard<std::mutex> lock(_inputMutex);
+                _inputBindings[binding] = Generic::VOID;
             }
             void eraseBinding(T binding)
             {

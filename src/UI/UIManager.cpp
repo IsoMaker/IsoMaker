@@ -7,7 +7,9 @@ UIManager::UIManager(int screenWidth, int screenHeight)
     : _screenWidth(screenWidth),
       _screenHeight(screenHeight),
       _currentTool(ToolType::SELECT),
-      _selectedAssetIndex(-1),
+      _show3DAssets(true),
+      _selectedAssetIndex2D(-1),
+      _selectedAssetIndex3D(-1),
       _selectedObjectIndex(-1),
       _transformSectionOpen(true),
       _lightingSectionOpen(false),
@@ -19,6 +21,7 @@ UIManager::UIManager(int screenWidth, int screenHeight)
       _editMenuOpen(false),
       _renderMenuOpen(false),
       _helpMenuOpen(false),
+      _editorMenuOpen(false),
       _searchActive(false),
       _currentEditorType(0),
       _currentSceneProvider(nullptr)
@@ -58,7 +61,6 @@ void UIManager::initialize()
     
     // Load icons
     loadIcons();
-    
     // Setup event handlers
     setupEventHandlers();
 }
@@ -70,11 +72,39 @@ void UIManager::update(input::IHandlerBase &inputHandler)
     
     // Check for clicks outside menus to close them
     if (inputHandler.isPressed(input::Generic::SELECT1)) {
-        // Close menus if clicked outside
-        if (_fileMenuOpen && mousePos.y > 30) _fileMenuOpen = false;
-        if (_editMenuOpen && mousePos.y > 30) _editMenuOpen = false;
-        if (_renderMenuOpen && mousePos.y > 30) _renderMenuOpen = false;
-        if (_helpMenuOpen && mousePos.y > 30) _helpMenuOpen = false;
+        // Close menus if clicked outside - but not if clicking on submenu items
+        bool clickedOnMenu = false;
+        
+        // Check if clicking on any submenu area
+        if (_fileMenuOpen) {
+            Rectangle fileSubmenuArea = {10.0f, 30.0f, 120.0f, 125.0f};
+            if (CheckCollisionPointRec(mousePos, fileSubmenuArea)) clickedOnMenu = true;
+        }
+        if (_editMenuOpen) {
+            Rectangle editSubmenuArea = {90.0f, 30.0f, 120.0f, 150.0f};
+            if (CheckCollisionPointRec(mousePos, editSubmenuArea)) clickedOnMenu = true;
+        }
+        if (_renderMenuOpen) {
+            Rectangle renderSubmenuArea = {170.0f, 30.0f, 120.0f, 100.0f};
+            if (CheckCollisionPointRec(mousePos, renderSubmenuArea)) clickedOnMenu = true;
+        }
+        if (_helpMenuOpen) {
+            Rectangle helpSubmenuArea = {250.0f, 30.0f, 120.0f, 75.0f};
+            if (CheckCollisionPointRec(mousePos, helpSubmenuArea)) clickedOnMenu = true;
+        }
+        if (_editorMenuOpen) {
+            Rectangle editorSubmenuArea = {static_cast<float>(_screenWidth - 80 - 10), 30.0f, 120.0f, 60.0f};
+            if (CheckCollisionPointRec(mousePos, editorSubmenuArea)) clickedOnMenu = true;
+        }
+        
+        // Only close menus if not clicking on submenu items
+        if (!clickedOnMenu && mousePos.y > 30) {
+            _fileMenuOpen = false;
+            _editMenuOpen = false;
+            _renderMenuOpen = false;
+            _helpMenuOpen = false;
+            _editorMenuOpen = false;
+        }
     }
     
     // Check tool selection in left toolbar
@@ -107,19 +137,29 @@ void UIManager::draw(MapEditor &mapEditor)
     
     // Draw UI components
     drawLeftToolbar();
-    drawTopMenuBar();
     drawRightPanels();
+	drawTopMenuBar();
     drawBottomAssetsBar();
     
-    // Draw main view area border
-    Rectangle mainViewArea = getMainViewArea();
-    DrawRectangleLinesEx(mainViewArea, 1, UI_SECONDARY);
+}
+
+void UIManager::draw(ISceneProvider &sceneProvider)
+{
+    // Update scene provider reference
+    if (_currentSceneProvider != &sceneProvider) {
+        _currentSceneProvider = &sceneProvider;
+        refreshSceneObjects();
+    }
+    
+    // Draw UI components - only top menu bar for scripting editor
+    drawTopMenuBar();
 }
 
 void UIManager::drawTopMenuBar()
 {
-    // Draw top bar background
-    DrawRectangle(0, 0, static_cast<int>(_screenWidth), static_cast<int>(_topBarHeight), UI_PRIMARY);
+    // Draw top bar background with shadow
+    Rectangle topBarBounds = {0, 0, static_cast<float>(_screenWidth), static_cast<float>(_topBarHeight)};
+    DrawRectangleRoundedWithShadow(topBarBounds, 0, UI_PRIMARY, UI_SHADOW_OFFSET_SMALL, SHADOW_MEDIUM);
     
     // Menu items
     int menuItemWidth = 80;
@@ -130,6 +170,7 @@ void UIManager::drawTopMenuBar()
         _editMenuOpen = false;
         _renderMenuOpen = false;
         _helpMenuOpen = false;
+        _editorMenuOpen = false;
     }
     
     // File submenu
@@ -150,6 +191,7 @@ void UIManager::drawTopMenuBar()
         _fileMenuOpen = false;
         _renderMenuOpen = false;
         _helpMenuOpen = false;
+        _editorMenuOpen = false;
     }
     
     // Edit submenu
@@ -170,6 +212,7 @@ void UIManager::drawTopMenuBar()
         _fileMenuOpen = false;
         _editMenuOpen = false;
         _helpMenuOpen = false;
+        _editorMenuOpen = false;
     }
     
     // Render submenu
@@ -190,6 +233,7 @@ void UIManager::drawTopMenuBar()
         _fileMenuOpen = false;
         _editMenuOpen = false;
         _renderMenuOpen = false;
+        _editorMenuOpen = false;
     }
     
     // Help submenu
@@ -204,39 +248,55 @@ void UIManager::drawTopMenuBar()
         }
     }
     
-    // Editor dropdown (right aligned)
-    int dropdownWidth = 150;
-    int dropdownPos = _screenWidth - dropdownWidth - 10;
+    // Current editor label (centered) with enhanced styling
+    const char* editorNames[2] = {"Map Editor", "Scripting Editor"};
+    const char* currentEditorName = editorNames[_currentEditorType];
+    int textWidth = MeasureText(currentEditorName, UI_FONT_SIZE_XLARGE);
+    int centerX = _screenWidth / 2 - textWidth / 2;
     
-    // Dropdown to select editor type
-    const char *editorTypes[2] = { "Map Editor", "Scripting" };
+    // Draw subtle background for editor label
+    Rectangle labelBounds = {
+        static_cast<float>(centerX - UI_PADDING_MEDIUM), 
+        2, 
+        static_cast<float>(textWidth + 2 * UI_PADDING_MEDIUM), 
+        static_cast<float>(_topBarHeight - 4)
+    };
+    DrawRectangleRounded(labelBounds, UI_BORDER_RADIUS_SMALL, UI_SECONDARY);
     
-    // Use the custom dropdown
-    Rectangle dropdownBounds = {static_cast<float>(dropdownPos), 2.0f, static_cast<float>(dropdownWidth), static_cast<float>(_topBarHeight - 4)};
-    bool editMode = false;
-    int newEditorType = CustomDropdown(dropdownBounds, editorTypes[_currentEditorType], _currentEditorType, editorTypes, 2, &editMode);
+    DrawText(currentEditorName, centerX, 7, UI_FONT_SIZE_XLARGE, UI_TEXT_PRIMARY);
     
-    // Check if editor type changed
-    if (newEditorType != _currentEditorType) {
-        _currentEditorType = newEditorType;
-        Events::editorModeChanged(_currentEditorType);
+    // Editor menu (right aligned)
+    Rectangle editorRect = {static_cast<float>(_screenWidth - menuItemWidth - 10), 0.0f, static_cast<float>(menuItemWidth), static_cast<float>(_topBarHeight)};
+    if (MenuItem(editorRect, "Editor", &_editorMenuOpen)) {
+        _fileMenuOpen = false;
+        _editMenuOpen = false;
+        _renderMenuOpen = false;
+        _helpMenuOpen = false;
     }
     
-    // Search bar (middle)
-    Rectangle searchBounds = {
-        static_cast<float>(_screenWidth / 2 - 100),
-        5,
-        200,
-        20
-    };
-    SearchBar(searchBounds, _searchText, sizeof(_searchText), &_searchActive);
+    // Editor submenu
+    if (_editorMenuOpen) {
+        const char* editorItems[2] = {"Map Editor", "Scripting Editor"};
+        int editorItemSelected = Submenu({editorRect.x, editorRect.y + editorRect.height, 120.0f, 60.0f}, editorItems, 2);
+        
+        // Handle editor menu selection
+        if (editorItemSelected >= 0) {
+            _editorMenuOpen = false;
+            handleEditorMenuAction(editorItemSelected);
+        }
+    }
 }
 
 void UIManager::drawLeftToolbar()
 {
-    // Draw toolbar background
-    DrawRectangle(0, static_cast<int>(_topBarHeight), static_cast<int>(_leftToolbarWidth), 
-                 static_cast<int>(_screenHeight - _topBarHeight - _bottomAssetsBarHeight), UI_PRIMARY);
+    // Draw toolbar background with enhanced styling
+    Rectangle toolbarBounds = {
+        0, 
+        static_cast<float>(_topBarHeight), 
+        static_cast<float>(_leftToolbarWidth), 
+        static_cast<float>(_screenHeight - _topBarHeight - _bottomAssetsBarHeight)
+    };
+    DrawRectangleRoundedWithShadow(toolbarBounds, 0, PANEL_BACKGROUND, UI_SHADOW_OFFSET_SMALL, SHADOW_LIGHT);
     
     // Tool definitions
     const char* toolTips[6] = {
@@ -275,9 +335,9 @@ void UIManager::drawRightPanels()
     int panelHeight = (_screenHeight - _topBarHeight - _bottomAssetsBarHeight) / 2;
     int panelY = _topBarHeight;
     
-    // Scene panel
+    // Scene panel with enhanced styling
     if (_panelVisibility[PanelType::SCENE]) {
-        // Panel bounds
+        // Panel bounds with padding
         Rectangle panelBounds = {
             static_cast<float>(_screenWidth - _rightPanelsWidth),
             static_cast<float>(panelY),
@@ -285,45 +345,56 @@ void UIManager::drawRightPanels()
             static_cast<float>(panelHeight)
         };
         
+        // Draw panel with shadow and rounded corners
+        DrawPanel(panelBounds, "Scene", PANEL_HEADER, PANEL_BACKGROUND, true);
+        
         // Use the CollapsiblePanel component - though always open for scene
         bool alwaysOpen = true;
-        CollapsiblePanel(panelBounds, "Scene", &alwaysOpen, UI_PRIMARY, UI_SECONDARY);
+        CollapsiblePanel(panelBounds, "Scene", &alwaysOpen, PANEL_HEADER, PANEL_BACKGROUND);
         
-        // Scene objects list
+        // Scene objects list with enhanced styling
+        int itemStartY = panelY + UI_PADDING_XLARGE + UI_PADDING_LARGE;
         for (int i = 0; i < _sceneObjects.size(); i++) {
             Rectangle itemBounds = {
-                static_cast<float>(_screenWidth - _rightPanelsWidth + 5),
-                static_cast<float>(panelY + 35 + i * 25),
-                static_cast<float>(_rightPanelsWidth - 10),
-                25
+                static_cast<float>(_screenWidth - _rightPanelsWidth + UI_PADDING_MEDIUM),
+                static_cast<float>(itemStartY + i * (UI_PADDING_XLARGE + UI_PADDING_SMALL)),
+                static_cast<float>(_rightPanelsWidth - 2 * UI_PADDING_MEDIUM),
+                UI_PADDING_XLARGE
             };
             
             const SceneObjectInfo& obj = _sceneObjects[i];
+            bool isHovered = CheckCollisionPointRec(GetMousePosition(), itemBounds);
             
-            // Background for selected item
+            // Enhanced background for selected/hovered items
             if (obj.isSelected || i == _selectedObjectIndex) {
-                DrawRectangleRec(itemBounds, ACCENT_TERTIARY);
+                DrawRectangleRounded(itemBounds, UI_BORDER_RADIUS_SMALL, SELECTED_BACKGROUND);
+            } else if (isHovered) {
+                DrawRectangleRounded(itemBounds, UI_BORDER_RADIUS_SMALL, HOVER_BACKGROUND);
             }
             
-            // Add type indicator color
+            // Enhanced type indicator colors
             Color typeColor = UI_TEXT_PRIMARY;
             switch (obj.type) {
-                case SceneObjectType::CUBE_3D: typeColor = {100, 150, 255, 255}; break;
-                case SceneObjectType::SPRITE_2D: typeColor = {255, 150, 100, 255}; break;
-                case SceneObjectType::CAMERA: typeColor = {150, 255, 150, 255}; break;
-                case SceneObjectType::LIGHT: typeColor = {255, 255, 100, 255}; break;
-                default: typeColor = UI_TEXT_PRIMARY; break;
+                case SceneObjectType::CUBE_3D: typeColor = ACCENT_PRIMARY; break;
+                case SceneObjectType::SPRITE_2D: typeColor = ACCENT_SECONDARY; break;
+                case SceneObjectType::CAMERA: typeColor = ACCENT_TERTIARY; break;
+                case SceneObjectType::LIGHT: typeColor = WARNING; break;
+                default: typeColor = UI_TEXT_SECONDARY; break;
             }
             
-            // Draw visibility indicator
-            const char* visibilityIcon = obj.isVisible ? "👁" : "🚫";
-            DrawText(visibilityIcon, itemBounds.x + 5, itemBounds.y + 5, 10, typeColor);
+            // Draw visibility indicator with better spacing
+            const char* visibilityIcon = obj.isVisible ? "●" : "○";
+            DrawText(visibilityIcon, itemBounds.x + UI_PADDING_SMALL, itemBounds.y + UI_PADDING_SMALL, UI_FONT_SIZE_MEDIUM, typeColor);
             
-            // Draw object name
-            DrawText(obj.getDisplayName().c_str(), itemBounds.x + 25, itemBounds.y + 5, 10, typeColor);
+            // Draw object name with better typography
+            DrawText(obj.getDisplayName().c_str(), 
+                    itemBounds.x + UI_PADDING_XLARGE, 
+                    itemBounds.y + UI_PADDING_SMALL, 
+                    UI_FONT_SIZE_MEDIUM, 
+                    UI_TEXT_PRIMARY);
             
             // Check for selection
-            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(GetMousePosition(), itemBounds)) {
+            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && isHovered) {
                 _selectedObjectIndex = i;
                 if (_currentSceneProvider) {
                     _currentSceneProvider->selectObject(obj.id);
@@ -333,16 +404,20 @@ void UIManager::drawRightPanels()
         }
     }
     
-    // Properties panel
+    // Properties panel with enhanced styling
     if (_panelVisibility[PanelType::PROPERTIES]) {
         panelY += panelHeight;
         
-        // Panel background
-        DrawRectangle(static_cast<int>(_screenWidth - _rightPanelsWidth), static_cast<int>(panelY), static_cast<int>(_rightPanelsWidth), static_cast<int>(panelHeight), UI_SECONDARY);
+        // Enhanced panel bounds
+        Rectangle propertiesBounds = {
+            static_cast<float>(_screenWidth - _rightPanelsWidth),
+            static_cast<float>(panelY),
+            static_cast<float>(_rightPanelsWidth),
+            static_cast<float>(panelHeight)
+        };
         
-        // Panel header
-        DrawRectangle(static_cast<int>(_screenWidth - _rightPanelsWidth), static_cast<int>(panelY), static_cast<int>(_rightPanelsWidth), 30, UI_PRIMARY);
-        DrawText("Properties", static_cast<int>(_screenWidth - _rightPanelsWidth + 10), static_cast<int>(panelY + 10), 10, UI_TEXT_PRIMARY);
+        // Draw panel with shadow and rounded corners
+        DrawPanel(propertiesBounds, "Properties", PANEL_HEADER, PANEL_BACKGROUND, true);
         
         int sectionY = panelY + 35;
         int sectionHeight = 30;
@@ -409,37 +484,164 @@ void UIManager::drawBottomAssetsBar()
 {
     int barY = _screenHeight - _bottomAssetsBarHeight;
     
-    // Draw assets bar background
-    DrawRectangle(0, static_cast<int>(barY), static_cast<int>(_screenWidth), static_cast<int>(_bottomAssetsBarHeight), UI_SECONDARY);
+    // Enhanced assets bar with shadow and rounded corners
+    Rectangle assetsBounds = {
+        0, 
+        static_cast<float>(barY), 
+        static_cast<float>(_screenWidth), 
+        static_cast<float>(_bottomAssetsBarHeight)
+    };
+    DrawPanel(assetsBounds, "Assets", PANEL_HEADER, PANEL_BACKGROUND, true);
     
     // Draw header
-    DrawRectangle(0, static_cast<int>(barY), static_cast<int>(_screenWidth), 30, UI_PRIMARY);
-    DrawText("Assets", 10, static_cast<int>(barY + 10), 10, UI_TEXT_PRIMARY);
+    Rectangle buttonRect3D = { 0, static_cast<float>(barY), 65, 30 };
+    Color buttonColor3D = CheckCollisionPointRec(GetMousePosition(), buttonRect3D) ? UI_TEXT_SECONDARY : UI_TEXT_PRIMARY;
+
+    DrawRectangleRec(buttonRect3D, UI_SECONDARY);
+    DrawText("Assets 3D", 10, static_cast<int>(barY + 10), 10, buttonColor3D);
+
+    if (CheckCollisionPointRec(GetMousePosition(), buttonRect3D) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        _show3DAssets = true;
+        std::cout << "Assets 3D button clicked!" << std::endl;
+        // UI::Events::assetSelected(0);
+    }
+
+    Rectangle buttonRect2D = { 70, static_cast<float>(barY), 65, 30 };
+    Color buttonColor2D = CheckCollisionPointRec(GetMousePosition(), buttonRect2D) ? UI_TEXT_SECONDARY : UI_TEXT_PRIMARY;
+
+    DrawRectangleRec(buttonRect2D, UI_SECONDARY);
+    DrawText("Assets 2D", 80, static_cast<int>(barY + 10), 10, buttonColor2D);
+
+    if (CheckCollisionPointRec(GetMousePosition(), buttonRect2D) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        _show3DAssets = false;
+        std::cout << "Assets 2D button clicked!" << std::endl;
+        // UI::Events::assetSelected(0);
+    }
+
+    Rectangle buttonRectPlus = {static_cast<float>(140), static_cast<float>(barY), static_cast<float>(30), static_cast<float>(30)};
+    Color buttonColorPlus = CheckCollisionPointRec(GetMousePosition(), buttonRectPlus) ? UI_TEXT_SECONDARY : UI_TEXT_PRIMARY;
     
-    // Draw asset grid (placeholders)
+    DrawRectangleRec(buttonRectPlus, UI_SECONDARY);
+    DrawText("+", 150, static_cast<int>(barY + 10), 10, buttonColorPlus);
+    
+    if (CheckCollisionPointRec(GetMousePosition(), buttonRectPlus) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        std::cout << "+ button clicked! Launching asset preview window." << std::endl;
+        openAssetWindow();
+    }
+
+    if (_show3DAssets)
+        drawBottomAssets3D(barY);
+    else
+        drawBottomAssets2D(barY);
+}
+
+void UIManager::drawBottomAssets2D(int barY)
+{
     int assetSize = 80;
     int padding = 10;
     int rowCapacity = (_screenWidth - padding) / (assetSize + padding);
-    
-    for (int i = 0; i < 10; i++) { // Displaying 10 placeholder assets
+    std::vector<Asset2D> assetTiles2D = _loader->getLoaded2DAssets();
+
+    for (int i = 0; i < assetTiles2D.size(); i++) {
         int row = i / rowCapacity;
         int col = i % rowCapacity;
-        
+
         int x = padding + col * (assetSize + padding);
         int y = barY + 40 + row * (assetSize + padding);
-        
+
         Rectangle assetBounds = {static_cast<float>(x), static_cast<float>(y), static_cast<float>(assetSize), static_cast<float>(assetSize)};
-        
-        // We would have real asset textures here
-        Texture2D emptyTexture = { 0 };
-        
-        // Use AssetTile component
-        char assetName[20];
-        sprintf(assetName, "Asset %d", i + 1);
-        
-        if (AssetTile(assetBounds, emptyTexture, assetName, i == _selectedAssetIndex)) {
-            _selectedAssetIndex = i;
-            Events::assetSelected(i);
+        Rectangle tileBounds = { (float)x, (float)y, (float)assetSize, (float)assetSize };
+
+        Asset2D asset = assetTiles2D[i];
+        Texture2D texture = asset.getTexture();
+
+        if (AssetTile(assetBounds, asset, i == _selectedAssetIndex2D, {x, y})) {
+            _selectedAssetIndex2D = i;
+            std::shared_ptr<Asset2D> assetBasic = std::make_shared<Asset2D>(assetTiles2D[i]);
+            Events::assetSelected(assetBasic);
+        }
+
+        if (asset.isLoaded()) {
+
+        }
+
+        // Selection
+        if (CheckCollisionPointRec(GetMousePosition(), tileBounds) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            _selectedAssetIndex2D = i;
+            std::shared_ptr<Asset2D> assetBasic = std::make_shared<Asset2D>(assetTiles2D[i]);
+            Events::assetSelected(assetBasic);
+        }
+    }
+}
+
+void UIManager::drawModelPreview(Asset3D asset, Rectangle assetBounds, int barY)
+{
+    // Adjust bounds to leave space for text at bottom and center the 3D preview
+    Rectangle previewBounds = {
+        assetBounds.x + 5, 
+        assetBounds.y + 5, 
+        assetBounds.width - 10, 
+        assetBounds.height - 25  // Leave 20px for text plus some padding
+    };
+    
+    BeginScissorMode((int)previewBounds.x, (int)previewBounds.y, (int)previewBounds.width, (int)previewBounds.height);
+    rlViewport(previewBounds.x, GetScreenHeight() - (previewBounds.y + previewBounds.height), previewBounds.width, previewBounds.height);
+
+    Camera cam = { 0 };
+    cam.position = { 2.0f, 2.0f, 2.0f };
+    cam.target = { 0.0f, 0.0f, 0.0f };  // Center the target
+    cam.up = { 0.0f, 1.0f, 0.0f };
+    cam.fovy = 45.0f;
+    cam.projection = CAMERA_PERSPECTIVE;
+
+    BeginMode3D(cam);
+
+    // Center the model and make it appropriately sized for the preview
+    Vector3 pos = { 0.0f, 0.0f, 0.0f };  // Center the model
+    Vector3 rotAxis = { 0.0f, 1.0f, 0.0f };
+    float angle = GetTime() * 45.0f;
+    
+    // Scale the model appropriately for the preview size
+    float previewScale = asset.getScale() * 0.8f;  // Slightly smaller to fit nicely
+    DrawModelEx(asset.getModel(), pos, rotAxis, angle, {previewScale, previewScale, previewScale}, WHITE);
+
+    EndMode3D();
+
+    rlViewport(0, 0, GetScreenWidth(), GetScreenHeight());
+    rlLoadIdentity();
+    EndScissorMode();
+}
+
+void UIManager::drawBottomAssets3D(int barY)
+{
+    int assetSize = 80;
+    int padding = 10;
+    int rowCapacity = (_screenWidth - padding) / (assetSize + padding);
+    std::vector<Asset3D> assetTiles3D = _loader->getLoaded3DAssets();
+
+    for (int i = 0; i < assetTiles3D.size(); i++) {
+        int row = i / rowCapacity;
+        int col = i % rowCapacity;
+
+        int x = padding + col * (assetSize + padding);
+        int y = barY + 40 + row * (assetSize + padding);
+
+        Rectangle assetBounds = {static_cast<float>(x), static_cast<float>(y), static_cast<float>(assetSize), static_cast<float>(assetSize)};
+        Rectangle tileBounds = { (float)x, (float)y, (float)assetSize, (float)assetSize };
+
+
+        if (AssetTile(assetBounds, assetTiles3D[i].getModel(), assetTiles3D[i].getDisplayName().c_str(), i == _selectedAssetIndex3D)) {
+            _selectedAssetIndex3D = i;
+            std::shared_ptr<Asset3D> assetBasic = std::make_shared<Asset3D>(assetTiles3D[i]);
+            Events::assetSelected(assetBasic);
+        }
+
+        drawModelPreview(assetTiles3D[i], assetBounds, barY);
+
+        if (CheckCollisionPointRec(GetMousePosition(), tileBounds) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            _selectedAssetIndex3D = i;
+            std::shared_ptr<Asset3D> assetBasic = std::make_shared<Asset3D>(assetTiles3D[i]);
+            Events::assetSelected(assetBasic);
         }
     }
 }
@@ -613,6 +815,16 @@ Rectangle UIManager::getMainViewArea() const
     };
 }
 
+Rectangle UIManager::getFullViewArea() const
+{
+    return {
+        0.0f,
+        static_cast<float>(_topBarHeight),
+        static_cast<float>(_screenWidth),
+        static_cast<float>(_screenHeight - _topBarHeight)
+    };
+}
+
 void UIManager::setupEventHandlers()
 {
     // Subscribe to editor events to update UI state
@@ -736,6 +948,20 @@ void UIManager::handleHelpMenuAction(int selectedItem)
     }
 }
 
+void UIManager::handleEditorMenuAction(int selectedItem)
+{
+    switch (selectedItem) {
+        case 0: // Map Editor
+            _currentEditorType = 0;
+            Events::editorModeChanged(_currentEditorType);
+            break;
+        case 1: // Scripting Editor
+            _currentEditorType = 1;
+            Events::editorModeChanged(_currentEditorType);
+            break;
+    }
+}
+
 int UIManager::getSelectedObjectCount() const
 {
     return _selectedObjectIndex >= 0 ? 1 : 0;
@@ -782,6 +1008,21 @@ void UIManager::refreshSceneObjects()
             }
         }
     }
+}
+
+void UIManager::openAssetWindow() {
+    pid_t pid = fork();
+    if (pid == 0) {
+        execl("bin/OpenAsset", "AssetWindow", nullptr);
+        _exit(1);
+    } else if (pid < 0) {
+        std::cerr << "Failed to fork AssetWindow\n";
+    }
+}
+
+void UIManager::setLoader(std::shared_ptr<AssetLoader> loader)
+{
+    _loader = loader;
 }
 
 } // namespace UI

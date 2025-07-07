@@ -1,4 +1,5 @@
 #include "EditorEvents.hpp"
+#include <iostream>
 
 namespace UI {
 
@@ -64,8 +65,8 @@ namespace Events {
         g_eventDispatcher.dispatch(EditorEvent(EditorEventType::EDITOR_MODE_CHANGED, modeIndex, "Editor mode changed"));
     }
     
-    void assetSelected(int assetIndex) {
-        g_eventDispatcher.dispatch(EditorEvent(EditorEventType::ASSET_SELECTED, assetIndex, "Asset selected"));
+    void assetSelected(std::shared_ptr<AAsset> asset) {
+        g_eventDispatcher.dispatch(EditorEvent(EditorEventType::ASSET_SELECTED, asset, "Asset selected"));
     }
     
     // Scene synchronization events
@@ -83,6 +84,11 @@ namespace Events {
     
     void sceneObjectRenamed(int objectId, const std::string& newName) {
         g_eventDispatcher.dispatch(EditorEvent(EditorEventType::SCENE_OBJECT_RENAMED, newName, "Scene object renamed"));
+    }
+
+    void addAssetRequested() {
+        std::cout << "trigger event\n";
+        g_eventDispatcher.dispatch(EditorEvent(EditorEventType::ASSET_LOADED, 0, "Add New Asset"));
     }
 }
 

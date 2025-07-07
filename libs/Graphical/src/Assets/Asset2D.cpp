@@ -1,10 +1,35 @@
 #include "Asset2D.hpp"
 
-Texture2D Asset2D::getTexture()
+Asset2D::Asset2D()
+{
+    _textureLoaded = false;
+}
+
+Asset2D::Asset2D(std::string fileName) : AAsset(fileName)
+{
+    loadFile();
+}
+
+Asset2D::Asset2D(Texture2D texture)
+{
+    setTexture(texture);
+}
+
+Texture2D Asset2D::getTexture() const
 {
     if (_textureLoaded)
         return _texture;
     return Texture2D();
+}
+
+void Asset2D::setTexture(Texture2D texture)
+{
+    _texture = texture;
+    if (_texture.id != 0) {
+        _textureLoaded = true;
+    } else {
+        _textureLoaded = false;
+    }
 }
 
 void Asset2D::loadFile()

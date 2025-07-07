@@ -1,3 +1,4 @@
+#pragma once
 /*
 ** EPITECH PROJECT, 2025
 ** IsoMaker
@@ -18,7 +19,7 @@ using namespace Utilities;
 namespace map {
     class MapGrid {
         public:
-            MapGrid(int cellAmount = 21, int cellSize = 1, Color gridColor = MAGENTA, Color backgroundColor = BLACK);
+            MapGrid(int cellAmount = 21, int cellSize = 1, Color gridColor = (Color){130, 130, 130, 200}, Color backgroundColor = WHITE);
             ~MapGrid();
 
             void init();

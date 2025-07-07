@@ -9,31 +9,14 @@ bool CustomButton(Rectangle bounds, const char* text, Color normalColor, Color h
     Vector2 mousePoint = GetMousePosition();
     bool mouseHover = CheckCollisionPointRec(mousePoint, bounds);
     bool pressed = false;
+    bool isPressed = mouseHover && IsMouseButtonDown(MOUSE_LEFT_BUTTON);
     
-    // Determine button color based on state
-    Color buttonColor = normalColor;
-    if (mouseHover) {
-        if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
-            buttonColor = pressedColor;
-        } else {
-            buttonColor = hoverColor;
-        }
-        
-        if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
-            pressed = true;
-        }
+    if (mouseHover && IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
+        pressed = true;
     }
     
-    // Draw button
-    DrawRectangleRec(bounds, buttonColor);
-    
-    // Calculate text position
-    int textWidth = MeasureText(text, 10);
-    int textX = bounds.x + (bounds.width - textWidth) / 2;
-    int textY = bounds.y + (bounds.height - 10) / 2;
-    
-    // Draw text
-    DrawText(text, textX, textY, 10, UI_TEXT_PRIMARY);
+    // Use enhanced button drawing
+    DrawButton(bounds, text, normalColor, mouseHover, isPressed);
     
     return pressed;
 }
@@ -41,28 +24,44 @@ bool CustomButton(Rectangle bounds, const char* text, Color normalColor, Color h
 bool CollapsiblePanel(Rectangle bounds, const char* title, bool* isOpen, Color headerColor, Color bodyColor) {
     bool clicked = false;
     
-    // Draw panel header
-    DrawRectangle(bounds.x, bounds.y, bounds.width, 30, headerColor);
+    // Draw panel with enhanced styling
+    DrawPanel(bounds, "", bodyColor, PANEL_BACKGROUND, true);
     
-    // Draw panel title
-    DrawText(title, bounds.x + 10, bounds.y + 10, 10, UI_TEXT_PRIMARY);
+    // Draw header section
+    Rectangle headerBounds = {bounds.x, bounds.y, bounds.width, UI_PADDING_XLARGE + UI_PADDING_MEDIUM};
+    DrawRectangleRounded(headerBounds, UI_BORDER_RADIUS_MEDIUM, headerColor);
     
-    // Draw toggle button
-    Rectangle toggleBounds = {bounds.x + bounds.width - 25, bounds.y + 5, 20, 20};
-    DrawRectangleRec(toggleBounds, UI_SECONDARY);
+    // Draw panel title with better typography
+    int textX = bounds.x + UI_PADDING_MEDIUM;
+    int textY = bounds.y + UI_PADDING_MEDIUM;
+    DrawText(title, textX, textY, UI_FONT_SIZE_MEDIUM, UI_TEXT_PRIMARY);
     
-    // Draw +/- symbol based on panel state
-    DrawText(*isOpen ? "-" : "+", toggleBounds.x + 7, toggleBounds.y + 5, 10, UI_TEXT_PRIMARY);
+    // Draw enhanced toggle button
+    Rectangle toggleBounds = {
+        bounds.x + bounds.width - UI_PADDING_XLARGE - UI_PADDING_MEDIUM, 
+        bounds.y + UI_PADDING_SMALL, 
+        UI_PADDING_XLARGE, 
+        UI_PADDING_XLARGE
+    };
+    
+    bool toggleHovered = CheckCollisionPointRec(GetMousePosition(), toggleBounds);
+    DrawButton(toggleBounds, *isOpen ? "−" : "+", ACCENT_PRIMARY, toggleHovered, false);
     
     // Check for toggle button click
-    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(GetMousePosition(), toggleBounds)) {
+    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && toggleHovered) {
         *isOpen = !(*isOpen);
         clicked = true;
     }
     
-    // Draw panel body if open
+    // Draw panel body if open with rounded corners
     if (*isOpen) {
-        DrawRectangle(bounds.x, bounds.y + 30, bounds.width, bounds.height - 30, bodyColor);
+        Rectangle bodyBounds = {
+            bounds.x + 1, 
+            bounds.y + headerBounds.height, 
+            bounds.width - 2, 
+            bounds.height - headerBounds.height - 1
+        };
+        DrawRectangleRounded(bodyBounds, UI_BORDER_RADIUS_MEDIUM, bodyColor);
     }
     
     return clicked;
@@ -196,42 +195,144 @@ bool ToolButton(Rectangle bounds, Texture2D icon, const char* tooltip, bool isSe
     return pressed;
 }
 
-bool AssetTile(Rectangle bounds, Texture2D texture, const char* name, bool isSelected) {
+bool AssetTile(Rectangle bounds, Asset2D asset, bool isSelected, Vector2 position) {
     bool clicked = false;
+    bool isHovered = CheckCollisionPointRec(GetMousePosition(), bounds);
+
+    // Draw shadow for depth
+    Rectangle shadowBounds = {bounds.x + 2, bounds.y + 2, bounds.width, bounds.height};
+    DrawRectangleRounded(shadowBounds, 0.12f, 8, SHADOW_LIGHT);
+
+    // Draw main card background with modern styling
+    Color bgColor = isSelected ? ACCENT_PRIMARY : (isHovered ? HOVER_BACKGROUND : PANEL_BACKGROUND);
+    Color bgColorTop = isSelected ? ACCENT_SECONDARY : (isHovered ? UI_TERTIARY : UI_SECONDARY);
     
-    // Draw tile background
-    Color bgColor = isSelected ? ACCENT_TERTIARY : UI_SECONDARY;
-    DrawRectangleRec(bounds, bgColor);
+    DrawRectangleRounded(bounds, 0.12f, 8, bgColor);
     
-    // Draw asset preview (texture)
-    if (texture.id > 0) {
-        // Scale texture to fit within bounds while maintaining aspect ratio
-        float scale = fmin(bounds.width / texture.width, bounds.height / texture.height);
-        float scaledWidth = texture.width * scale;
-        float scaledHeight = texture.height * scale;
+    // Add subtle gradient effect at the top
+    Rectangle gradientRect = {bounds.x, bounds.y, bounds.width, bounds.height * 0.25f};
+    DrawRectangleGradientV(gradientRect.x, gradientRect.y, gradientRect.width, gradientRect.height, bgColorTop, bgColor);
+
+    // Draw border with hover/selection states
+    Color borderColor = isSelected ? ACCENT_TERTIARY : (isHovered ? ACCENT_PRIMARY : PANEL_BORDER);
+    float borderWidth = isSelected ? 3.0f : (isHovered ? 2.0f : 1.0f);
+    DrawRectangleLinesEx(bounds, borderWidth, borderColor);
+
+    // Content area for texture (with padding)
+    Rectangle contentArea = {bounds.x + 6, bounds.y + 6, bounds.width - 12, bounds.height - 28};
+    
+    if (asset.isLoaded()) {
+        Texture2D texture = asset.getTexture();
+        int texW = asset.getWidth();
+        int texH = asset.getHeight();
         
-        DrawTexturePro(
-            texture,
-            {0, 0, (float)texture.width, (float)texture.height},
-            {bounds.x + (bounds.width - scaledWidth) / 2, bounds.y + (bounds.height - scaledHeight) / 2 - 10, scaledWidth, scaledHeight},
-            {0, 0},
-            0,
-            WHITE
-        );
+        // Calculate centered and properly scaled texture positioning
+        float aspectRatio = (float)texW / (float)texH;
+        float contentAspect = contentArea.width / contentArea.height;
+        
+        Rectangle textureRect;
+        if (aspectRatio > contentAspect) {
+            // Fit to width
+            textureRect.width = contentArea.width;
+            textureRect.height = contentArea.width / aspectRatio;
+            textureRect.x = contentArea.x;
+            textureRect.y = contentArea.y + (contentArea.height - textureRect.height) / 2;
+        } else {
+            // Fit to height
+            textureRect.height = contentArea.height;
+            textureRect.width = contentArea.height * aspectRatio;
+            textureRect.x = contentArea.x + (contentArea.width - textureRect.width) / 2;
+            textureRect.y = contentArea.y;
+        }
+        
+        Rectangle source = {0, 0, (float)texW, (float)texH};
+        DrawTexturePro(texture, source, textureRect, {0, 0}, 0.0f, WHITE);
+        
+        // Add glow effect when selected
+        if (isSelected) {
+            DrawRectangleLinesEx(textureRect, 2, GLOW_ACCENT);
+        }
     } else {
-        // Placeholder when no texture
-        DrawRectangle(bounds.x + 5, bounds.y + 5, bounds.width - 10, bounds.height - 25, UI_TEXT_SECONDARY);
+        // Enhanced loading placeholder
+        DrawRectangleRounded(contentArea, 0.1f, 6, UI_TERTIARY);
+        DrawRectangleLinesEx(contentArea, 1, UI_PRIMARY);
+        
+        // Loading indicator with better styling
+        const char* loadingText = "Loading...";
+        int loadingWidth = MeasureText(loadingText, 8);
+        DrawText(loadingText, contentArea.x + (contentArea.width - loadingWidth) / 2, 
+                contentArea.y + contentArea.height / 2 - 4, 8, UI_TEXT_SECONDARY);
     }
+
+    // Enhanced asset name display
+    const char* name = asset.getDisplayName().c_str();
+    int textWidth = MeasureText(name, 10);
+    Color textColor = isSelected ? WHITE : UI_TEXT_PRIMARY;
     
-    // Draw asset name at bottom
-    int textWidth = MeasureText(name, 9);
-    DrawText(name, bounds.x + (bounds.width - textWidth) / 2, bounds.y + bounds.height - 15, 9, UI_TEXT_PRIMARY);
+    // Semi-transparent background for text readability
+    Rectangle textBg = {bounds.x + 2, bounds.y + bounds.height - 20, bounds.width - 4, 16};
+    Color textBgColor = {0, 0, 0, 120};
+    DrawRectangleRounded(textBg, 0.3f, 4, textBgColor);
     
+    DrawText(name, bounds.x + (bounds.width - textWidth) / 2, bounds.y + bounds.height - 16, 10, textColor);
+
+    if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(GetMousePosition(), bounds)) {
+        clicked = true;
+    }
+
+    return clicked;
+}
+
+bool AssetTile(Rectangle bounds, Model model, const char* name, bool isSelected) {
+    bool clicked = false;
+    bool isHovered = CheckCollisionPointRec(GetMousePosition(), bounds);
+
+    // Draw shadow for depth
+    Rectangle shadowBounds = {bounds.x + 2, bounds.y + 2, bounds.width, bounds.height};
+    DrawRectangleRounded(shadowBounds, 0.12f, 8, SHADOW_LIGHT);
+
+    // Draw main card background with modern styling
+    Color bgColor = isSelected ? ACCENT_PRIMARY : (isHovered ? HOVER_BACKGROUND : PANEL_BACKGROUND);
+    Color bgColorTop = isSelected ? ACCENT_SECONDARY : (isHovered ? UI_TERTIARY : UI_SECONDARY);
+    
+    DrawRectangleRounded(bounds, 0.12f, 8, bgColor);
+    
+    // Add subtle gradient effect at the top
+    Rectangle gradientRect = {bounds.x, bounds.y, bounds.width, bounds.height * 0.25f};
+    DrawRectangleGradientV(gradientRect.x, gradientRect.y, gradientRect.width, gradientRect.height, bgColorTop, bgColor);
+
+    // Draw border with hover/selection states
+    Color borderColor = isSelected ? ACCENT_TERTIARY : (isHovered ? ACCENT_PRIMARY : PANEL_BORDER);
+    float borderWidth = isSelected ? 3.0f : (isHovered ? 2.0f : 1.0f);
+    DrawRectangleLinesEx(bounds, borderWidth, borderColor);
+
+    // 3D preview area with enhanced styling
+    Rectangle previewArea = {bounds.x + 6, bounds.y + 6, bounds.width - 12, bounds.height - 28};
+    
+    // Draw inner preview frame
+    Color previewBgColor = isSelected ? (Color){20, 25, 35, 255} : (Color){25, 30, 40, 255};
+    DrawRectangleRounded(previewArea, 0.1f, 6, previewBgColor);
+    
+    // Subtle inner border for 3D preview area
+    Color previewBorderColor = isSelected ? GLOW_ACCENT : UI_PRIMARY;
+    DrawRectangleLinesEx(previewArea, 1, previewBorderColor);
+
+    // Enhanced asset name display
+    int textWidth = MeasureText(name, 10);
+    Color textColor = isSelected ? WHITE : UI_TEXT_PRIMARY;
+    
+    // Semi-transparent background for text readability
+    Rectangle textBg = {bounds.x + 2, bounds.y + bounds.height - 20, bounds.width - 4, 16};
+    Color textBgColor = {0, 0, 0, 120};
+    DrawRectangleRounded(textBg, 0.3f, 4, textBgColor);
+    
+    DrawText(name, bounds.x + (bounds.width - textWidth) / 2, bounds.y + bounds.height - 16, 10, textColor);
+
     // Check for click
     if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(GetMousePosition(), bounds)) {
         clicked = true;
     }
-    
+
     return clicked;
 }
 
@@ -400,6 +501,115 @@ int CustomDropdown(Rectangle bounds, const char *text, int active, const char **
     }
     
     return result;
+}
+
+// Enhanced drawing helper functions for consistent styling
+void DrawRectangleRounded(Rectangle rec, float radius, Color color) {
+    // Simple rounded rectangle using multiple rectangles for corners
+    // This is a basic implementation - could be enhanced with actual rounded corners
+    
+    if (radius <= 0) {
+        DrawRectangleRec(rec, color);
+        return;
+    }
+    
+    // Clamp radius to reasonable bounds
+    float maxRadius = fmin(rec.width, rec.height) / 2.0f;
+    radius = fmin(radius, maxRadius);
+    
+    // Draw main rectangle
+    DrawRectangle(
+        rec.x + radius, rec.y,
+        rec.width - 2 * radius, rec.height,
+        color
+    );
+    
+    // Draw left and right rectangles
+    DrawRectangle(
+        rec.x, rec.y + radius,
+        radius, rec.height - 2 * radius,
+        color
+    );
+    DrawRectangle(
+        rec.x + rec.width - radius, rec.y + radius,
+        radius, rec.height - 2 * radius,
+        color
+    );
+    
+    // Draw corner circles
+    DrawCircle(rec.x + radius, rec.y + radius, radius, color);
+    DrawCircle(rec.x + rec.width - radius, rec.y + radius, radius, color);
+    DrawCircle(rec.x + radius, rec.y + rec.height - radius, radius, color);
+    DrawCircle(rec.x + rec.width - radius, rec.y + rec.height - radius, radius, color);
+}
+
+void DrawRectangleRoundedWithShadow(Rectangle rec, float radius, Color color, float shadowOffset, Color shadowColor) {
+    // Draw shadow first
+    Rectangle shadowRec = {
+        rec.x + shadowOffset,
+        rec.y + shadowOffset,
+        rec.width,
+        rec.height
+    };
+    DrawRectangleRounded(shadowRec, radius, shadowColor);
+    
+    // Draw main rectangle
+    DrawRectangleRounded(rec, radius, color);
+}
+
+void DrawPanel(Rectangle bounds, const char* title, Color headerColor, Color bodyColor, bool drawShadow) {
+    if (drawShadow) {
+        DrawRectangleRoundedWithShadow(bounds, UI_BORDER_RADIUS_MEDIUM, bodyColor, UI_SHADOW_OFFSET_SMALL, SHADOW_LIGHT);
+    } else {
+        DrawRectangleRounded(bounds, UI_BORDER_RADIUS_MEDIUM, bodyColor);
+    }
+    
+    // Draw header if title is provided
+    if (title && strlen(title) > 0) {
+        Rectangle headerBounds = {bounds.x, bounds.y, bounds.width, UI_PADDING_XLARGE};
+        DrawRectangleRounded(headerBounds, UI_BORDER_RADIUS_MEDIUM, headerColor);
+        
+        // Draw title text
+        int textX = bounds.x + UI_PADDING_MEDIUM;
+        int textY = bounds.y + (headerBounds.height - UI_FONT_SIZE_MEDIUM) / 2;
+        DrawText(title, textX, textY, UI_FONT_SIZE_MEDIUM, UI_TEXT_PRIMARY);
+    }
+    
+    // Draw border
+    DrawRectangleLinesEx(bounds, 1, PANEL_BORDER);
+}
+
+void DrawButton(Rectangle bounds, const char* text, Color baseColor, bool isHovered, bool isPressed) {
+    Color buttonColor = baseColor;
+    float shadowOffset = UI_SHADOW_OFFSET_SMALL;
+    
+    if (isPressed) {
+        buttonColor = ColorBrightness(baseColor, -0.2f);
+        shadowOffset = 1.0f;
+    } else if (isHovered) {
+        buttonColor = ColorBrightness(baseColor, 0.1f);
+    }
+    
+    DrawRectangleRoundedWithShadow(bounds, UI_BORDER_RADIUS_SMALL, buttonColor, shadowOffset, SHADOW_MEDIUM);
+    
+    // Draw text centered
+    int textWidth = MeasureText(text, UI_FONT_SIZE_MEDIUM);
+    int textX = bounds.x + (bounds.width - textWidth) / 2;
+    int textY = bounds.y + (bounds.height - UI_FONT_SIZE_MEDIUM) / 2;
+    DrawText(text, textX, textY, UI_FONT_SIZE_MEDIUM, UI_TEXT_PRIMARY);
+}
+
+void DrawInputField(Rectangle bounds, const char* text, bool isActive, bool isHovered) {
+    Color backgroundColor = isActive ? UI_SECONDARY : UI_TERTIARY;
+    Color borderColor = isActive ? ACCENT_PRIMARY : (isHovered ? HOVER_BACKGROUND : PANEL_BORDER);
+    
+    DrawRectangleRounded(bounds, UI_BORDER_RADIUS_SMALL, backgroundColor);
+    DrawRectangleLinesEx(bounds, isActive ? 2 : 1, borderColor);
+    
+    // Draw text
+    int textX = bounds.x + UI_PADDING_MEDIUM;
+    int textY = bounds.y + (bounds.height - UI_FONT_SIZE_MEDIUM) / 2;
+    DrawText(text, textX, textY, UI_FONT_SIZE_MEDIUM, UI_TEXT_PRIMARY);
 }
 
 } // namespace UI

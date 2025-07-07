@@ -1,0 +1,4 @@
+Type: 3D
+Name: dirt2
+File: /home/glea/Epitech/tek4/IsoMaker/ressources/newBlock.glb
+Scale: 0.5

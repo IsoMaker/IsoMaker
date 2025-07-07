@@ -36,6 +36,7 @@ cmake-build-debug
 cmake/build
 build
 bin/IsoMaker
+bin/OpenAsset
 
 GenericGame
 
@@ -43,4 +44,4 @@ GenericGame
 
 .DS_Store
 
-game_map.dat
+*/game_map.dat

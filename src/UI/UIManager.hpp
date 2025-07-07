@@ -1,3 +1,4 @@
+#pragma once
 /**
  * @file UIManager.hpp
  * @brief User interface management system for the IsoMaker game engine editor
@@ -9,6 +10,11 @@
 
 #include "raylib.h"
 #include "raygui.h"
+#include <unistd.h>
+#include <string>
+#include <vector>
+#include <unordered_map>
+
 #include "UITheme.hpp"
 #include "UIComponents.hpp"
 #include "EditorEvents.hpp"
@@ -17,9 +23,7 @@
 #include "../Editor/3DMap/3DMapEditor.hpp"
 #include "Assets/Asset2D.hpp"
 #include "Assets/Asset3D.hpp"
-#include <string>
-#include <vector>
-#include <unordered_map>
+#include "../Utilities/LoadedAssets.hpp"
 
 namespace UI {
 
@@ -37,6 +41,33 @@ enum class ToolType {
     CUBE,   ///< Cube placement tool for adding 3D objects
     ZOOM    ///< Zoom tool for view scaling
 };
+
+// std::ostream& operator<<(std::ostream &os, const ToolType &color) {
+//     switch (color) {
+//         case ToolType::SELECT:
+//             os << "Select";
+//             break;
+//         case ToolType::HAND:
+//             os << "Hand";
+//             break;
+//         case ToolType::PEN:
+//             os << "Pen";
+//             break;
+//             case ToolType::ERASER:
+//             os << "Eraser";
+//             break;
+//         case ToolType::CUBE:
+//             os << "Cube";
+//             break;
+//         case ToolType::ZOOM:
+//             os << "Zoom";
+//             break;
+//         default:
+//             os << "Tool";
+//             break;
+//     }
+//     return os;
+// }
 
 /**
  * @brief Panel types in the right sidebar
@@ -122,6 +153,16 @@ public:
      * @param mapEditor Reference to the map editor for querying editor state
      */
     void draw(MapEditor &mapEditor);
+    
+    /**
+     * @brief Render all UI components with generic scene provider
+     * 
+     * Draws all UI elements including menus, toolbars, panels, and the assets browser.
+     * Should be called every frame after the main viewport rendering.
+     * 
+     * @param sceneProvider Reference to the scene provider for querying editor state
+     */
+    void draw(ISceneProvider &sceneProvider);
 
     // UI Component functions
     /**
@@ -155,7 +196,30 @@ public:
      * Handles asset selection and loading.
      */
     void drawBottomAssetsBar();
+
+    /**
+     * @brief Draw the bottom assets loaded 2D
+     * 
+     * Renders the bottom assets browser showing available assets.
+     * Handles asset selection and loading.
+     */
+    void drawBottomAssets2D(int barY);
+
+    /**
+     * @brief Draw the bottom assets loaded 3D
+     * 
+     * Renders the bottom assets browser showing available assets.
+     * Handles asset selection and loading.
+     */
+    void drawBottomAssets3D(int barY);
     
+    /**
+     * @brief Draw the asset 3D preview
+     * 
+     * Renders a spinning animation of the 3D model.
+     */
+    void drawModelPreview(Asset3D asset, Rectangle assetBounds, int barY);
+
     // Panel management
     /**
      * @brief Toggle visibility of a panel
@@ -201,6 +265,7 @@ public:
      * @return Rectangle The main viewport area
      */
     Rectangle getMainViewArea() const;
+    Rectangle getFullViewArea() const;
     
     // Event handling
     /**
@@ -247,6 +312,15 @@ public:
      */
     void handleHelpMenuAction(int selectedItem);
     
+    /**
+     * @brief Handle Editor menu actions
+     * 
+     * Processes Editor menu selections and dispatches appropriate events.
+     * 
+     * @param selectedItem Index of the selected menu item
+     */
+    void handleEditorMenuAction(int selectedItem);
+    
     // Editor state queries
     /**
      * @brief Get the number of selected objects
@@ -285,6 +359,8 @@ public:
      * Refreshes the scene hierarchy panel to reflect current scene state.
      */
     void refreshSceneObjects();
+
+    void setLoader(std::shared_ptr<AssetLoader> loader);
     
 private:
     // Window dimensions
@@ -306,14 +382,19 @@ private:
     bool _editMenuOpen;                    ///< Edit menu open state
     bool _renderMenuOpen;                  ///< Render menu open state
     bool _helpMenuOpen;                    ///< Help menu open state
+    bool _editorMenuOpen;                  ///< Editor menu open state
     
     // Tool icons
     std::vector<Texture2D> _toolIcons;     ///< Tool icon textures
     std::vector<RenderTexture2D> _toolIconRenderTextures; ///< Tool icon render textures
     
-    // Assets for the bottom bar
-    std::vector<Asset2D> _assetTiles;      ///< Available 2D assets for the bottom bar
-    int _selectedAssetIndex;               ///< Index of currently selected asset
+    bool _show3DAssets;
+
+    std::shared_ptr<AssetLoader> _loader;
+
+    // Assets index
+    int _selectedAssetIndex2D;               ///< Index of currently selected asset
+    int _selectedAssetIndex3D;               ///< Index of currently selected asset
 
     // Scene objects
     std::vector<SceneObjectInfo> _sceneObjects; ///< List of scene objects for hierarchy
@@ -364,6 +445,14 @@ private:
      * Unloads and frees UI icon textures.
      */
     void unloadIcons();
+
+    /**
+     * @brief Open asset window
+     * 
+     * Open Asset window to preload them.
+     */
+    void openAssetWindow();
+
 };
 
 } // namespace UI

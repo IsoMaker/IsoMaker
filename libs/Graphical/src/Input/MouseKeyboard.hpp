@@ -1,3 +1,4 @@
+#pragma once
 /*
 ** EPITECH PROJECT, 2024
 ** IsoMaker
@@ -10,8 +11,10 @@
 #include "../../includes/Input/AHandler.hpp"
 #include "../Utilities/Vector.hpp"
 
-namespace input {
-    class MouseKeyboardHandler : public AHandler<int> {
+namespace input
+{
+    class MouseKeyboardHandler : public AHandler<int>
+    {
         public:
             MouseKeyboardHandler() : AHandler(Type::KEYBOARDMOUSE)
             {
@@ -33,6 +36,8 @@ namespace input {
             }
 
             ~MouseKeyboardHandler() = default;
+
+            std::unordered_map<int, Generic> getBindings() const { return _inputBindings; }
         protected:
         private:
             void handleInput();

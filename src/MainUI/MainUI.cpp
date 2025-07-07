@@ -2,19 +2,47 @@
 #include <thread>
 #include <chrono>
 
-MainUI::MainUI() 
-    : _3DMapEditor(_camera, _window),
-      _uiManager(SCREENWIDTH, SCREENHEIGHT) 
+MainUI::MainUI(std::shared_ptr<Render::Camera> camera, std::shared_ptr<Render::Window> window) : _uiManager(SCREENWIDTH, SCREENHEIGHT) 
 {
-    _window.startWindow(Vector2D(SCREENWIDTH, SCREENHEIGHT));
+    _camera = camera;
+    _window = window;
+    _window.get()->startWindow(Vector2D(SCREENWIDTH, SCREENHEIGHT));
+    
+    // Initialize editors
+    _3DMapEditor.init(window, camera);
+    _scriptingEditor.init(window, camera);
     _uiManager.initialize();
 
-    //temporary cube asset loading for the 3D map, to change after libraries are implemented
     _gameProjectName = "game_project";
+    _currentEditor = MAP; // Default to Map Editor
+    
+    _loader = std::make_shared<AssetLoader>();
+    _3DMapEditor.setLoader(_loader);
+    _uiManager.setLoader(_loader);
+    //temporary cube asset loading for the 3D map, to change after libraries are implemented
+    initMapEditorAssets();
+    
+    // Setup event handlers for UI-MainUI communication
+    setupEventHandlers();
+}
 
-    Asset3D cubeAsset;
-    cubeAsset.setFileName("ressources/newBlock.glb");
-    cubeAsset.loadFile();
+MainUI::~MainUI()
+{
+}
+
+void MainUI::initMapEditorAssets()
+{
+    Color myColor = LIGHTGRAY;
+    Image colorImage = GenImageColor(1, 1, myColor);
+    Texture2D colorTexture = LoadTextureFromImage(colorImage);
+    UnloadImage(colorImage);
+    Asset2D textureAsset(colorTexture);
+    // Asset2D textureAsset("ressources/textures/cube_texture.png")
+    _3DMapEditor.changeTextureType(textureAsset);
+
+    Asset3D cubeAsset("ressources/elements/models/cube.obj");
+    if (textureAsset.isLoaded())
+        cubeAsset.setModelTexture(textureAsset.getTexture());
     _3DMapEditor.changeCubeType(cubeAsset);
 
     Asset2D playerAsset;
@@ -25,38 +53,87 @@ MainUI::MainUI()
 
 void MainUI::update(input::IHandlerBase &inputHandler) {
     Vector2D cursorPos = inputHandler.getCursorCoords();
-    _3DMapEditor.update(inputHandler);
+
+    _loader->updateAssets("ressources/loadedAssets");
+    _3DMapEditor.setLoader(_loader);
+    _uiManager.setLoader(_loader);
+    
+    // Update current editor
+    switch (_currentEditor) {
+        case MAP:
+            _3DMapEditor.update(inputHandler);
+            break;
+        case SCRIPTING:
+            _scriptingEditor.update(inputHandler);
+            break;
+    }
+    
     _uiManager.update(inputHandler);
 }
 
 void MainUI::draw() {
-    _window.startRender();
-    
+    _window.get()->startRender();
+
     // Get the main view area from the UI manager
     Rectangle mainViewArea = _uiManager.getMainViewArea();
+
+    // Draw content in the main view area
+    _window.get()->clearBackground(UI::BACKGROUND);
+
+    // Draw current editor content
+    switch (_currentEditor) {
+        case MAP:
+            _3DMapEditor.draw(mainViewArea, _camera);
+            _uiManager.draw(_3DMapEditor);
+            break;
+        case SCRIPTING:
+            _scriptingEditor.setSceneProvider(&_3DMapEditor);
+            _scriptingEditor.draw(_uiManager.getFullViewArea());
+            _uiManager.draw(_scriptingEditor);
+            break;
+    }
     
-    // Draw 3D content in the main view area
-    _window.clearBackground(UI::BACKGROUND);
-    
-    BeginScissorMode(mainViewArea.x, mainViewArea.y, mainViewArea.width, mainViewArea.height);
-    _camera.start3D();
-    _3DMapEditor.draw3DElements();
-    _camera.end3D();
-    EndScissorMode();
-    
-    // Draw 2D UI elements
-    _3DMapEditor.draw2DElements();
-    _uiManager.draw(_3DMapEditor);
-    
-    _window.endRender();
+    _window.get()->endRender();
 }
 
 void MainUI::loop(input::IHandlerBase &inputHandler) {
-    _3DMapEditor.initGrid();
-    while (!_window.isWindowClosing()) {
+    while (!_window.get()->isWindowClosing()) {
         update(inputHandler);
         draw();
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
     }
-    _window.closeWindow();
+    _window.get()->closeWindow();
+}
+
+void MainUI::setCurrentEditor(EditorType editorType) {
+    _currentEditor = editorType;
+    std::cout << "[MainUI] Switched to editor type: " << editorType << std::endl;
+}
+
+EditorType MainUI::getCurrentEditor() const {
+    return _currentEditor;
+}
+
+void MainUI::setupEventHandlers() {
+    // Subscribe to editor mode change events from the UI
+    UI::g_eventDispatcher.subscribe(UI::EditorEventType::EDITOR_MODE_CHANGED, 
+        [this](const UI::EditorEvent& event) {
+            if (std::holds_alternative<int>(event.data)) {
+                int editorIndex = std::get<int>(event.data);
+                EditorType newEditor;
+                
+                // Map UI editor indices to EditorType enum
+                switch (editorIndex) {
+                    case 0: newEditor = MAP; break;
+                    case 1: newEditor = SCRIPTING; break;
+                    default: 
+                        std::cout << "[MainUI] Unknown editor index: " << editorIndex << std::endl;
+                        return;
+                }
+                
+                setCurrentEditor(newEditor);
+            }
+        });
+    
+    std::cout << "[MainUI] Event handlers set up" << std::endl;
 }

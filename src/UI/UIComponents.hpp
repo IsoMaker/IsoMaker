@@ -5,6 +5,7 @@
 #include "UITheme.hpp"
 #include <string>
 #include <functional>
+#include "Entities/MapElement.hpp"
 
 namespace UI {
 
@@ -30,7 +31,8 @@ Vector3 PropertyEditor(Rectangle bounds, const char* label, Vector3 value);
 int TabBar(Rectangle bounds, const char** names, int count, int* active);
 
 // Asset tile component
-bool AssetTile(Rectangle bounds, Texture2D texture, const char* name, bool isSelected);
+bool AssetTile(Rectangle bounds, Asset2D asset, bool isSelected, Vector2 position);
+bool AssetTile(Rectangle bounds, Model texture, const char* name, bool isSelected);
 
 // Tool button with icon
 bool ToolButton(Rectangle bounds, Texture2D icon, const char* tooltip, bool isSelected);
@@ -43,5 +45,12 @@ int Submenu(Rectangle bounds, const char** items, int count);
 
 // Search bar
 bool SearchBar(Rectangle bounds, char* text, int textSize, bool* active);
+
+// Enhanced drawing helper functions for consistent styling
+void DrawRectangleRounded(Rectangle rec, float radius, Color color);
+void DrawRectangleRoundedWithShadow(Rectangle rec, float radius, Color color, float shadowOffset, Color shadowColor);
+void DrawPanel(Rectangle bounds, const char* title, Color headerColor, Color bodyColor, bool drawShadow = true);
+void DrawButton(Rectangle bounds, const char* text, Color baseColor, bool isHovered, bool isPressed);
+void DrawInputField(Rectangle bounds, const char* text, bool isActive, bool isHovered);
 
 } // namespace UI

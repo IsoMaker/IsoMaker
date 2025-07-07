@@ -1,3 +1,4 @@
+#pragma once
 /**
  * @file EditorEvents.hpp
  * @brief Event-driven communication system for IsoMaker editor components
@@ -13,6 +14,8 @@
 #include <string>
 #include <variant>
 #include "raylib.h"
+
+#include "Assets/AAsset.hpp"
 
 namespace UI {
 
@@ -55,7 +58,7 @@ enum class EditorEventType {
     FILE_EXPORT,         ///< File export operation requested
     
     // Editor mode events
-    EDITOR_MODE_CHANGED, ///< Editor mode has changed (2D/3D)
+    EDITOR_MODE_CHANGED, ///< Editor mode has changed (MAP_EDITOR/SCRIPTING)
     
     // Asset events
     ASSET_SELECTED,      ///< An asset has been selected in the browser
@@ -89,7 +92,8 @@ using EventData = std::variant<
     std::string,            ///< For file paths, object names, etc.
     Vector3,                ///< For positions, rotations, scale
     Vector2,                ///< For 2D positions, cursor coords
-    bool                    ///< For toggles, states
+    bool,                   ///< For toggles, states
+    std::shared_ptr<AAsset>
 >;
 
 /**
@@ -308,8 +312,8 @@ namespace Events {
      * 
      * @param assetIndex Index of the selected asset in the browser
      */
-    void assetSelected(int assetIndex);
-    
+    void assetSelected(std::shared_ptr<AAsset> asset);
+
     // Scene synchronization events
     /**
      * @brief Dispatch a scene updated event
@@ -339,6 +343,14 @@ namespace Events {
      * @param newName New name for the object
      */
     void sceneObjectRenamed(int objectId, const std::string& newName);
+
+    /**
+     * @brief Dispatch a scene object renamed event
+     * 
+     * @param objectId ID of the renamed scene object
+     * @param newName New name for the object
+     */
+    void addAssetRequested();
 }
 
 } // namespace UI

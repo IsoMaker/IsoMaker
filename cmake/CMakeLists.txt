@@ -18,11 +18,13 @@ if (NOT BUILD_TESTS)
         "../src/main.cpp"
         "../src/Editor/3DMap/3DMapEditor.cpp"
         "../src/Editor/3DMap/Grid.cpp"
+        "../src/Editor/ScriptingEditor/ScriptingEditor.cpp"
         "../src/MainUI/MainUI.cpp"
         "../src/UI/UIManager.cpp"
         "../src/UI/UIComponents.cpp"
         "../src/UI/RayguiImpl.cpp"
         "../src/UI/EditorEvents.cpp"
+        "../src/Utilities/LoadedAssets.cpp"
     )
 
     target_link_libraries(IsoMaker PRIVATE

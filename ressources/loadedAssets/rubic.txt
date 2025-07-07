@@ -1,0 +1,4 @@
+Type: 3D
+Name: rubic
+File: /home/glea/Epitech/tek4/IsoMaker/ressources/simple_rubix_cube.glb
+Scale: 0.488445

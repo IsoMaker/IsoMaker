@@ -1,3 +1,4 @@
+#pragma once
 /**
  * @file 3DMapEditor.hpp
  * @brief 3D map editor component for the IsoMaker game engine
@@ -14,17 +15,22 @@
 
 #include <fstream>
 
-#include "Entities/BasicObject.hpp"
-
 #include "Render/Window.hpp"
 #include "Render/Camera.hpp"
 #include "Grid.hpp"
 
 #include "Input/MouseKeyboard.hpp"
+
+#include "Entities/MapElement.hpp"
+#include "Entities/Character.hpp"
+
 #include "../../UI/EditorEvents.hpp"
 #include "../../UI/SceneObject.hpp"
 
+#include "../../Utilities/LoadedAssets.hpp"
+
 using namespace Utilities;
+using namespace objects;
 
 /**
  * @brief Asset type enumeration
@@ -69,8 +75,21 @@ namespace asset {
  */
 class MapEditor : public UI::ISceneProvider {
     public:
+
         /**
          * @brief Construct a new MapEditor object
+         */
+        MapEditor();
+
+        /**
+         * @brief Destroy the MapEditor object
+         * 
+         * Cleanup is handled automatically by member destructors.
+         */
+        ~MapEditor();
+
+                /**
+         * @brief Initialize te map editor's main parameters
          * 
          * Initializes the 3D map editor with camera and window references.
          * Sets up the grid system and default editor state.
@@ -78,14 +97,7 @@ class MapEditor : public UI::ISceneProvider {
          * @param camera Reference to the rendering camera
          * @param window Reference to the application window
          */
-        MapEditor(Render::Camera& camera, Render::Window& window);
-        
-        /**
-         * @brief Destroy the MapEditor object
-         * 
-         * Cleanup is handled automatically by member destructors.
-         */
-        ~MapEditor();
+        void init(std::shared_ptr<Render::Window> window, std::shared_ptr<Render::Camera> camera);
 
         /**
          * @brief Initialize the grid system
@@ -109,14 +121,23 @@ class MapEditor : public UI::ISceneProvider {
          * 
          * Renders 2D overlay elements like cursor information and HUD elements.
          */
-        void draw2DElements();
-        
+        void draw2DElements(Rectangle renderArea, std::shared_ptr<Render::Camera>);
+
         /**
          * @brief Draw 3D scene elements
          * 
          * Renders all 3D objects, the grid, and preview objects in the scene.
          */
         void draw3DElements();
+
+                /**
+         * @brief Draw all map editor elements
+         * 
+         * Calls other draw methods of map editor to render all 3D and 2D elements
+         * 
+         * @param mainViewArea Rectangle representing view area of map editor
+         */
+        void draw(Rectangle mainViewArea, std::shared_ptr<Render::Camera>);
 
         /**
          * @brief Change the current cube type for placement
@@ -126,7 +147,7 @@ class MapEditor : public UI::ISceneProvider {
          * @param asset The 3D asset to use for new cubes
          */
         void changeCubeType(Asset3D asset);
-        
+
         /**
          * @brief Add a cube at the specified position
          * 
@@ -135,7 +156,7 @@ class MapEditor : public UI::ISceneProvider {
          * @param position The 3D position where to place the cube
          */
         void addCube(Vector3D position);
-        
+
         /**
          * @brief Remove a cube object
          * 
@@ -143,7 +164,16 @@ class MapEditor : public UI::ISceneProvider {
          * 
          * @param cubeIterator Iterator pointing to the cube to remove
          */
-        void removeCube(std::vector<BasicObject>::iterator cubeIterator);
+        void removeCube(std::vector<std::shared_ptr<MapElement>>::iterator cubeIterator);
+
+        /**
+         * @brief Change the current sprite type for 2D objects
+         * 
+         * Sets the 2D asset to be used for new sprite placements.
+         * 
+         * @param newAsset The 2D asset to use for new sprites
+         */
+        void changeTextureType(Asset2D newAsset);
 
         /**
          * @brief Change the current sprite type for 2D objects
@@ -155,13 +185,13 @@ class MapEditor : public UI::ISceneProvider {
         void changeSpriteType(Asset2D newAsset);
         
         /**
-         * @brief Add a player at the specified 2D position
+         * @brief Add a player at the specified 3D position
          * 
-         * Places a player object at the given 2D position.
+         * Places a player object at the given 3D position.
          * 
-         * @param position The 2D position where to place the player
+         * @param position The 3D position where to place the player
          */
-        void addPlayer(Vector2D position);
+        void addPlayer(Vector3D position, int totalFrames);
         
         /**
          * @brief Remove a player object
@@ -170,7 +200,7 @@ class MapEditor : public UI::ISceneProvider {
          * 
          * @param toRemove Iterator pointing to the player to remove
          */
-        void removePlayer(std::vector<BasicObject>::iterator toRemove);
+        void removePlayer(std::vector<std::shared_ptr<Character>>::iterator toRemove);
 
         /**
          * @brief Save the map to a binary file
@@ -179,7 +209,7 @@ class MapEditor : public UI::ISceneProvider {
          * 
          * @param filename Path to the output file
          */
-        void saveMapBinary(const std::string& filename);
+        void saveMap(const std::string& filename);
         
         /**
          * @brief Load a map from a binary file
@@ -188,7 +218,7 @@ class MapEditor : public UI::ISceneProvider {
          * 
          * @param filename Path to the input file
          */
-        void loadMapBinary(const std::string& filename);
+        void loadMap(const std::string& filename);
 
         /**
          * @brief Compile the map for game runtime
@@ -233,8 +263,18 @@ class MapEditor : public UI::ISceneProvider {
          * Responds to asset selection from the assets browser.
          * 
          * @param assetIndex Index of the selected asset
+         * @param loadedAssets2D Vector of asset2D
          */
-        void handleAssetSelected(int assetIndex);
+        void handleAssetSelected(std::shared_ptr<AAsset> asset);
+
+        /**
+         * @brief Handle asset selection events
+         * 
+         * Responds to asset selection from the assets browser.
+         * 
+         * @param assetIndex Index of the selected asset
+         */
+        void handleAssetLoaded();
         
         // State queries for UI
         /**
@@ -319,20 +359,11 @@ class MapEditor : public UI::ISceneProvider {
          */
         void notifySceneChanged();
 
+        void setLoader(std::shared_ptr<AssetLoader> loader);
+
     protected:
     private:
         // Internal helper methods
-        /**
-         * @brief Align cursor position to grid
-         * 
-         * Calculates grid-aligned position and finds the closest object.
-         * 
-         * @param cursorPos 2D cursor position
-         * @return std::pair<Vector3D, std::optional<std::vector<BasicObject>::iterator>> 
-         *         Aligned position and optional closest object iterator
-         */
-        std::pair<Vector3D, std::optional<std::vector<BasicObject>::iterator>> alignPosition(Vector2D cursorPos);
-        
         /**
          * @brief Find position from ray collision
          * 
@@ -359,33 +390,42 @@ class MapEditor : public UI::ISceneProvider {
          * @param cursorPos 2D cursor position
          * @param cameraPos 3D camera position
          */
-        void updateCursorInfo(Vector2D cursorPos, Vector3D cameraPos);
+        void updateCursor();
 
         // Scene objects
-        std::vector<BasicObject> _objects3D;       ///< All 3D objects in the scene
-        std::vector<BasicObject> _objects2D;       ///< All 2D objects in the scene
+        std::vector<std::shared_ptr<MapElement>> _objects3D; ///< All 3D objects in the scene
+        std::vector<std::shared_ptr<Character>> _objects2D;  ///< All 2D objects in the scene
 
         // Current assets
-        Asset3D _currentCubeType;                  ///< Currently selected 3D asset for placement
-        Asset2D _currentSpireType;                 ///< Currently selected 2D asset for placement
+        Asset2D _currentTextureType;                         ///< Currently selected texture for 3D asset placement;
+        Asset3D _currentCubeType;                            ///< Currently selected 3D asset for placement
+        Asset2D _currentSpriteType;               ///< Currently selected 2D asset for placement
+        bool _blocSelect;
+
+        // Assets Loaded
+        std::shared_ptr<AssetLoader> _loader;
+        std::vector<Asset3D> _objects3DLoaded;            ///< All 3D objects loaded
+        std::vector<Asset2D> _objects2DLoaded;             ///< All 2D objects loaded
 
         // Core references
-        Render::Window &_window;                   ///< Reference to the application window
-        Render::Camera &_camera;                   ///< Reference to the 3D camera
-        map::MapGrid _grid;                        ///< Grid system for alignment
+        std::shared_ptr<Render::Window> _window;             ///< Reference to the application window
+        std::shared_ptr<Render::Camera> _camera;             ///< Reference to the 3D camera
+        map::MapGrid _grid;                                  
 
         // Editor state
-        bool _placePlayer;                         ///< Flag for player placement mode
-        bool _drawWireframe = false;               ///< Wireframe rendering mode
-        float _cubeHeight;                         ///< Height for cube placement
+        bool _placePlayer;                                   ///< Flag for player placement mode
+        bool _drawWireframe = false;                         ///< Wireframe rendering mode
+        float _cubeHeight;                                   ///< Height for cube placement
+        Vector2D _spriteSize;                                   ///< Height for cube placement
 
         // Interactive elements
-        Vector3D _alignedPosition;                 ///< Current grid-aligned cursor position
-        BasicObject _previewObject;               ///< Preview object for placement
-        std::optional<std::vector<BasicObject>::iterator> _closestObject; ///< Closest object to cursor
+        Vector2D _cursorPosition;
+        Vector3D _alignedPosition;                           ///< Current grid-aligned cursor position
+        std::optional<std::vector<std::shared_ptr<MapElement>>::iterator> _closestObject; ///< Closest object to cursor
+        std::optional<std::vector<std::shared_ptr<Character>>::iterator> _closestSprite; ///< Closest sprite to cursor
         
         // Current tool and selection state
-        int _currentTool = 0;                      ///< Current tool index (default: SELECT)
-        int _selectedObjectId = -1;                ///< ID of currently selected object
-        bool _gridVisible = true;                  ///< Grid visibility state
+        int _currentTool = 0;                                ///< Current tool index (default: SELECT)
+        int _selectedObjectId = -1;                          ///< ID of currently selected object
+        bool _gridVisible = true;                            ///< Grid visibility state
 };
