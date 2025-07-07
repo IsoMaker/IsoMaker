@@ -67,6 +67,96 @@ struct BlockConfig {
 };
 
 /**
+ * @brief Types of editable fields in the configuration dialog
+ */
+enum class FieldType {
+    FLOAT,          ///< Numeric input field
+    STRING,         ///< Text input field
+    BOOL,           ///< Checkbox field
+    VECTOR3,        ///< Three numeric fields (X, Y, Z)
+    COMBO,          ///< Dropdown selection
+    INTEGER         ///< Integer input field
+};
+
+/**
+ * @brief Definition of an editable field in the configuration dialog
+ */
+struct FieldDefinition {
+    std::string key;                    ///< Parameter key in BlockConfig
+    std::string label;                  ///< Display label
+    FieldType type;                     ///< Type of field
+    std::string defaultValue;           ///< Default value as string
+    std::vector<std::string> options;   ///< Options for combo boxes
+    float minValue = 0.0f;              ///< Minimum value for numeric fields
+    float maxValue = 100.0f;            ///< Maximum value for numeric fields
+    std::string description = "";       ///< Tooltip or help text
+    
+    FieldDefinition(const std::string& k, const std::string& l, FieldType t, const std::string& def = "")
+        : key(k), label(l), type(t), defaultValue(def) {}
+    
+    FieldDefinition& withOptions(const std::vector<std::string>& opts) {
+        options = opts;
+        return *this;
+    }
+    
+    FieldDefinition& withRange(float min, float max) {
+        minValue = min;
+        maxValue = max;
+        return *this;
+    }
+    
+    FieldDefinition& withDescription(const std::string& desc) {
+        description = desc;
+        return *this;
+    }
+};
+
+/**
+ * @brief Configuration template for a block type
+ */
+struct BlockConfigTemplate {
+    std::string title;                              ///< Dialog title
+    std::vector<FieldDefinition> fields;           ///< List of editable fields
+    float dialogWidth = 400.0f;                    ///< Dialog width
+    float dialogHeight = 350.0f;                   ///< Dialog height
+    
+    BlockConfigTemplate(const std::string& t = "") : title(t) {}
+    
+    BlockConfigTemplate& addField(const FieldDefinition& field) {
+        fields.push_back(field);
+        return *this;
+    }
+    
+    BlockConfigTemplate& withSize(float width, float height) {
+        dialogWidth = width;
+        dialogHeight = height;
+        return *this;
+    }
+};
+
+/**
+ * @brief UI field renderer state for managing input values
+ */
+struct FieldState {
+    std::string stringValue;
+    float floatValue = 0.0f;
+    int intValue = 0;
+    bool boolValue = false;
+    Vector3 vectorValue = {0.0f, 0.0f, 0.0f};
+    int comboIndex = 0;
+    char textBuffer[256] = {0};
+    bool isDirty = false;
+    
+    FieldState() = default;
+    
+    void setFromString(const std::string& value);
+    void setFromFloat(float value);
+    void setFromBool(bool value);
+    void setFromVector3(const Vector3& value);
+    void setFromInt(int value);
+};
+
+/**
  * @brief Connection port types for different execution flows
  */
 enum class ConnectionPortType {
@@ -387,6 +477,24 @@ private:
     void drawPaletteCategory(const std::string& title, const std::vector<BlockType>& blocks, 
                            Rectangle bounds, float& yOffset);
     void drawConfigDialog();
+    
+    // Modular configuration system
+    std::unordered_map<BlockType, BlockConfigTemplate> _blockConfigTemplates;
+    std::unordered_map<std::string, FieldState> _fieldStates;
+    
+    void initializeBlockConfigTemplates();
+    BlockConfigTemplate& getConfigTemplate(BlockType blockType);
+    void loadFieldStatesFromBlock(ScriptBlock* block);
+    void applyFieldStatesToBlock(ScriptBlock* block);
+    void resetFieldStates();
+    
+    float drawConfigField(const FieldDefinition& field, FieldState& state, Rectangle dialogBounds, float yOffset);
+    float drawFloatField(const FieldDefinition& field, FieldState& state, Rectangle dialogBounds, float yOffset);
+    float drawStringField(const FieldDefinition& field, FieldState& state, Rectangle dialogBounds, float yOffset);
+    float drawBoolField(const FieldDefinition& field, FieldState& state, Rectangle dialogBounds, float yOffset);
+    float drawVector3Field(const FieldDefinition& field, FieldState& state, Rectangle dialogBounds, float yOffset);
+    float drawComboField(const FieldDefinition& field, FieldState& state, Rectangle dialogBounds, float yOffset);
+    float drawIntegerField(const FieldDefinition& field, FieldState& state, Rectangle dialogBounds, float yOffset);
     
     void initializeBlockPalette();
     ScriptBlock createBlockFromType(BlockType type, Vector2 position);
